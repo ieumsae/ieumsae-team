@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        form { display: flex; flex-direction: column; }
+        label { margin-top: 10px; }
+        input, select { margin-bottom: 10px; padding: 5px; }
+        button { margin-top: 20px; padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#checkUserIdDuplicate").click(function() {
+                var userId = $("#userId").val();
+                checkDuplicate("userId", userId);
+            });
+
+            $("#checkUserNickNameDuplicate").click(function() {
+                var userNickName = $("#userNickName").val();
+                checkDuplicate("userNickName", userNickName);
+            });
+
+            $("#checkUserPhoneDuplicate").click(function() {
+                var userPhone = $("#userPhone").val();
+                checkDuplicate("userPhone", userPhone);
+            });
+
+            $("#checkUserEmailDuplicate").click(function() {
+                var userEmail = $("#userEmail").val();
+                checkDuplicate("userEmail", userEmail);
+            });
+
+            function checkDuplicate(field, value) {
+                $.ajax({
+                    type: "POST",
+                    url: "/check-duplicate",
+                    data: {
+                        field: field,
+                        value: value
+                    },
+                    success: function(response) {
+                        if (response === true) {
+                            alert("이미 사용 중인 " + field + " 입니다.");
+                        } else {
+                            alert(field + " 사용 가능합니다.");
+                        }
+                    },
+                    error: function() {
+                        alert("오류 발생");
+                    }
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+<h1>회원가입</h1>
+<form th:action="@{/signup}" th:object="${user}" method="post">
+    <label for="userId">아이디:</label>
+    <input type="text" id="userId" th:field="*{userId}" required>
+    <button type="button" id="checkUserIdDuplicate">아이디 중복 확인</button>
+
+    <label for="userPw">비밀번호:</label>
+    <input type="password" id="userPw" th:field="*{userPw}" required>
+
+    <label for="userNickName">닉네임:</label>
+    <input type="text" id="userNickName" th:field="*{userNickName}" required>
+    <button type="button" id="checkUserNickNameDuplicate">닉네임 중복 확인</button>
+
+    <label for="userName">이름:</label>
+    <input type="text" id="userName" th:field="*{userName}" required>
+
+    <label for="userPhone">전화번호:</label>
+    <input type="tel" id="userPhone" th:field="*{userPhone}" required>
+    <button type="button" id="checkUserPhoneDuplicate">전화번호 중복 확인</button>
+
+    <label for="userEmail">이메일:</label>
+    <input type="email" id="userEmail" th:field="*{userEmail}" required>
+    <button type="button" id="checkUserEmailDuplicate">이메일 중복 확인</button>
+
+    <label for="userAddress">주소:</label>
+    <input type="text" id="userAddress" th:field="*{userAddress}" required>
+
+    <label for="userGender">성별:</label>
+    <select id="userGender" th:field="*{userGender}">
+        <option value="M">남성</option>
+        <option value="F">여성</option>
+        <option value="O">기타</option>
+    </select>
+
+    <label for="userInterest1">관심사 1:</label>
+    <input type="text" id="userInterest1" name="userInterest1">
+
+    <label for="userInterest2">관심사 2:</label>
+    <input type="text" id="userInterest2" name="userInterest2">
+
+    <label for="userRegion1">관심 지역 1:</label>
+    <input type="text" id="userRegion1" name="userRegion1">
+
+    <label for="userRegion2">관심 지역 2:</label>
+    <input type="text" id="userRegion2" name="userRegion2">
+
+    <button type="submit">가입하기</button>
+</form>
+</body>
+</html>
