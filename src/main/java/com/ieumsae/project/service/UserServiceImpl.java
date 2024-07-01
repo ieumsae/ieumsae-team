@@ -54,4 +54,20 @@ public class UserServiceImpl implements UserService {
         // ID로 사용자를 찾고, 없으면 null 반환
         return userRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public boolean checkDuplicate(String field, String value) {
+        switch (field) {
+            case "userId":
+                return userRepository.findByUserName(value).isPresent();
+            case "userNickName":
+                return userRepository.findByUserNickName(value).isPresent();
+            case "userPhone":
+                return userRepository.findByUserPhone(value).isPresent();
+            case "userEmail":
+                return userRepository.findByUserEmail(value).isPresent();
+            default:
+                throw new IllegalArgumentException("Invalid field for duplicate check");
+        }
+    }
 }
