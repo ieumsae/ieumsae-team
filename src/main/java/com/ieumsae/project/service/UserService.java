@@ -6,4 +6,5 @@ import com.ieumsae.project.domain.UserInterest;
 public interface UserService {
     void join(User user);
     User findById(Long id);
+    boolean checkDuplicate(String field, String value);
 }
