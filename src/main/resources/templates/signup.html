@@ -1,87 +1,136 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; }
-        form { display: flex; flex-direction: column; }
-        label { margin-top: 10px; }
-        input, select { margin-bottom: 10px; padding: 5px; }
-        button { margin-top: 20px; padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .error { color: red; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0e6ff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(123, 104, 238, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #5e35b1;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 1rem;
+            color: #5e35b1;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        input {
+            margin-top: 0.5rem;
+            padding: 0.7rem;
+            border: 2px solid #d1c4e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #7c4dff;
+            outline: none;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .input-group input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        button {
+            padding: 0.7rem;
+            background-color: #7c4dff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #6200ea;
+        }
+        .check-button {
+            background-color: #9575cd;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .check-button:hover {
+            background-color: #7e57c2;
+        }
+        #submit-button {
+            margin-top: 1rem;
+            background-color: #5e35b1;
+        }
+        #submit-button:hover {
+            background-color: #4527a0;
+        }
     </style>
 </head>
 <body>
-<h1>회원가입</h1>
-<form id="signupForm" th:action="@{/users/signup}" method="post" th:object="${userForm}">
-    <div id="errorMessage" class="error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+<div class="container">
+    <h1>회원가입</h1>
+    <form id="signupForm">
+        <label for="userId">아이디</label>
+        <div class="input-group">
+            <input type="text" id="userId" name="userId" required>
+            <button type="button" id="checkUserIdDuplicate" class="check-button">중복 확인</button>
+        </div>
 
-    <label for="userId">아이디:</label>
-    <input type="text" id="userId" th:field="*{userId}" required>
-    <button type="button" id="checkUserIdDuplicate">아이디 중복 확인</button>
+        <label for="userPw">비밀번호</label>
+        <input type="password" id="userPw" name="userPw" required>
 
-    <label for="userPw">비밀번호:</label>
-    <input type="password" id="userPw" th:field="*{userPw}" required>
+        <label for="userNickName">닉네임</label>
+        <div class="input-group">
+            <input type="text" id="userNickName" name="userNickName" required>
+            <button type="button" id="checkUserNickNameDuplicate" class="check-button">중복 확인</button>
+        </div>
 
-    <label for="userNickName">닉네임:</label>
-    <input type="text" id="userNickName" th:field="*{userNickName}" required>
-    <button type="button" id="checkUserNickNameDuplicate">닉네임 중복 확인</button>
+        <label for="userName">이름</label>
+        <input type="text" id="userName" name="userName" required>
 
-    <label for="userName">이름:</label>
-    <input type="text" id="userName" th:field="*{userName}" required>
+        <label for="userEmail">이메일</label>
+        <div class="input-group">
+            <input type="email" id="userEmail" name="userEmail" required>
+            <button type="button" id="checkUserEmailDuplicate" class="check-button">중복 확인</button>
+        </div>
 
+        <button type="submit" id="submit-button">가입하기</button>
+    </form>
+</div>
 
-    <label for="userPhone">전화번호:</label>
-    <input type="tel" id="userPhone" th:field="*{userPhone}" required>
-    <button type="button" id="checkUserPhoneDuplicate">전화번호 중복 확인</button>
-
-    <label for="userEmail">이메일:</label>
-    <input type="email" id="userEmail" th:field="*{userEmail}" required>
-    <button type="button" id="checkUserEmailDuplicate">이메일 중복 확인</button>
-
-    <label for="userAddress">주소:</label>
-    <input type="text" id="userAddress" th:field="*{userAddress}" required>
-
-    <label for="userMbti">MBTI:</label>
-    <input type="text" id="userMbti" th:field="*{userMbti}" required>
-
-    <label for="userGender">성별:</label>
-    <select id="userGender" th:field="*{userGender}">
-        <option value="M">남성</option>
-        <option value="F">여성</option>
-        <option value="O">기타</option>
-    </select>
-
-    <label for="userInterest1">관심사 1:</label>
-    <input type="text" id="userInterest1" th:field="*{userInterest1}">
-
-    <label for="userInterest2">관심사 2:</label>
-    <input type="text" id="userInterest2" th:field="*{userInterest2}">
-
-    <label for="userRegion1">관심 지역 1:</label>
-    <input type="text" id="userRegion1" th:field="*{userRegion1}">
-
-    <label for="userRegion2">관심 지역 2:</label>
-    <input type="text" id="userRegion2" th:field="*{userRegion2}">
-
-    <button type="submit">가입하기</button>
-</form>
-
-<script th:inline="javascript">
+<script>
     function checkDuplicate(field, value) {
-        fetch(`/users/check-duplicate?field=${encodeURIComponent(field)}&value=${encodeURIComponent(value)}`, {
-            method: 'POST'
+        fetch(`/api/users/check/${encodeURIComponent(field)}/${encodeURIComponent(value)}`, {
+            method: 'GET'
         })
             .then(response => response.json())
             .then(isDuplicate => {
                 let fieldName = {
                     'userId': '아이디',
                     'userNickName': '닉네임',
-                    'userPhone': '전화번호',
                     'userEmail': '이메일'
                 }[field];
                 alert(isDuplicate ? `이미 사용 중인 ${fieldName}입니다.` : `사용 가능한 ${fieldName}입니다.`);
@@ -92,12 +141,42 @@
             });
     }
 
+    document.getElementById('checkUserIdDuplicate').addEventListener
+    ('click', () => checkDuplicate('userId', document.getElementById('userId').value));
 
+    document.getElementById('checkUserNickNameDuplicate').addEventListener
+    ('click', () => checkDuplicate('userNickName', document.getElementById('userNickName').value));
 
-    document.getElementById('checkUserIdDuplicate').addEventListener('click', () => checkDuplicate('userId', document.getElementById('userId').value));
-    document.getElementById('checkUserNickNameDuplicate').addEventListener('click', () => checkDuplicate('userNickName', document.getElementById('userNickName').value));
-    document.getElementById('checkUserPhoneDuplicate').addEventListener('click', () => checkDuplicate('userPhone', document.getElementById('userPhone').value));
-    document.getElementById('checkUserEmailDuplicate').addEventListener('click', () => checkDuplicate('userEmail', document.getElementById('userEmail').value));
+    document.getElementById('checkUserEmailDuplicate').addEventListener
+    ('click', () => checkDuplicate('userEmail', document.getElementById('userEmail').value));
+
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const userData = Object.fromEntries(formData.entries());
+
+        fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.user) {
+                    alert('회원가입이 완료되었습니다.');
+                    window.location.href = '/';
+                } else {
+                    alert('회원가입에 실패했습니다: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
+    });
 </script>
 </body>
+
 </html>
