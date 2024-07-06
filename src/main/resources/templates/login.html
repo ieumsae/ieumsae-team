@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #e3f2fd;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(3, 169, 244, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #1565c0;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.7rem;
+            border: 2px solid #bbdefb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #2196f3;
+            outline: none;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            padding: 0.7rem;
+            background-color: #1565c0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0d47a1;
+        }
+        .signup-button {
+            padding: 0.7rem;
+            background-color: #bbdefb;
+            color: #1565c0;
+            border: 2px solid #1565c0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .signup-button:hover {
+            background-color: #1565c0;
+            color: white;
+        }
+        .social-login {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .social-login img {
+            width: 40px;
+            height: 40px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>로그인</h1>
+    <form>
+        <input type="text" placeholder="아이디" required>
+        <input type="password" placeholder="비밀번호" required>
+        <div class="button-container">
+            <button type="submit">로그인</button>
+            <button type="button" class="signup-button" onclick="location.href='signup'">회원가입</button>
+        </div>
+    </form>
+    <div class="social-login">
+        <!-- 소셜 로그인 아이콘들을 여기에 추가하세요 -->
+        <!-- 예: <img src="naver-icon.png" alt="Naver"> -->
+        <!-- <img src="github-icon.png" alt="GitHub"> -->
+        <!-- <img src="google-icon.png" alt="Google"> -->
+    </div>
+</div>
+</body>
+</html>
