@@ -1,10 +1,13 @@
 package com.ieumsae.project.service;
 
 import com.ieumsae.project.domain.User;
-import com.ieumsae.project.domain.UserInterest;
+import com.ieumsae.project.domain.UserForm;
 
 public interface UserService {
-    void join(User user);
+    User join(UserForm form);
     User findById(Long id);
     boolean checkDuplicate(String field, String value);
+
+
+
 }
