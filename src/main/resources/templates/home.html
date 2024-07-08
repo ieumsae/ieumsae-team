@@ -1,17 +1,51 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>홈</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #userInfo {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<h1>환영합니다!</h1>
+<div class="container">
+    <h1>환영합니다</h1>
+    <div id="userInfo">로딩 중...</div>
+</div>
 
-<div th:if="${message}" th:text="${message}" style="color: green;"></div>
-
-<p>이곳은 홈 화면입니다.</p>
-
-<a href="/users/signup">회원가입</a>
-<!-- 필요한 다른 링크들을 추가할 수 있습니다 -->
+<script>
+    fetch('/api/user-info')
+        .then(response => response.text())
+        .then(data => {
+            const [userIdPair, rolePair] = data.split(',');
+            const userId = userIdPair.split(':')[1];
+            const role = rolePair.split(':')[1];
+            document.getElementById('userInfo').textContent =
+                `사용자 ID: ${userId}, 역할: ${role}`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('userInfo').textContent = '정보를 불러오는데 실패했습니다.';
+        });
+</script>
 </body>
 </html>
