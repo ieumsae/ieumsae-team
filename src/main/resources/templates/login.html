@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -94,9 +94,10 @@
 <body>
 <div class="container">
     <h1>로그인</h1>
-    <form>
-        <input type="text" placeholder="아이디" required>
-        <input type="password" placeholder="비밀번호" required>
+    <form action="/login" method="post">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+        <input type="text" name="userId" placeholder="아이디" required>
+        <input type="password" name="userPw" placeholder="비밀번호" required>
         <div class="button-container">
             <button type="submit">로그인</button>
             <button type="button" class="signup-button" onclick="location.href='signup'">회원가입</button>
@@ -104,9 +105,9 @@
     </form>
     <div class="social-login">
         <!-- 소셜 로그인 아이콘들을 여기에 추가하세요 -->
-        <!-- 예: <img src="naver-icon.png" alt="Naver"> -->
-        <!-- <img src="github-icon.png" alt="GitHub"> -->
-        <!-- <img src="google-icon.png" alt="Google"> -->
+
+        <img src="/images/googleicon.png" alt="google">
+
     </div>
 </div>
 </body>
