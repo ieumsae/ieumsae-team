@@ -26,4 +26,6 @@ public class Chat {
     @Column(name = "chat_send_dt")
     private LocalDateTime sendDateTime;
 
+    private String chatType;
+
 }

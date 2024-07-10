@@ -4,7 +4,7 @@ class ChatClient {
         this.chatIdx = null;
         this.userIdx = null;
         this.nickname = null;
-        this.chatType = null; // 'personal' or 'group'
+        this.chatType = null;
     }
 
     connect(chatIdx, userIdx, nickname, chatType) {
@@ -25,7 +25,7 @@ class ChatClient {
     }
 
     subscribeToChat() {
-        const topic = this.chatType === 'personal' ? `/topic/chat/${this.chatIdx}` : `/topic/groupChat/${this.chatIdx}`;
+        const topic = this.chatType === 'PERSONAL' ? `/topic/chat/${this.chatIdx}` : `/topic/groupChat/${this.chatIdx}`;
         this.stompClient.subscribe(topic, (message) => {
             const chatMessage = JSON.parse(message.body);
             this.displayMessage(chatMessage);
@@ -33,12 +33,13 @@ class ChatClient {
     }
 
     joinChat() {
-        const destination = this.chatType === 'personal' ? `/app/chat.addUser/${this.chatIdx}` : `/app/groupChat.addUser/${this.chatIdx}`;
+        const destination = this.chatType === 'PERSONAL' ? `/app/chat.addUser/${this.chatIdx}` : `/app/groupChat.addUser/${this.chatIdx}`;
         const joinMessage = {
             userIdx: this.userIdx,
             nickname: this.nickname,
             content: '',
-            sendDateTime: new Date()
+            sendDateTime: new Date(),
+            chatType: this.chatType
         };
         this.stompClient.send(destination, {}, JSON.stringify(joinMessage));
     }
@@ -48,33 +49,58 @@ class ChatClient {
             userIdx: this.userIdx,
             nickname: this.nickname,
             content: '',
-            sendDateTime: new Date()
+            sendDateTime: new Date(),
+            chatType: this.chatType
         };
-        const destination = this.chatType === 'personal' ? `/app/chat.leaveUser/${this.chatIdx}` : `/app/groupChat.leaveUser/${this.chatIdx}`;
+        const destination = this.chatType === 'PERSONAL' ? `/app/chat.leaveUser/${this.chatIdx}` : `/app/groupChat.leaveUser/${this.chatIdx}`;
         this.stompClient.send(destination, {}, JSON.stringify(leaveMessage));
         this.stompClient.disconnect();
     }
 
     sendMessage(content) {
         const chatMessage = {
+            chatIdx: this.chatIdx,  // 이 부분이 중요합니다
             userIdx: this.userIdx,
             nickname: this.nickname,
             content: content,
-            sendDateTime: new Date()
+            sendDateTime: new Date(),
+            chatType: this.chatType
         };
-        const destination = this.chatType === 'personal' ? `/app/chat.sendMessage/${this.chatIdx}` : `/app/groupChat.sendMessage/${this.chatIdx}`;
+        const destination = this.chatType === 'PERSONAL' ? `/app/chat.sendMessage/${this.chatIdx}` : `/app/groupChat.sendMessage/${this.chatIdx}`;
         this.stompClient.send(destination, {}, JSON.stringify(chatMessage));
     }
 
     loadPreviousMessages() {
-        const destination = this.chatType === 'personal' ? `/app/chat.getMessages/${this.chatIdx}` : `/app/groupChat.getMessages/${this.chatIdx}`;
+        const destination = this.chatType === 'PERSONAL' ? `/app/chat.getMessages/${this.chatIdx}` : `/app/groupChat.getMessages/${this.chatIdx}`;
         this.stompClient.send(destination, {}, this.userIdx);
     }
 
     displayMessage(message) {
-        // 이 메서드는 실제 UI에 메시지를 표시하는 로직을 구현해야 합니다.
-        // 예를 들어, DOM 조작을 통해 메시지를 화면에 추가하는 등의 작업을 수행합니다.
-        console.log('Received message:', message);
-        // 실제 구현에서는 이 부분을 채팅 UI에 메시지를 추가하는 코드로 대체해야 합니다.
+        const chatMessages = document.getElementById('chat-messages');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.classList.add(message.userIdx == this.userIdx ? 'own-message' : 'other-message');
+
+        const nicknameSpan = document.createElement('span');
+        nicknameSpan.classList.add('nickname');
+        nicknameSpan.textContent = message.nickname;
+
+        const contentSpan = document.createElement('span');
+        contentSpan.classList.add('content');
+        contentSpan.textContent = message.content;
+
+        const timeSpan = document.createElement('span');
+        timeSpan.classList.add('time');
+        timeSpan.textContent = new Date(message.sendDateTime).toLocaleTimeString();
+
+        messageElement.appendChild(nicknameSpan);
+        messageElement.appendChild(contentSpan);
+        messageElement.appendChild(timeSpan);
+
+        chatMessages.appendChild(messageElement);
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        console.log('Displayed message:', message);
     }
 }

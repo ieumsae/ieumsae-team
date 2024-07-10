@@ -9,6 +9,10 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -22,10 +26,31 @@ public class ChatController {
         this.chatService = chatService;
     }
 
+    // 채팅 페이지 연결
+    @GetMapping("/chat")
+    public String chatPage() {
+        return "chat";  // chat.html을 렌더링
+    }
+
+    // 채팅방 연결
+    @PostMapping("/enterChat")
+    public String enterChat(@RequestParam("chatIdx") int chatIdx,
+                            @RequestParam("userIdx") int userIdx,
+                            Model model) {
+        model.addAttribute("chatIdx", chatIdx);
+        model.addAttribute("userIdx", userIdx);
+        model.addAttribute("chatType", "PERSONAL");
+        return "chatRoom";  // chatRoom.html로 이동
+    }
+
     // 개인 채팅 메시지 전송
     @MessageMapping("/chat.sendMessage/{chatIdx}")
     @SendTo("/topic/chat/{chatIdx}")
     public Chat sendMessage(@DestinationVariable Integer chatIdx, @Payload Chat chatMessage) {
+        if (chatIdx == null || chatMessage.getChatIdx() == null) {
+            throw new IllegalArgumentException("chatIdx cannot be null");
+        }
+        chatMessage.setChatIdx(chatIdx);
         return chatService.saveAndFormatChatMessage(chatMessage);
     }
 

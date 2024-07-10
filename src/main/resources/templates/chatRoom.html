@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>채팅방</title>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:src="@{/js/chat.js}"></script>
+</head>
+<body>
+<div id="chat-page">
+    <input type="hidden" id="chat-idx" th:value="${chatIdx}">
+    <input type="hidden" id="user-idx" th:value="${userIdx}">
+    <input type="hidden" id="chat-type" value="PERSONAL">
+    <div id="chat-messages"></div>
+    <div id="message-input-container">
+        <input type="text" id="message-input" placeholder="메시지를 입력하세요...">
+        <button id="send-button">전송</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const chatIdx = [[${chatIdx}]];
+    const userIdx = [[${userIdx}]];
+    const nickname = [[${nickname}]];
+    const chatType = "PERSONAL";
+
+    const chatClient = new ChatClient();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        chatClient.connect(chatIdx, userIdx, nickname, chatType);
+
+        document.getElementById('send-button').addEventListener('click', sendMessage);
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    });
+
+    function sendMessage() {
+        const messageInput = document.getElementById('message-input');
+        const message = messageInput.value.trim();
+        if (message) {
+            chatClient.sendMessage(message);
+            messageInput.value = '';
+        }
+    }
+
+    window.addEventListener('beforeunload', function() {
+        chatClient.leaveChat();
+    });
+</script>
+</body>
+</html>
