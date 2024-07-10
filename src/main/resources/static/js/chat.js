@@ -1,3 +1,5 @@
+// 2024.07.10
+
 class ChatClient {
     constructor() {
         this.stompClient = null;
