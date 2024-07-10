@@ -1,4 +1,4 @@
-package com.ieumsae.project.domain;
+package com.ieumsae.domain;
 
 
 import jakarta.persistence.*;
