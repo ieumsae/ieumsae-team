@@ -1,96 +1,80 @@
-// 2024.07.10
-
 class ChatClient {
     constructor() {
         this.stompClient = null;
-        this.roomId = null;
-        this.userId = null;
+        this.chatIdx = null;
+        this.userIdx = null;
         this.nickname = null;
-        this.roomType = null;
+        this.chatType = null; // 'personal' or 'group'
     }
 
-    connect(roomId, userId, nickname, roomType) {
-        this.roomId = roomId;
-        this.userId = userId;
+    connect(chatIdx, userIdx, nickname, chatType) {
+        this.chatIdx = chatIdx;
+        this.userIdx = userIdx;
         this.nickname = nickname;
-        this.roomType = roomType;
-
-        // 웹소켓: 양방향 통신 시스템을 구축(서버)
-        // STOMP: 웹소켓이라는 시스템 위에 얹는 느낌 (프로토콜)
+        this.chatType = chatType;
 
         const socket = new SockJS('/ws-endpoint');
         this.stompClient = Stomp.over(socket);
-        // over메소드는 STOMP 클라이언트를 생성하는 기능을 한다.
-        // 주어진 웹소켓 객체(SockJS로 생성된 socket)을 STOMP 프로토콜로 래핑한다.
-        // 래핑: 어떤 객체나 데이터를 다른 객체로 감싸는 것 => 기능을 확장하거나 변경하기 위해 새로운 레이어를 추가하는 것
-        // 클라이언트 객체를 통해 STOMP 명령어를 사용할 수 있다. (CONNECT, SUBSCRIBE, SEND 등)
 
         this.stompClient.connect({}, (frame) => {
-            console.log('Connected: ' + frame); // 연결 성공 시 프레임 정보를 콘솔에 출력
-            this.subscribeToRoom(); // 채팅방 주제를 구독하는 메소드 호출
-            this.joinRoom(); // 채팅방 입장 메시지를 보내는 메소드 호출
-            this.loadPreviousMessages(); // 이전 채팅 메시지를 불러오는 메소드를 호출
+            console.log('Connected: ' + frame);
+            this.subscribeToChat();
+            this.joinChat();
+            this.loadPreviousMessages();
         });
     }
 
-    // connect(): 첫 번쨰 인자{}는 연결 시 사용할 추가 헤더로, 여기서는 비어있음 / 두 번째 인자는 연결 성공 시 실행될 콜백함수를 람다로 표현
-    // frame은 연결 성공 시 서버로부터 받는 응답객체
-    // 함수 내부의 this는 외부 스코프의 this와 동일하다. (lexical this)
-
-    // frame: STOMP 프로토콜에서 클라이언트와 서버 간에 주고받는 메시지의 기본단위, 연결이 성공했을 때 서버가 보내는 응답도 하나의 frame
-    // frame의 예시
-    /*
-    {
-        command: "CONNECTED",
-            headers: {
-        version: "1.1",
-            "heart-beat": "0,0",
-            server: "Apache/2.3.45"
-    },
-        body: ""
-    }
-     */
-
-    subscribeToRoom() {
-        this.stompClient.subscribe(`/topic/chat/${this.roomId}`, (message) => {
+    subscribeToChat() {
+        const topic = this.chatType === 'personal' ? `/topic/chat/${this.chatIdx}` : `/topic/groupChat/${this.chatIdx}`;
+        this.stompClient.subscribe(topic, (message) => {
             const chatMessage = JSON.parse(message.body);
-            // `/topic/chat/${this.roomId}` 주소에서 받은 message를 매개변수로 하여 message의 본문을 JSON 형태로 변환(파싱)
             this.displayMessage(chatMessage);
-            // displayMessage 메소드를 호출하여 화면에 표시
         });
     }
 
-    // 채팅방 입장
-    joinRoom() {
-        this.sendMessage("", ChatMessage.MessageType.JOIN);
+    joinChat() {
+        const destination = this.chatType === 'personal' ? `/app/chat.addUser/${this.chatIdx}` : `/app/groupChat.addUser/${this.chatIdx}`;
+        const joinMessage = {
+            userIdx: this.userIdx,
+            nickname: this.nickname,
+            content: '',
+            sendDateTime: new Date()
+        };
+        this.stompClient.send(destination, {}, JSON.stringify(joinMessage));
     }
 
-    // 채팅방 탈퇴
-    leaveRoom() {
-        this.sendMessage("", ChatMessage.MessageType.LEAVE);
+    leaveChat() {
+        const leaveMessage = {
+            userIdx: this.userIdx,
+            nickname: this.nickname,
+            content: '',
+            sendDateTime: new Date()
+        };
+        const destination = this.chatType === 'personal' ? `/app/chat.leaveUser/${this.chatIdx}` : `/app/groupChat.leaveUser/${this.chatIdx}`;
+        this.stompClient.send(destination, {}, JSON.stringify(leaveMessage));
         this.stompClient.disconnect();
     }
 
-    // 서버로 메시지를 전송 (/app 주소로 발신)
-    sendMessage (content, type = ChatMessage.MessageType.CHAT) {
+    sendMessage(content) {
         const chatMessage = {
-            senderId: this.userId, // 메시지를 보낸 사용자 Id
-            senderNickname: this.nickname, // 메시지 보낸 사용자 nickname
-            content: content, // 메시지 내용 (매개변수로 받은 값)
-            type: type, // 메시지 타입 (매개변수로 받은 값) => ChatMessage.MessageType.CHAT
-            roomType: this.roomType // 채팅방 타입 (개인/그룹)
+            userIdx: this.userIdx,
+            nickname: this.nickname,
+            content: content,
+            sendDateTime: new Date()
         };
-        this.stompClient.send(`/app/chat.sendMessage/${this.roomId}`, {}, JSON.stringify(chatMessage));
-        // stompClient.send 메소드를 사용하여 메시지를 전송
-        // 첫 번째 인자: 메시지를 보낼 목적지 주소
-        // 두 번째 인자: 추가적인 헤더, 여기서는 빈 객체를 사용
-        // 세 번째 인자: 메시지 본문 (객체를 JSON 문자열로 반환)
+        const destination = this.chatType === 'personal' ? `/app/chat.sendMessage/${this.chatIdx}` : `/app/groupChat.sendMessage/${this.chatIdx}`;
+        this.stompClient.send(destination, {}, JSON.stringify(chatMessage));
     }
 
-    // 이전 채팅 메시지를 불러오기
-    loadPreviousMessages () {
-        this.stompClient.send(`/app/chat.getMessages/${this.roomId}`, {}, this.userId);
+    loadPreviousMessages() {
+        const destination = this.chatType === 'personal' ? `/app/chat.getMessages/${this.chatIdx}` : `/app/groupChat.getMessages/${this.chatIdx}`;
+        this.stompClient.send(destination, {}, this.userIdx);
     }
 
-
+    displayMessage(message) {
+        // 이 메서드는 실제 UI에 메시지를 표시하는 로직을 구현해야 합니다.
+        // 예를 들어, DOM 조작을 통해 메시지를 화면에 추가하는 등의 작업을 수행합니다.
+        console.log('Received message:', message);
+        // 실제 구현에서는 이 부분을 채팅 UI에 메시지를 추가하는 코드로 대체해야 합니다.
+    }
 }
