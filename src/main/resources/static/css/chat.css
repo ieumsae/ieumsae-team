@@ -157,3 +157,13 @@ body {
     float: right;
     margin-top: 5px;
 }
+
+.entrance-message {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    margin: 10px 0;
+    background-color: #f0f0f0;
+    padding: 5px;
+    border-radius: 10px;
+}

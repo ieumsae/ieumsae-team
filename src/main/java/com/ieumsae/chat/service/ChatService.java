@@ -39,8 +39,9 @@ public class ChatService {
             if (chatMessage.getChatIdx() == null) {
                 throw new IllegalArgumentException("chat_idx cannot be null");
             }
-            String formattedTime = chatMessage.getSendDateTime().format(TIME_FORMATTER);
-            String formattedContent = String.format("[개인] %s (%s) %s", chatMessage.getUserIdx(), formattedTime, chatMessage.getContent());
+            // 채팅 메시지의 content 부분에 시간 나오는 기능을 삭제
+            // String formattedTime = chatMessage.getSendDateTime().format(TIME_FORMATTER);
+            String formattedContent = String.format("%s: %s", chatMessage.getUserIdx(), chatMessage.getContent());
             chatMessage.setContent(formattedContent);
             return chatRepository.save(chatMessage);
         } else {
@@ -52,11 +53,11 @@ public class ChatService {
         throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
     }
 
+
     public Chat addUserToChat(Chat chatMessage, Integer chatIdx) {
         if ("PERSONAL".equals(chatMessage.getChatType())) {
             chatMessage.setChatIdx(chatIdx);
             chatMessage.setSendDateTime(LocalDateTime.now());
-            chatMessage.setContent(chatMessage.getUserIdx() + "님이 입장하셨습니다.");
 
             ChatEntranceLog entranceLog = new ChatEntranceLog();
             entranceLog.setChatIdx(chatIdx);
@@ -64,7 +65,10 @@ public class ChatService {
             entranceLog.setEntranceDateTime(LocalDateTime.now());
             chatEntranceLogRepository.save(entranceLog);
 
-            return chatRepository.save(chatMessage);
+            // 특별한 타입의 메시지를 생성합니다.
+            chatMessage.setContent(chatMessage.getUserIdx() + "님이 입장하셨습니다.");
+            chatMessage.setChatType("ENTRANCE");  // 새로운 타입 추가
+            return chatMessage;
         } else {
             throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
         }

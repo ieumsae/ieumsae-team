@@ -42,6 +42,8 @@ class ChatClient {
             chatType: this.chatType
         };
         this.stompClient.send(destination, {}, JSON.stringify(joinMessage));
+        // 기존에 서버에서 입장 메시지를 DB에 저장하지 않고 클라이언트 쪽 코드로 이동
+        this.displaySystemMessage(`${this.nickname}님이 입장하셨습니다.`);
     }
 
     leaveChat() {
@@ -78,29 +80,36 @@ class ChatClient {
     displayMessage(message) {
         const chatMessages = document.getElementById('chat-messages');
         const messageElement = document.createElement('div');
-        messageElement.classList.add('message');
-        messageElement.classList.add(message.userIdx == this.userIdx ? 'own-message' : 'other-message');
 
-        const nicknameSpan = document.createElement('span');
-        nicknameSpan.classList.add('nickname');
-        nicknameSpan.textContent = message.nickname;
+        if (message.chatType === "ENTRANCE") {
+            // 입장 메시지 처리
+            messageElement.classList.add('entrance-message');
+            messageElement.textContent = message.content;
+        } else {
+            // 일반 채팅 메시지 처리
+            messageElement.classList.add('message');
+            messageElement.classList.add(message.userIdx == this.userIdx ? 'own-message' : 'other-message');
 
-        const contentSpan = document.createElement('span');
-        contentSpan.classList.add('content');
-        contentSpan.textContent = message.content;
+            const nicknameSpan = document.createElement('span');
+            nicknameSpan.classList.add('nickname');
+            nicknameSpan.textContent = message.nickname;
 
-        const timeSpan = document.createElement('span');
-        timeSpan.classList.add('time');
-        timeSpan.textContent = new Date(message.sendDateTime).toLocaleTimeString();
+            const contentSpan = document.createElement('span');
+            contentSpan.classList.add('content');
+            contentSpan.textContent = message.content;
 
-        messageElement.appendChild(nicknameSpan);
-        messageElement.appendChild(contentSpan);
-        messageElement.appendChild(timeSpan);
+            // 발/수신 메시지 박스 우측 하단에 시간을 표시하는 기능
+            const timeSpan = document.createElement('span');
+            timeSpan.classList.add('time');
+            timeSpan.textContent = new Date(message.sendDateTime).toLocaleTimeString();
+
+            messageElement.appendChild(nicknameSpan);
+            messageElement.appendChild(contentSpan);
+            messageElement.appendChild(timeSpan);
+        }
 
         chatMessages.appendChild(messageElement);
-
         chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        console.log('Displayed message:', message);
     }
+
 }
