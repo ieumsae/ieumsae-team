@@ -30,6 +30,8 @@ public class ChatController {
     @GetMapping("/chat")
     public String chatPage() {
         return "chat";  // chat.html을 렌더링
+
+
     }
 
     // 채팅방 연결
@@ -89,3 +91,8 @@ public class ChatController {
         return chatService.getGroupMessagesAfterUserJoin(groupChatIdx, userIdx);
     }
 }
+
+// 개인 채팅 기록 가져오기
+// List<Chat> previousMessages = chatService.getAllMessages(chatIdx);
+//        model.addAttribute("previousMessages", previousMessages);
+//        return "chatRoom";  // chatRoom.html로 이동

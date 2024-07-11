@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ChatService {
@@ -59,11 +60,15 @@ public class ChatService {
             chatMessage.setChatIdx(chatIdx);
             chatMessage.setSendDateTime(LocalDateTime.now());
 
-            ChatEntranceLog entranceLog = new ChatEntranceLog();
-            entranceLog.setChatIdx(chatIdx);
-            entranceLog.setUserIdx(chatMessage.getUserIdx());
-            entranceLog.setEntranceDateTime(LocalDateTime.now());
-            chatEntranceLogRepository.save(entranceLog);
+            Optional<ChatEntranceLog> existingLog = chatEntranceLogRepository.findByChatIdxAndUserIdx(chatIdx, chatMessage.getUserIdx());
+
+            if (existingLog.isEmpty()) {
+                ChatEntranceLog entranceLog = new ChatEntranceLog();
+                entranceLog.setChatIdx(chatIdx);
+                entranceLog.setUserIdx(chatMessage.getUserIdx());
+                entranceLog.setEntranceDateTime(LocalDateTime.now());
+                chatEntranceLogRepository.save(entranceLog);
+            }
 
             // 특별한 타입의 메시지를 생성합니다.
             chatMessage.setContent(chatMessage.getUserIdx() + "님이 입장하셨습니다.");
