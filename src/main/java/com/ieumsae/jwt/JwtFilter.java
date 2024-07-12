@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 // JWT 토큰을 검증하고 인증 정보를 설정하는 필터
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -25,12 +27,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("JwtFilter 시작");
 
         // 요청에서 Authorization 헤더를 찾음
         String authorization = request.getHeader("Authorization");
 
         // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
+            log.warn("Authorization 헤더가 없거나 Bearer 토큰이 아님");
 
             System.out.println("token null");
 
@@ -38,13 +42,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
             return; // 조건이 해당되면 메소드 종료 (필수)
         }
+        logger.info("Authorization 헤더 확인됨");
+
 
         // Bearer 접두사를 제거하고 실제 토큰 추출
         String token = authorization.split(" ")[1];
+        log.info("토큰 추출: {}", token);
+
 
         // 토큰 만료 시간 검증
         if (jwtUtil.isExpired(token)) {
-
+            log.warn("토큰 만료됨");
             System.out.println("token expired");
 
             filterChain.doFilter(request, response);
@@ -54,13 +62,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 토큰에서 사용자 ID와 역할 추출
         String userId = jwtUtil.getUserId(token);
-        String role = jwtUtil.getRole(token);
+        String UserRole = jwtUtil.getRole(token);
 
         // 임시 User 객체 생성 (실제 애플리케이션에서는 데이터베이스에서 사용자 정보를 조회해야 함)
         User user = new User();
-        user.setUserId(userId);
+        user.setUserName(userId);
         user.setUserPw("temppassword"); // 임시 비밀번호 설정
-        user.setUserRole(role);
+        user.setUserRole(UserRole);
 
         // CustomUserDetails 객체 생성
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
@@ -73,5 +81,21 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
+
+        String requestUri = request.getRequestURI();
+
+        if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (requestUri.matches("^\\/oauth2(?:\\/.*)?$")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
     }
+
 }

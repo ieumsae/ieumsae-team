@@ -4,6 +4,7 @@ import com.ieumsae.domain.User;
 import com.ieumsae.domain.UserForm;
 import com.ieumsae.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,6 +86,12 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("이미 등록된 이메일입니다.");
         }
         //이메일 중복확인 검사
+    }
+    @Override
+    public boolean hasNickname(String userNickname) {
+        User user = userRepository.findByUserNickName(userNickname)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return user.getUserNickName() != null && !user.getUserNickName().isEmpty();
     }
 
     @Override

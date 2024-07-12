@@ -7,6 +7,7 @@ public interface UserService {
     User join(UserForm form);
     User findById(Long id);
     boolean checkDuplicate(String field, String value);
+    boolean hasNickname(String userNickname);
 
 
 
