@@ -8,9 +8,13 @@ import java.util.Optional;
 
 @Repository
 public interface ChatEntranceLogRepository extends JpaRepository<ChatEntranceLog, Long> {
-    // 특정 채팅방에 특정 사용자가 가장 최근에 입장한 기록을 조회
-    Optional<ChatEntranceLog> findByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(Integer chatIdx, Integer userIdx);
-
+    // 특정 채팅방에 특정 사용자가 가장 최근에 입장한 기록을 조회 (로그 중복확인)
     Optional<ChatEntranceLog> findByChatIdxAndUserIdx(Integer chatIdx, Integer userIdx);
+
+    // 이전에 접속 기록이 있는지 확인하는 메소드
+    boolean existsByChatIdxAndUserIdx(Integer chatIdx, Integer userIdx);
+
+    // 특정 사용자의 채팅방 입장 시간 조회
+    Optional<ChatEntranceLog> findFirstByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(Integer chatIdx, Integer userIdx);
 
 }

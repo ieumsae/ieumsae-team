@@ -40,6 +40,8 @@ public class ChatService {
             if (chatMessage.getChatIdx() == null) {
                 throw new IllegalArgumentException("chat_idx cannot be null");
             }
+            // 채팅 메시지의 content 부분에 시간 나오는 기능을 삭제
+            // String formattedTime = chatMessage.getSendDateTime().format(TIME_FORMATTER);
             String formattedContent = String.format("%s: %s", chatMessage.getUserIdx(), chatMessage.getContent());
             chatMessage.setContent(formattedContent);
             return chatRepository.save(chatMessage);
@@ -51,6 +53,7 @@ public class ChatService {
     public GroupChat saveAndFormatGroupChatMessage(GroupChat groupChatMessage) {
         throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
     }
+
 
     public Chat addUserToChat(Chat chatMessage, Integer chatIdx) {
         if ("PERSONAL".equals(chatMessage.getChatType())) {
@@ -67,8 +70,9 @@ public class ChatService {
                 chatEntranceLogRepository.save(entranceLog);
             }
 
+            // 특별한 타입의 메시지를 생성합니다.
             chatMessage.setContent(chatMessage.getUserIdx() + "님이 입장하셨습니다.");
-            chatMessage.setChatType("ENTRANCE");
+            chatMessage.setChatType("ENTRANCE");  // 새로운 타입 추가
             return chatMessage;
         } else {
             throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
@@ -79,31 +83,15 @@ public class ChatService {
         throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
     }
 
-    public List<Chat> getMessagesAfterUserJoin(Integer chatIdx, Integer userIdx) {
-        ChatEntranceLog lastEntrance = chatEntranceLogRepository
-                .findByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(chatIdx, userIdx)
-                .orElseThrow(() -> new RuntimeException("사용자의 입장 시간 정보를 찾을 수 없습니다."));
-
-        return chatRepository.findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(
-                chatIdx, lastEntrance.getEntranceDateTime());
+    // 이전 채팅 내용 가져오기
+    public List<Chat> getPreviousMessages(Integer chatIdx, Integer userIdx) {
+        LocalDateTime firstEntranceDateTime = chatEntranceLogRepository
+                .findFirstByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(chatIdx, userIdx) // 최근 입장기록 하나만 가져옴
+                .map(ChatEntranceLog::getEntranceDateTime) // 찾은 입장기록에서 입장 시간만 추출한다.
+                .orElse(null); // 입장기록이 없을 경우 가장 오래된 시간
+        
+        //최초 입장 시간 이후의 채팅 내용을 시간순으로 조회
+        return chatRepository.findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeDesc(chatIdx, firstEntranceDateTime);
     }
 
-    public List<GroupChat> getGroupMessagesAfterUserJoin(Integer groupChatIdx, Integer userIdx) {
-        throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
-    }
-
-    public List<Chat> getPreviousMessages(int chatIdx, Integer userIdx) {
-        // 사용자의 마지막 입장 시간을 가져옵니다.
-        Optional<ChatEntranceLog> lastEntrance = chatEntranceLogRepository
-                .findByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(chatIdx, userIdx);
-
-        if (lastEntrance.isPresent()) {
-            // 마지막 입장 시간 이후의 메시지를 가져옵니다.
-            return chatRepository.findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(
-                    chatIdx, lastEntrance.get().getEntranceDateTime());
-        } else {
-            // 입장 기록이 없는 경우, 최근 50개의 메시지를 가져옵니다.
-            return chatRepository.findTop50ByChatIdxOrderBySendDateTimeDesc(chatIdx);
-        }
-    }
 }

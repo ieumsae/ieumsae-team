@@ -21,43 +21,57 @@
 </div>
 
 <script th:inline="javascript">
-    const chatIdx = [[${chatIdx}]];
-    const userIdx = [[${userIdx}]];
-    const nickname = [[${nickname}]];
+    // Thymeleaf를 통해 서버에서 전달된 값들을 JavaScript 변수로 설정
+    const chatIdx = /*[[${chatIdx}]]*/ null;
+    const userIdx = /*[[${userIdx}]]*/ null;
     const chatType = "PERSONAL";
+    const previousMessages = /*[[${previousMessages}]]*/ [];
 
-    const chatClient = new ChatClient();
+    console.log("chatIdx:", chatIdx, "userIdx:", userIdx);
 
-    document.addEventListener('DOMContentLoaded', function() {
-        chatClient.connect(chatIdx, userIdx, nickname, chatType);
+    if (chatIdx === null || userIdx === null) {
+        console.error("chatIdx or userIdx is null");
+        // 에러 처리 로직
+        alert("채팅방 정보를 불러오는데 실패했습니다. 이전 페이지로 돌아갑니다.");
+        window.history.back();
+    } else {
+        const chatClient = new ChatClient();
 
-        document.getElementById('send-button').addEventListener('click', sendMessage);
-        document.getElementById('message-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+        document.addEventListener('DOMContentLoaded', function() {
+            // WebSocket 연결 및 이전 메시지 로드
+            chatClient.connect(chatIdx, userIdx, chatType);
+
+            // 이전 메시지 표시
+            if (previousMessages && previousMessages.length > 0) {
+                chatClient.loadPreviousMessages(previousMessages);
             }
+
+            // 메시지 전송 버튼 이벤트 리스너
+            document.getElementById('send-button').addEventListener('click', sendMessage);
+
+            // 엔터 키 입력 시 메시지 전송
+            document.getElementById('message-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
         });
-    });
 
-    function sendMessage() {
-        const messageInput = document.getElementById('message-input');
-        const message = messageInput.value.trim();
-        if (message) {
-            chatClient.sendMessage(message);
-            messageInput.value = '';
+        // 메시지 전송 함수
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            if (message) {
+                chatClient.sendMessage(message);
+                messageInput.value = '';
+            }
         }
+
+        // 페이지 나갈 때 연결 종료
+        window.addEventListener('beforeunload', function() {
+            chatClient.leaveChat();
+        });
     }
-
-    window.addEventListener('beforeunload', function() {
-        chatClient.leaveChat();
-    });
-
-    /*<![CDATA[*/
-    var previousMessages = /*[[${previousMessages}]]*/ [];
-
-    // ChatClient 초기화 후
-    chatClient.handlePreviousMessages(previousMessages);
-    /*]]>*/
 </script>
 </body>
 </html>

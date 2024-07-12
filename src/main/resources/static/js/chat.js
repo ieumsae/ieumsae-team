@@ -3,36 +3,57 @@ class ChatClient {
         this.stompClient = null;
         this.chatIdx = null;
         this.userIdx = null;
-        this.nickname = null;
         this.chatType = null;
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
     }
 
-    connect(chatIdx, userIdx, nickname, chatType) {
+    connect(chatIdx, userIdx, chatType) {
+        if (chatIdx == null || userIdx == null) {
+            console.error("Invalid chatIdx or userIdx", {chatIdx, userIdx, chatType});
+            alert("채팅 연결에 필요한 정보가 올바르지 않습니다. 페이지를 새로고침하거나 다시 접속해주세요.");
+            return;
+        }
+
         this.chatIdx = chatIdx;
         this.userIdx = userIdx;
-        this.nickname = nickname;
         this.chatType = chatType;
 
         const socket = new SockJS('/ws-endpoint');
         this.stompClient = Stomp.over(socket);
 
-        this.stompClient.connect({}, (frame) => {
-            console.log('Connected: ' + frame);
-            this.subscribeToChat();
-            this.joinChat();
-            this.loadPreviousMessages();
-        });
+        this.stompClient.connect({},
+            (frame) => {
+                console.log('Connected: ' + frame);
+                this.reconnectAttempts = 0;
+                this.subscribeToChat();
+                this.joinChat();
+                this.loadPreviousMessages();
+            },
+            (error) => {
+                console.error('Connection error:', error);
+                this.handleReconnect();
+            }
+        );
+    }
+
+    handleReconnect() {
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+            this.reconnectAttempts++;
+            const timeout = Math.min(30000, (Math.pow(2, this.reconnectAttempts) - 1) * 1000);
+            console.log(`Attempting to reconnect in ${timeout/1000} seconds...`);
+            setTimeout(() => this.connect(this.chatIdx, this.userIdx, this.chatType), timeout);
+        } else {
+            console.error('Max reconnection attempts reached');
+            alert("연결을 다시 수립할 수 없습니다. 페이지를 새로고침해주세요.");
+        }
     }
 
     subscribeToChat() {
         const topic = this.chatType === 'PERSONAL' ? `/topic/chat/${this.chatIdx}` : `/topic/groupChat/${this.chatIdx}`;
         this.stompClient.subscribe(topic, (message) => {
             const chatMessage = JSON.parse(message.body);
-            if (Array.isArray(chatMessage)) {
-                this.handlePreviousMessages(chatMessage);
-            } else {
-                this.displayMessage(chatMessage);
-            }
+            this.displayMessage(chatMessage);
         });
     }
 
@@ -40,19 +61,17 @@ class ChatClient {
         const destination = this.chatType === 'PERSONAL' ? `/app/chat.addUser/${this.chatIdx}` : `/app/groupChat.addUser/${this.chatIdx}`;
         const joinMessage = {
             userIdx: this.userIdx,
-            nickname: this.nickname,
             content: '',
             sendDateTime: new Date(),
             chatType: this.chatType
         };
         this.stompClient.send(destination, {}, JSON.stringify(joinMessage));
-        this.displaySystemMessage(`${this.nickname}님이 입장하셨습니다.`);
+        this.displaySystemMessage(`사용자(${this.userIdx})님이 입장하셨습니다.`);
     }
 
     leaveChat() {
         const leaveMessage = {
             userIdx: this.userIdx,
-            nickname: this.nickname,
             content: '',
             sendDateTime: new Date(),
             chatType: this.chatType
@@ -66,7 +85,6 @@ class ChatClient {
         const chatMessage = {
             chatIdx: this.chatIdx,
             userIdx: this.userIdx,
-            nickname: this.nickname,
             content: content,
             sendDateTime: new Date(),
             chatType: this.chatType
@@ -75,31 +93,14 @@ class ChatClient {
         this.stompClient.send(destination, {}, JSON.stringify(chatMessage));
     }
 
-    loadPreviousMessages() {
-        const destination = this.chatType === 'PERSONAL'
-            ? `/app/chat.getMessages/${this.chatIdx}`
-            : `/app/groupChat.getMessages/${this.chatIdx}`;
-        this.stompClient.send(destination, {}, JSON.stringify({
-            userIdx: this.userIdx,
-            chatType: this.chatType
-        }));
-    }
-
-    handlePreviousMessages(messages) {
-        console.log("Handling previous messages:", messages);
-        const chatMessages = document.getElementById('chat-messages');
-        // 기존 메시지를 임시로 저장
-        const existingMessages = chatMessages.innerHTML;
-        // 채팅창을 비웁니다
-        chatMessages.innerHTML = '';
-
-        // 이전 메시지들을 추가합니다
-        messages.forEach(message => this.displayMessage(message));
-
-        // 기존 메시지를 다시 추가합니다
-        chatMessages.innerHTML += existingMessages;
-
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+    loadPreviousMessages(previousMessages) {
+        if (previousMessages && Array.isArray(previousMessages)) {
+            previousMessages.forEach(message => {
+                this.displayMessage(message);
+            });
+        } else {
+            console.warn("No previous messages or invalid format");
+        }
     }
 
     displayMessage(message) {
@@ -113,9 +114,9 @@ class ChatClient {
             messageElement.classList.add('message');
             messageElement.classList.add(message.userIdx == this.userIdx ? 'own-message' : 'other-message');
 
-            const nicknameSpan = document.createElement('span');
-            nicknameSpan.classList.add('nickname');
-            nicknameSpan.textContent = message.nickname;
+            const userIdxSpan = document.createElement('span');
+            userIdxSpan.classList.add('user-idx');
+            userIdxSpan.textContent = `User ${message.userIdx}: `;
 
             const contentSpan = document.createElement('span');
             contentSpan.classList.add('content');
@@ -123,9 +124,9 @@ class ChatClient {
 
             const timeSpan = document.createElement('span');
             timeSpan.classList.add('time');
-            timeSpan.textContent = this.formatTime(message.sendDateTime);
+            timeSpan.textContent = new Date(message.sendDateTime).toLocaleTimeString();
 
-            messageElement.appendChild(nicknameSpan);
+            messageElement.appendChild(userIdxSpan);
             messageElement.appendChild(contentSpan);
             messageElement.appendChild(timeSpan);
         }
@@ -137,16 +138,14 @@ class ChatClient {
     displaySystemMessage(content) {
         const chatMessages = document.getElementById('chat-messages');
         const messageElement = document.createElement('div');
-        messageElement.classList.add('entrance-message');
+        messageElement.classList.add('system-message');
         messageElement.textContent = content;
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    formatTime(dateTime) {
-        const date = new Date(dateTime);
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
+    handleError(error) {
+        console.error("Chat error:", error);
+        alert("채팅 중 오류가 발생했습니다. 페이지를 새로고침해주세요.");
     }
 }
