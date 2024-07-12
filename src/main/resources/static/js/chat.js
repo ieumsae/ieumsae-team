@@ -28,7 +28,11 @@ class ChatClient {
         const topic = this.chatType === 'PERSONAL' ? `/topic/chat/${this.chatIdx}` : `/topic/groupChat/${this.chatIdx}`;
         this.stompClient.subscribe(topic, (message) => {
             const chatMessage = JSON.parse(message.body);
-            this.displayMessage(chatMessage);
+            if (Array.isArray(chatMessage)) {
+                this.handlePreviousMessages(chatMessage);
+            } else {
+                this.displayMessage(chatMessage);
+            }
         });
     }
 
@@ -42,7 +46,6 @@ class ChatClient {
             chatType: this.chatType
         };
         this.stompClient.send(destination, {}, JSON.stringify(joinMessage));
-        // 기존에 서버에서 입장 메시지를 DB에 저장하지 않고 클라이언트 쪽 코드로 이동
         this.displaySystemMessage(`${this.nickname}님이 입장하셨습니다.`);
     }
 
@@ -61,7 +64,7 @@ class ChatClient {
 
     sendMessage(content) {
         const chatMessage = {
-            chatIdx: this.chatIdx,  // 이 부분이 중요합니다
+            chatIdx: this.chatIdx,
             userIdx: this.userIdx,
             nickname: this.nickname,
             content: content,
@@ -73,8 +76,30 @@ class ChatClient {
     }
 
     loadPreviousMessages() {
-        const destination = this.chatType === 'PERSONAL' ? `/app/chat.getMessages/${this.chatIdx}` : `/app/groupChat.getMessages/${this.chatIdx}`;
-        this.stompClient.send(destination, {}, this.userIdx);
+        const destination = this.chatType === 'PERSONAL'
+            ? `/app/chat.getMessages/${this.chatIdx}`
+            : `/app/groupChat.getMessages/${this.chatIdx}`;
+        this.stompClient.send(destination, {}, JSON.stringify({
+            userIdx: this.userIdx,
+            chatType: this.chatType
+        }));
+    }
+
+    handlePreviousMessages(messages) {
+        console.log("Handling previous messages:", messages);
+        const chatMessages = document.getElementById('chat-messages');
+        // 기존 메시지를 임시로 저장
+        const existingMessages = chatMessages.innerHTML;
+        // 채팅창을 비웁니다
+        chatMessages.innerHTML = '';
+
+        // 이전 메시지들을 추가합니다
+        messages.forEach(message => this.displayMessage(message));
+
+        // 기존 메시지를 다시 추가합니다
+        chatMessages.innerHTML += existingMessages;
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     displayMessage(message) {
@@ -82,11 +107,9 @@ class ChatClient {
         const messageElement = document.createElement('div');
 
         if (message.chatType === "ENTRANCE") {
-            // 입장 메시지 처리
             messageElement.classList.add('entrance-message');
             messageElement.textContent = message.content;
         } else {
-            // 일반 채팅 메시지 처리
             messageElement.classList.add('message');
             messageElement.classList.add(message.userIdx == this.userIdx ? 'own-message' : 'other-message');
 
@@ -98,10 +121,9 @@ class ChatClient {
             contentSpan.classList.add('content');
             contentSpan.textContent = message.content;
 
-            // 발/수신 메시지 박스 우측 하단에 시간을 표시하는 기능
             const timeSpan = document.createElement('span');
             timeSpan.classList.add('time');
-            timeSpan.textContent = new Date(message.sendDateTime).toLocaleTimeString();
+            timeSpan.textContent = this.formatTime(message.sendDateTime);
 
             messageElement.appendChild(nicknameSpan);
             messageElement.appendChild(contentSpan);
@@ -112,4 +134,19 @@ class ChatClient {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    displaySystemMessage(content) {
+        const chatMessages = document.getElementById('chat-messages');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('entrance-message');
+        messageElement.textContent = content;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    formatTime(dateTime) {
+        const date = new Date(dateTime);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
 }

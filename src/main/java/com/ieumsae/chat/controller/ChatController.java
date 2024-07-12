@@ -39,9 +39,15 @@ public class ChatController {
     public String enterChat(@RequestParam("chatIdx") int chatIdx,
                             @RequestParam("userIdx") int userIdx,
                             Model model) {
+        // 채팅방 정보 설정
         model.addAttribute("chatIdx", chatIdx);
         model.addAttribute("userIdx", userIdx);
         model.addAttribute("chatType", "PERSONAL");
+
+        // 이전 메시지 불러오기
+        List<Chat> previousMessages = chatService.getPreviousMessages(chatIdx, userIdx);
+        model.addAttribute("previousMessages", previousMessages);
+
         return "chatRoom";  // chatRoom.html로 이동
     }
 
@@ -92,7 +98,3 @@ public class ChatController {
     }
 }
 
-// 개인 채팅 기록 가져오기
-// List<Chat> previousMessages = chatService.getAllMessages(chatIdx);
-//        model.addAttribute("previousMessages", previousMessages);
-//        return "chatRoom";  // chatRoom.html로 이동

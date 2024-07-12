@@ -1,6 +1,9 @@
 package com.ieumsae.chat.repository;
 
 import com.ieumsae.chat.domain.Chat;
+import com.ieumsae.chat.domain.GroupChat;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,18 +14,16 @@ import java.util.List;
 
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Long> {
-    // 특정 채팅방(chatIdx)의 모든 메시지를 시간 순으로 조회
-    List<Chat> findByChatIdxOrderBySendDateTimeAsc(Integer chatIdx);
 
-    // 특정 채팅방에서 주어진 시간 이후의 특정 사용자의 메시지를 조회
-    @Query("SELECT c FROM Chat c WHERE c.chatIdx = :chatIdx AND c.sendDateTime > :joinTime " +
-            "AND c.userIdx = :userIdx ORDER BY c.sendDateTime ASC")
-    List<Chat> findPersonalChatMessages(
-            @Param("chatIdx") Integer chatIdx,
-            @Param("joinTime") LocalDateTime joinTime,
-            @Param("userIdx") Integer userIdx
-    );
+    @Query("SELECT gc FROM GroupChat gc WHERE gc.groupChatIdx = :chatIdx ORDER BY gc.chatSendDt DESC")
+    List<GroupChat> findRecentMessagesByChatIdx(@Param("chatIdx") int chatIdx, Pageable pageable);
 
-    // 특정 채팅방에서 주어진 시간 이후의 모든 메시지를 조회
-    List<Chat> findByChatIdxAndSendDateTimeAfterOrderBySendDateTimeAsc(Integer chatIdx, LocalDateTime timestamp);
+    default List<GroupChat> findRecentMessagesByChatIdx(int chatIdx, int limit) {
+        return findRecentMessagesByChatIdx(chatIdx, PageRequest.of(0, limit));
+    }
+
+    List<Chat> findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(Integer chatIdx, LocalDateTime dateTime);
+
+    List<Chat> findTop50ByChatIdxOrderBySendDateTimeDesc(Integer chatIdx);
+
 }

@@ -51,6 +51,13 @@
     window.addEventListener('beforeunload', function() {
         chatClient.leaveChat();
     });
+
+    /*<![CDATA[*/
+    var previousMessages = /*[[${previousMessages}]]*/ [];
+
+    // ChatClient 초기화 후
+    chatClient.handlePreviousMessages(previousMessages);
+    /*]]>*/
 </script>
 </body>
 </html>
