@@ -90,6 +90,9 @@
         }
     </style>
 </head>
+<head>
+    <!-- 다른 head 내용 -->
+</head>
 <body>
 <div class="container">
     <h1>닉네임 설정</h1>
@@ -105,86 +108,77 @@
 </div>
 
 <script>
-    // 중복 체크 함수
-    function checkDuplicate(field, value) {
-        // API 호출: GET 요청으로 중복 체크
+    document.addEventListener('DOMContentLoaded', function() {
 
-        // field와 value를 URL에 안전하게 포함시키기 위해 encodeURIComponent 사용
-        fetch(`/api/users/check/${encodeURIComponent(field)}/${encodeURIComponent(value)}`, {
-            method: 'GET' // HTTP GET 메서드 사용
-        })
-            .then(response => response.json()) // 서버 응답을 JSON으로 파싱
-             //완료 이후의 작업 시작
-            .then(isDuplicate => {
-
-                // 필드 이름을 한글로 변환
-                let fieldName = {
-                    'userNickName': '닉네임'
-                }[field];
-
-                // 중복 여부에 따라 다른 알림 메시지 표시
-                alert(isDuplicate ? `이미 사용 중인 ${fieldName}입니다.` : `사용 가능한 ${fieldName}입니다.`);
-            })
-
-            .catch(error => {
-
-                // 오류 발생 시 콘솔에 로그 출력 및 사용자에게 알림
-                console.error('Error:', error);
-
-                alert('오류가 발생했습니다.');
-            });
-    }
-
-    // 닉네임 중복 체크 버튼 이벤트 리스너
-    document.getElementById('checkUserNickNameDuplicate').addEventListener('click', () => {
-
-        // 버튼 클릭 시 현재 입력된 닉네임 값으로 중복 체크 함수 호출
-        checkDuplicate('userNickName', document.getElementById('userNickName').value);
-    });
-
-    // 회원가입 폼 제출 이벤트 리스너
-    document.getElementById('signupFormStep2').addEventListener('submit', function(e) {
-
-        e.preventDefault(); // 폼의 기본 제출 동작 방지
-
-        // 현재 폼의 데이터를 FormData 객체로 변환 후 일반 객체로 변환
-        const formData = new FormData(this);
-        const nickNameData = Object.fromEntries(formData.entries());
-
-        // localStorage에서 이전에 저장된 사용자 데이터 불러오기
-        const userData = JSON.parse(localStorage.getItem('userData'));
-
-        // 이전 데이터와 현재 폼 데이터를 합침
-        const completeData = {...userData, ...nickNameData};
-
-        // API 호출: POST 요청으로 회원가입 데이터 전송
-        fetch('/api/users', {
-
-            method: 'POST', // HTTP POST 메서드 사용
-
-            headers: {
-                'Content-Type': 'application/json', // 요청 본문이 JSON 형식임을 명시
-            },
-
-            body: JSON.stringify(completeData) // JavaScript 객체를 JSON 문자열로 변환하여 전송
-        })
-            .then(response => response.json()) // 서버 응답을 JSON으로 파싱
-            .then(data => {
-                if (data.user) {
-                    // 회원가입 성공 시 처리
-                    alert('회원가입이 완료되었습니다.');
-                    localStorage.removeItem('userData'); // 임시 저장된 사용자 데이터 삭제
-                    window.location.href = '/login'; // 로그인 페이지로 리다이렉트
-                } else {
-                    // 회원가입 실패 시 처리
-                    alert('회원가입에 실패했습니다: ' + data.error);
+        // 중복 체크 함수
+        function checkDuplicate(field, value) {
+            fetch(`/api/users/check/${encodeURIComponent(field)}/${encodeURIComponent(value)}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .catch(error => {
-                // 오류 발생 시 콘솔에 로그 출력 및 사용자에게 알림
-                console.error('에러 메시지:', error);
-                alert('오류가 발생했습니다.');
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(isDuplicate => {
+                    let fieldName = {
+                        'userNickName': '닉네임'
+                    }[field];
+                    alert(isDuplicate ? `이미 사용 중인 ${fieldName}입니다.` : `사용 가능한 ${fieldName}입니다.`);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('오류가 발생했습니다.');
+                });
+        }
+
+        // 닉네임 중복 체크 버튼 이벤트 리스너
+        document.getElementById('checkUserNickNameDuplicate').addEventListener('click', () => {
+            checkDuplicate('userNickName', document.getElementById('userNickName').value);
+        });
+
+        // 회원가입 폼 제출 이벤트 리스너
+        document.getElementById('signupFormStep2').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nickname = document.getElementById('userNickName').value;
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const completeData = { ...userData, userNickName: nickname };
+
+
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+            console.log('Request headers:', headers);
+
+            fetch('/api/users', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(completeData)
+            })
+                .then(response => {
+                    if (!response.ok) {      throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.user) {
+                        alert('회원가입이 완료되었습니다.');
+                        localStorage.removeItem('userData');
+                        window.location.href = '/login';
+                    } else {
+                        alert('회원가입에 실패했습니다: ' + (data.error || '알 수 없는 오류'));
+                    }
+                })
+                .catch(error => {
+                    console.error('에러 메시지:', error);
+                    alert('오류가 발생했습니다.');
+                });
+        });
     });
 </script>
 </body>

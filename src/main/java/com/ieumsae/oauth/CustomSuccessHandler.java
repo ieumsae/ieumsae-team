@@ -53,7 +53,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             // 사용자의 닉네임 확인
             String userNickname = customUserDetails.getUserNickName();
-            boolean hasNickname = userService.hasNickname(userNickname);
+            boolean hasNickname = userNickname != null && !userNickname.trim().isEmpty();
             log.info("사용자 닉네임: {}, 닉네임 존재 여부: {}", userNickname, hasNickname);
 
             // 리다이렉트 URL 설정

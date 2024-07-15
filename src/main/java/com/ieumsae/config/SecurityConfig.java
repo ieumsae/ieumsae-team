@@ -64,7 +64,7 @@ public class SecurityConfig {
                         return configuration;
                     }
                 }))
-//                .csrf(csrf -> csrf.disable()) // CSRF 보호 기능 비활성화
+                .csrf(csrf -> csrf.disable()) // CSRF 보호 기능 비활성화
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/signup", "/signupNickname", "/login", "/api/users/**", "/api/users/", "/", "/oauth2/**").permitAll()
                             .requestMatchers("/admin/**").hasRole("ADMIN")

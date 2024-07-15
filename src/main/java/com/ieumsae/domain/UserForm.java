@@ -12,5 +12,5 @@ public class UserForm {
     private String userNickName;
     private String userPw;
     private String userEmail;
-
+    private boolean socialLogin;
 }

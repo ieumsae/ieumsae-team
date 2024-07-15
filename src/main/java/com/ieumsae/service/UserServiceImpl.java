@@ -87,12 +87,6 @@ public class UserServiceImpl implements UserService {
         }
         //이메일 중복확인 검사
     }
-    @Override
-    public boolean hasNickname(String userNickname) {
-        User user = userRepository.findByUserNickName(userNickname)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return user.getUserNickName() != null && !user.getUserNickName().isEmpty();
-    }
 
     @Override
     public User findById(Long id) {

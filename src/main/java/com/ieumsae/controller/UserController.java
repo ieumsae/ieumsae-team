@@ -3,6 +3,7 @@ package com.ieumsae.controller;
 import com.ieumsae.domain.User;
 import com.ieumsae.domain.UserForm;
 import com.ieumsae.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+/*
 /*
 주요 어노테이션 설명 :
 
@@ -26,6 +28,7 @@ RESTful 웹 서비스 구현에 최적화
 HTTP 요청 본문 → 자바 객체로 변환
  */
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -70,19 +73,20 @@ public class UserController {
                     )); // Map(키 -값)을 사용하여 응답 본문(body) 구성
 
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", e.getMessage()));
             //예외 발생시 에러메시지 응답 본문(body) 구성
         }
         catch (Exception e) {
             // 로그에 예외 상세 정보 기록
-            logger.error("회원가입 중 예외 발생", e);
+            log.error("회원가입 중 예외 발생", e);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "회원가입 처리 중 오류가 발생했습니다."));
         }
 
     }
-
 
     @GetMapping("/check/{field}/{value}")
     // HTTP GET 요청을 "/check/{field}/{value}" 경로로 매핑
@@ -99,7 +103,6 @@ public class UserController {
         //boolean 값 반환 true or false
     }
 }
-
 
 /*
 @PathVariable String field, @PathVariable String value:
