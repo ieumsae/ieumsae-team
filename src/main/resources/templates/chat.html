@@ -1,18 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>1:1 채팅</title>
-    <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <title>Chat</title>
 </head>
 <body>
-<div id="login-page" class="page">
-    <h1>1:1 채팅 시작하기</h1>
-    <form action="/enterChat" method="post">
-        <input type="number" name="chatIdx" placeholder="채팅방 번호 입력" required>
-        <input type="number" name="userIdx" placeholder="사용자 번호 입력" required>
-        <button type="submit">채팅 참여하기</button>
-    </form>
-</div>
+<h1>Welcome to Chat Application</h1>
+<button id="personalChatButton">Start Personal Chat</button>
+<button id="groupChatButton">Start Group Chat</button>
+<script src="/js/chat.js"></script>
+<script>
+    const chatClient = new ChatClient();
+
+    document.getElementById('personalChatButton').addEventListener('click', () => {
+        chatClient.connect('PERSONAL');
+    });
+
+    document.getElementById('groupChatButton').addEventListener('click', () => {
+        chatClient.connect('GROUP');
+    });
+</script>
 </body>
 </html>
