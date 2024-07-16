@@ -16,7 +16,7 @@ public class UserInfo {
     private Long id;
 
     @Column(name = "user_idx")
-    private int userId;
+    private int userIdx;
 
     @Column(name = "user_nick_name")
     private String nickName;
