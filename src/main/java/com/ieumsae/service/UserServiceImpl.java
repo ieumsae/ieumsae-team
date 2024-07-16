@@ -4,22 +4,9 @@ import com.ieumsae.domain.User;
 import com.ieumsae.domain.UserForm;
 import com.ieumsae.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-/*
-주요 어노테이션 설명:
-
-@Service:
-- 이 클래스가 서비스 계층의 컴포넌트임을 나타냄
-- Spring의 컴포넌트 스캔에 의해 빈으로 등록됨
-
-@Transactional:
-- 메서드 실행을 트랜잭션으로 처리
-- 메서드 실행 중 예외 발생 시 자동으로 롤백
-*/
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,73 +14,99 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    /**
+     * 생성자를 통한 의존성 주입
+     * @param userRepository 사용자 데이터 접근을 위한 리포지토리
+     * @param bCryptPasswordEncoder 비밀번호 암호화를 위한 인코더
+     */
     @Autowired
     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    /**
+     * 회원가입 1단계: 기본 정보 등록
+     * @param form 사용자 기본 정보를 담은 폼 객체
+     * @return Long 생성된 사용자의 고유 식별자(userIdx)
+     */
     @Override
     @Transactional
-    // UserForm 객체를 받아 User 객체로 변환하고 저장하는 메서드
-    public User join(UserForm form) {
-
-        //새로운 User 객체 생성
+    public Long signUp1(UserForm form) {
         User user = new User();
-
-        //Userform의 데이터를 User 객체에 설정
         user.setUserId(form.getUserId());
         user.setUserName(form.getUserName());
-        user.setUserNickName(form.getUserNickName());
-        user.setUserPw(bCryptPasswordEncoder.encode(form.getUserPw()));
+        user.setUserPw(bCryptPasswordEncoder.encode(form.getUserPw())); // 비밀번호 암호화
         user.setUserEmail(form.getUserEmail());
         user.setUserRole("ROLE_USER");
+        user.setSignUpCompleted(false); // 회원가입 미완료 상태로 설정
 
-        //중복 사용자 검증 메서드 안에 user 전달
-        validateDuplicateUser(user);
+        //role guest -> user -> admin
 
-        //User 객체를 데이터베이스에 저장하고 저장된 객체 반환
+        // 닉네임을 제외한 중복 검사
+        validateDuplicateUserExceptNickname(user);
+
+        // 데이터베이스에 저장하고 userIdx 반환
+        User savedUser = userRepository.save(user);
+
+        return savedUser.getUserIdx();
+    }
+
+    /**
+     * 회원가입 2단계: 닉네임 설정 및 회원가입 완료
+     * @param userIdx 회원가입 1단계에서 반환된 사용자 인덱스
+     * @param nickname 사용자가 설정한 닉네임
+     * @return user 업데이트된 사용자 정보
+     */
+    @Override
+    @Transactional
+    public User signUp2(Long userIdx, String nickname) {
+        User user = userRepository.findById(userIdx)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Idx:" + userIdx));
+
+        // 닉네임 중복 검사
+        if (checkDuplicate("userNickName", nickname)) {
+            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
+        }
+
+        user.setUserNickName(nickname);
+        user.setSignUpCompleted(true); // 회원가입 완료 상태로 설정
         return userRepository.save(user);
     }
-    @Transactional
-    public User createAdminUser(String userId, String userName, String userNickName, String userPw, String userEmail) {
-        User adminUser = new User();
-        adminUser.setUserId(userId);
-        adminUser.setUserName(userName);
-        adminUser.setUserNickName(userNickName);
-        adminUser.setUserPw(bCryptPasswordEncoder.encode(userPw));
-        adminUser.setUserEmail(userEmail);
-        adminUser.setUserRole("ROLE_ADMIN");
 
-        validateDuplicateUser(adminUser);
-        return userRepository.save(adminUser);
-    }
-
-    private void validateDuplicateUser(User user) {
-        //중복확인 사용자를 검증하는 메서드
-
+    /**
+     * 닉네임을 제외한 사용자 정보 중복 검사
+     * @param user 검사할 사용자 정보
+     * @throws IllegalStateException 중복된 정보가 있을 경우
+     */
+    private void validateDuplicateUserExceptNickname(User user) {
         if (checkDuplicate("userId", user.getUserId())) {
             throw new IllegalStateException("이미 존재하는 아이디입니다.");
         }
-        //아이디 중복확인 검사
-
-        if (checkDuplicate("userNickName", user.getUserNickName())) {
-            throw new IllegalStateException("이미 존재하는 닉네임입니다.");
-        }
-        //닉네임 중복확인 검사
-
         if (checkDuplicate("userEmail", user.getUserEmail())) {
             throw new IllegalStateException("이미 등록된 이메일입니다.");
         }
-        //이메일 중복확인 검사
     }
 
+    /**
+     * 사용자 ID로 사용자 정보 조회
+     * @param userIdx 조회할 사용자의 고유 식별자
+     * @return User 조회된 사용자 정보
+     * @throws IllegalArgumentException 해당 ID의 사용자가 없을 경우
+     */
     @Override
-    public User findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+    public User findById(Long userIdx) {
+        return userRepository.findById(userIdx)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Idx:" + userIdx));
     }
 
+    /**
+     * 사용자 정보 중복 확인
+     * @param field 중복 확인할 필드 (userId, userNickName, userEmail)
+     * @param value 중복 확인할 값
+     * @return boolean 중복 여부 (true: 중복, false: 중복 아님)
+     * @throws IllegalArgumentException 유효하지 않은 필드일 경우
+     */
     @Override
     public boolean checkDuplicate(String field, String value) {
         switch (field) {
