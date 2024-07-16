@@ -23,4 +23,5 @@ public class ChatEntranceLog {
     @Column(name = "chat_ent_dt")
     private LocalDateTime entranceDateTime;
 
+
 }
