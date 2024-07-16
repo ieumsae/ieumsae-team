@@ -16,7 +16,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
     // WebSocket 연결을 위한 엔드포인트를 등록
     // AddEndpoint 메소드는 웹소켓 연결을 시작할 때 사용할 URL 경로
-    // withSockJS()는 웹소켓을 지원하지 않는 환경에서도 실시간 통신이 가능하게 함
+    // withSockJS()는 웹소켓을 지원하지 않는 환경에서도 실시간 통신이 가능하게 함 (버전이 낮은 브라우저)
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {

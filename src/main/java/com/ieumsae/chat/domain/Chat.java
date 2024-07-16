@@ -28,4 +28,10 @@ public class Chat {
 
     private String chatType;
 
+    private String nickName;
+
+
+
+
 }
+

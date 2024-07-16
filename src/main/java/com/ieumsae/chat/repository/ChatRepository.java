@@ -11,6 +11,6 @@ import java.util.List;
 public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     // 채팅방의 특정 시간 이후의 모든 채팅 내용을 최신순으로 조회
-    List<Chat> findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeDesc(Integer chatIdx, LocalDateTime entranceDateTime);
+    List<Chat> findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(Integer chatIdx, LocalDateTime sendDateTime);
 
 }

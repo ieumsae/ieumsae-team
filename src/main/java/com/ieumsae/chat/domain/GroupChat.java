@@ -29,4 +29,8 @@ public class GroupChat {
     @Column(name = "chat_send_dt")
     private LocalDateTime sendDateTime;
 
+    private String groupChatType;
+
+    private String nickName;
+
 }
