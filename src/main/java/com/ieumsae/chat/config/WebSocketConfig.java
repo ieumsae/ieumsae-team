@@ -30,7 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.setApplicationDestinationPrefixes("/app");
         // 메시지를 전송하면 자동으로 주소 앞에 /app이 붙는다. => @MessageMapping 이 적용된 컨트롤러 메소드로 라우팅
         // 클라이언트에서 서버로 메시지를 전송할 때 사용할 접두사를 지정
-        // 메시지를 보낼 때
+        // 메시지를 보낼   때
 
     }
 
