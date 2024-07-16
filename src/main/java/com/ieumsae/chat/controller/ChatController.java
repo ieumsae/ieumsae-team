@@ -95,7 +95,7 @@ public class ChatController {
                 return "groupChat";  // groupChat.html로 이동
             } else {
                 logger.error("Invalid chatType: {}", chatType);
-                return "error"; // 에러 페이지로 리다이렉트
+                return "error"; //  에러 페이지로 리다이렉트
             }
 
         } catch (Exception e) {
