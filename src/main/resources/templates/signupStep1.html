@@ -137,6 +137,7 @@
             });
     }
 
+
     document.getElementById('checkUserIdDuplicate').addEventListener('click', () => {
         checkDuplicate('userId', document.getElementById('userId').value);
     });
@@ -166,8 +167,11 @@
             .then(data => {
                 if (data.userIdx) {
                     window.location.href = `/signup2?userIdx=${data.userIdx}`;
+                } else if (data.error) {
+                    // 오류 메시지를 표시합니다
+                    displayErrorMessage(data.error);
                 } else {
-                    alert(data.message || '회원가입 중 오류가 발생했습니다.');
+                    alert('회원가입 중 오류가 발생했습니다.');
                 }
             })
             .catch(error => {
@@ -175,6 +179,16 @@
                 alert('회원가입 중 오류가 발생했습니다.');
             });
     });
+
+    function displayErrorMessage(message) {
+        const errorElement = document.getElementById('errorMessage');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        } else {
+            alert(message);
+        }
+    }
 </script>
 </body>
 </html>
