@@ -13,6 +13,7 @@ class ChatClient {
         const response = await fetch('/getChatIdx');
         const data = await response.json();
         return data.chatIdx;
+
     }
 
     // 서버에서 userIdx를 받아오는 함수
