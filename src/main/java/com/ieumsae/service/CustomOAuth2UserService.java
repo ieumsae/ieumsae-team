@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -21,81 +22,52 @@ import java.util.Optional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
-    public CustomOAuth2UserService(UserRepository userRepository) {
+    public CustomOAuth2UserService(UserRepository userRepository, UserService userService, UserServiceImpl userServiceImpl) {
         this.userRepository = userRepository;
+        this.userService = userService;
+        this.userServiceImpl = userServiceImpl;
     }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("OAuth2 사용자 정보 로딩 중");
-        //기존 OAuth2UserService를 통해 OAuth2User 로드
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
-        //OAuth2User의 속성 로깅
         log.info("OAuth2User 속성: {}", oAuth2User.getAttributes());
 
-        //클라이언트 등록 ID 가져오기 (구글,네이버)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         log.info("등록 ID: {}", registrationId);
 
-        OAuth2Response oAuth2Response = null;
-
-        //소셜 로그인 제공자에 따라 적절한 Response 객체 생성
-        if (registrationId.equals("naver")) {
-            oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
-            log.info("네이버 OAuth2 응답 생성");
-        } else if (registrationId.equals("google")) {
-            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-            log.info("구글 OAuth2 응답 생성");
-        } else {
-            log.warn("지원하지 않는 OAuth2 제공자: {}", registrationId);
-            return null; // 지원하지 않는 제공자
-        }
-
-        //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
+        OAuth2Response oAuth2Response = createOAuth2Response(registrationId, oAuth2User.getAttributes());
         String userId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
         log.info("생성된 사용자 ID: {}", userId);
 
-        // 기존 사용자 조회
-        Optional<User> existUser = userRepository.findByUserId(userId);
+        UserForm userForm = new UserForm();
+        userForm.setUserId(userId);
+        userForm.setUserEmail(oAuth2Response.getEmail());
+        userForm.setUserName(oAuth2Response.getName());
+        userForm.setUserNickName(userForm.getUserNickName());
 
-        if (existUser.isEmpty()){
-            log.info("새 사용자 생성 중");
-            //정보 없다면 새 사용자 생성
-            User user = new User();
-            user.setUserId(userId);
-            user.setUserName(oAuth2Response.getName());
-            user.setUserEmail(oAuth2Response.getEmail());
-            user.setUserRole("ROLE_USER");
-            userRepository.save(user);
-            log.info("새 사용자 저장 완료");
+        Long userIdx = userService.socialSignup(new CustomOAuth2User(userForm, oAuth2User.getAttributes()));
 
-            // UserForm 객체 생성 및 기본 정보 설정
-            UserForm userForm = new UserForm();
-            userForm.setUserId(userId);
-            userForm.setUserEmail(oAuth2Response.getEmail());
-            userForm.setUserName(oAuth2Response.getName());
+        User savedUser = userRepository.findById(userIdx)
+                .orElseThrow(() -> new RuntimeException("User not found after social signup"));
 
-            return new CustomOAuth2User(userForm,oAuth2User.getAttributes());
-        } else {
-            log.info("기존 사용자 정보 업데이트 중");
-            //기존 사용자 정보 업데이트
-            User existingUser = existUser.get();
-            existingUser.setUserEmail(oAuth2Response.getEmail());
-            existingUser.setUserName(oAuth2Response.getName());
+        userForm.setUserIdx(savedUser.getUserIdx());
 
-            userRepository.save(existingUser);
-            log.info("기존 사용자 정보 업데이트 완료");
+        return new CustomOAuth2User(userForm, oAuth2User.getAttributes());
+    }
 
-            // UserForm 객체 생성 및 정보 설정
-            UserForm userForm = new UserForm();
-            userForm.setUserId(existingUser.getUserId());
-            userForm.setUserName(oAuth2Response.getName());
-            userForm.setUserEmail(oAuth2Response.getEmail());
-            userForm.setUserNickName(existingUser.getUserNickName());
-
-            return new CustomOAuth2User(userForm, oAuth2User.getAttributes());
+    private OAuth2Response createOAuth2Response(String registrationId, Map<String, Object> attributes) {
+        switch (registrationId) {
+            case "naver":
+                return new NaverResponse(attributes);
+            case "google":
+                return new GoogleResponse(attributes);
+            default:
+                throw new IllegalArgumentException("Unsupported OAuth2 provider: " + registrationId);
         }
     }
 }
