@@ -20,4 +20,5 @@ public class UserInfo {
 
     @Column(name = "user_nick_name")
     private String nickName;
+
 }
