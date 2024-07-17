@@ -32,5 +32,4 @@ public class GroupChat {
     private String groupChatType;
 
     private String nickName;
-
 }
