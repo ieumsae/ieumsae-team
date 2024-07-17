@@ -31,8 +31,8 @@ public class UserController {
         try {
             Long userIdx = userService.signUp1(userForm);
             return ResponseEntity.ok().body(Map.of("userIdx", userIdx, "message", "첫 번째 단계 회원가입 성공"));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
