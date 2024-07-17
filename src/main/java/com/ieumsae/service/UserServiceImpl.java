@@ -1,5 +1,6 @@
 package com.ieumsae.service;
 
+import com.ieumsae.domain.CustomOAuth2User;
 import com.ieumsae.domain.User;
 import com.ieumsae.domain.UserForm;
 import com.ieumsae.repository.UserRepository;
@@ -41,16 +42,31 @@ public class UserServiceImpl implements UserService {
         user.setUserRole("ROLE_USER");
         user.setSignUpCompleted(false); // 회원가입 미완료 상태로 설정
 
-        //role guest -> user -> admin
-
-        // 닉네임을 제외한 중복 검사
-        validateDuplicateUserExceptNickname(user);
+        try {
+            validateUserId(user.getUserId());
+            validateDuplicateUserExceptNickname(user);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        };
 
         // 데이터베이스에 저장하고 userIdx 반환
         User savedUser = userRepository.save(user);
 
         return savedUser.getUserIdx();
     }
+
+    public Long socialSignup(CustomOAuth2User customOAuth2User){
+        User user = userRepository.findByUserId(customOAuth2User.getUserID())
+                .orElseGet(() -> new User());
+
+        user.setUserId(customOAuth2User.getUserID());
+        user.setUserEmail(customOAuth2User.getUserEmail());
+        user.setUserName(customOAuth2User.getUserName());
+        user.setSignUpCompleted(false);
+        User savedUser = userRepository.save(user);
+        return savedUser.getUserIdx();
+    }
+
 
     /**
      * 회원가입 2단계: 닉네임 설정 및 회원가입 완료
@@ -61,6 +77,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User signUp2(Long userIdx, String nickname) {
+
         User user = userRepository.findById(userIdx)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user Idx:" + userIdx));
 
@@ -87,6 +104,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("이미 등록된 이메일입니다.");
         }
     }
+
 
     /**
      * 사용자 ID로 사용자 정보 조회
@@ -120,4 +138,18 @@ public class UserServiceImpl implements UserService {
                 throw new IllegalArgumentException("중복확인에 유효하지 않은 필드입니다: " + field);
         }
     }
+    //유효성 체크
+    private void validateUserId(String userId) {
+        if (userId.contains(" ")) {
+            throw new IllegalArgumentException("아이디에 공백을 포함할 수 없습니다.");
+        }
+        if (Character.isDigit(userId.charAt(0))) {
+            throw new IllegalArgumentException("아이디는 숫자로 시작할 수 없습니다.");
+        }
+        // 필요한 경우 추가적인 유효성 검사 규칙을 여기에 구현
+    }
+
 }
+
+
+
