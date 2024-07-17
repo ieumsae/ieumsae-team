@@ -1,12 +1,15 @@
 package com.ieumsae.oauth;
 
 import com.ieumsae.domain.CustomOAuth2User;
+import com.ieumsae.domain.User;
 import com.ieumsae.jwt.JwtUtil;
+import com.ieumsae.repository.UserRepository;
 import com.ieumsae.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,11 +26,16 @@ import java.util.Iterator;
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final UserRepository userRepository;
+
+
 
     // JwtUtil과 UserService를 주입받는 생성자
-    public CustomSuccessHandler(JwtUtil jwtUtil, UserService userService) {
+    public CustomSuccessHandler(JwtUtil jwtUtil, UserService userService, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+        this.userRepository = userRepository;
+
     }
 
     // 인증 성공 시 실행되는 메서드
@@ -43,6 +51,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             // OAuth2 로그인 처리
             CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
             userId = customUserDetails.getUserID();
+            Long userIdx = customUserDetails.getUserIdx();
             log.info("인증된 OAuth2 사용자 ID: {}", userId);
 
             // 사용자 권한 정보 추출
@@ -50,9 +59,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
             GrantedAuthority auth = iterator.next();
             role = auth.getAuthority();
-
-            // 사용자의 닉네임 확인
-            String userNickname = customUserDetails.getUserNickName();
+            User user = userRepository.findById(userIdx).orElse(null);
+            String userNickname = user != null ? user.getUserNickName() : null;
             boolean hasNickname = userNickname != null && !userNickname.trim().isEmpty();
             log.info("사용자 닉네임: {}, 닉네임 존재 여부: {}", userNickname, hasNickname);
 
@@ -61,8 +69,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 redirectUrl = "/";
                 log.info("사용자가 닉네임을 가지고 있습니다. 메인 페이지로 리다이렉트합니다.");
             } else {
-                redirectUrl = "/signupNickname";
+                redirectUrl = "/signup2?userIdx=" + userIdx;
                 log.info("사용자가 닉네임을 가지고 있지 않습니다. 닉네임 설정 페이지로 리다이렉트합니다.");
+                log.info("세션에 저장된 데이터: {}", customUserDetails);
             }
         } else if (authentication.getPrincipal() instanceof UserDetails) {
             // 폼 로그인 처리
