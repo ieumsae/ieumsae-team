@@ -41,6 +41,7 @@ public class ChatController {
         return "chat";  // chat.html을 렌더링
     }
 
+    //메소드 간소화 예정
     @PostMapping("/enterChat")
     public String enterChat(@RequestParam(value = "chatIdx", required = false) Integer chatIdx,
                             @RequestParam(value = "userIdx", required = false) Integer userIdx,
