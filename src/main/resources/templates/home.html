@@ -67,39 +67,10 @@
 </div>
 
 <script>
-    function getToken() {
-        return localStorage.getItem('token');
-    }
-
-    function setToken(token) {
-        localStorage.setItem('token', token);
-    }
-
-    function fetchWithToken(url, options = {}) {
-        const token = getToken();
-        console.log('Sending token:', token); // 디버깅을 위한 로그
-        return fetch(url, {
-            ...options,
-            headers: {
-                ...options.headers,
-                'Authorization': token ? `Bearer ${token}` : '',
-            },
-        });
-    }
-
-    // 로그인 성공 후 토큰을 저장하는 함수 (필요한 곳에 추가)
-    function handleLoginSuccess(token) {
-        setToken(token);
-        console.log('Token saved:', token); // 디버깅을 위한 로그
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
-        fetchWithToken('/api/user-info')
+        fetch('/api/user-info')
             .then(response => {
                 if (!response.ok) {
-                    if (response.status === 401) {
-                        throw new Error('인증 실패');
-                    }
                     throw new Error('네트워크 응답이 정상적이지 않습니다.');
                 }
                 return response.json();
@@ -110,22 +81,17 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                if (error.message === '인증 실패') {
-                    window.location.href = '/login';
-                } else {
-                    document.getElementById('userInfo').textContent = '정보를 불러오는데 실패했습니다.';
-                }
+                document.getElementById('userInfo').textContent = '정보를 불러오는데 실패했습니다.';
             });
     });
 
     function logout() {
-        fetchWithToken('/logout', {
+        fetch('/logout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then(() => {
-            removeToken();
             window.location.href = '/login';
         }).catch(error => {
             console.error('Error:', error);
