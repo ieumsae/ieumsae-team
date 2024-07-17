@@ -1,5 +1,8 @@
 package com.ieumsae.domain;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -7,20 +10,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+
 public class CustomOAuth2User implements OAuth2User {
 
+    private static final Logger log = LoggerFactory.getLogger(CustomOAuth2User.class);
     private final UserForm userForm;
+    private final Map<String, Object> attributes;
 
-    // 생성자
+
     public CustomOAuth2User(UserForm userForm, Map<String, Object> attributes) {
         this.userForm = userForm;
+        this.attributes = attributes;
 
     }
 
     // OAuth2 제공자로부터 받은 원본 속성 반환
     @Override
     public Map<String, Object> getAttributes() {
-        return null;
+        return attributes;
     }
 
     // 사용자의 권한 정보 반환
@@ -37,6 +44,10 @@ public class CustomOAuth2User implements OAuth2User {
         return userForm.getUserEmail();
     }
 
+    public Long getUserIdx(){
+        return userForm.getUserIdx();
+    }
+
     // 사용자 이메일 반환
     public String getUserEmail() {
         return userForm.getUserEmail();
@@ -51,6 +62,11 @@ public class CustomOAuth2User implements OAuth2User {
     // 사용자 닉네임 반환
     public String getUserNickName() {
         return userForm.getUserNickName();
+    }
+
+    public String getUserName(){
+        return userForm.getUserName();
+
     }
 
     // 닉네임 설정 필요 여부 확인
