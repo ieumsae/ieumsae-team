@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class User {
+public class
+User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_idx")
@@ -55,6 +56,11 @@ public class User {
 
     @Column(name = "user_role")
     private String userRole;
+
+    //유저 가입 완료 여부
+    @Column(name = "user_register")
+    private boolean signUpCompleted;
+
 }
 
 

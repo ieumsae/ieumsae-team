@@ -45,13 +45,19 @@ public class JwtUtil {
     }
 
     // 새로운 JWT 토큰을 생성합니다.
+    private static final long DEFAULT_EXPIRATION_MS = 3600000; // 1시간을 기본값으로 설정
+
     public String createJwt(String userId, String role, Long expiredMs) {
-        log.info("새로운 JWT 토큰 생성 시도 - userId: {}, role: {}, 만료시간: {} ms", userId, role, expiredMs);
+        // 유효하지 않은 만료 시간이 입력된 경우 기본값 사용
+        long validExpiredMs = (expiredMs != null && expiredMs > 0) ? expiredMs : DEFAULT_EXPIRATION_MS;
+
+        log.info("새로운 JWT 토큰 생성 시도 - userId: {}, role: {}, 만료시간: {} ms", userId, role, validExpiredMs);
+
         return Jwts.builder()
                 .claim("userId", userId)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiredMs))
+                .expiration(new Date(System.currentTimeMillis() + validExpiredMs))
                 .signWith(secretKey)
                 .compact();
     }

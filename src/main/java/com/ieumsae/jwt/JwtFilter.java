@@ -1,101 +1,96 @@
-package com.ieumsae.jwt;
-
-import com.ieumsae.domain.CustomUserDetails;
-import com.ieumsae.domain.User;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-
-@Slf4j
-// JWT 토큰을 검증하고 인증 정보를 설정하는 필터
-public class JwtFilter extends OncePerRequestFilter {
-
-    private final JwtUtil jwtUtil; // JWT 관련 유틸리티 클래스
-
-    // 생성자: JwtUtil 주입
-    public JwtFilter(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("JwtFilter 시작");
-
-        // 요청에서 Authorization 헤더를 찾음
-        String authorization = request.getHeader("Authorization");
-
-        // Authorization 헤더 검증
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            log.warn("Authorization 헤더가 없거나 Bearer 토큰이 아님");
-
-            System.out.println("token null");
-
-            filterChain.doFilter(request, response);
-
-            return; // 조건이 해당되면 메소드 종료 (필수)
-        }
-        logger.info("Authorization 헤더 확인됨");
-
-
-        // Bearer 접두사를 제거하고 실제 토큰 추출
-        String token = authorization.split(" ")[1];
-        log.info("토큰 추출: {}", token);
-
-
-        // 토큰 만료 시간 검증
-        if (jwtUtil.isExpired(token)) {
-            log.warn("토큰 만료됨");
-            System.out.println("token expired");
-
-            filterChain.doFilter(request, response);
-
-            return; // 조건이 해당되면 메소드 종료 (필수)
-        }
-
-        // 토큰에서 사용자 ID와 역할 추출
-        String userId = jwtUtil.getUserId(token);
-        String UserRole = jwtUtil.getRole(token);
-
-        // 임시 User 객체 생성 (실제 애플리케이션에서는 데이터베이스에서 사용자 정보를 조회해야 함)
-        User user = new User();
-        user.setUserName(userId);
-        user.setUserPw("temppassword"); // 임시 비밀번호 설정
-        user.setUserRole(UserRole);
-
-        // CustomUserDetails 객체 생성
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
-
-        // 인증 객체 생성
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-
-        // SecurityContext에 인증 객체 설정
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        // 다음 필터로 요청 전달
-        filterChain.doFilter(request, response);
-
-        String requestUri = request.getRequestURI();
-
-        if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
-
-            filterChain.doFilter(request, response);
-            return;
-        }
-        if (requestUri.matches("^\\/oauth2(?:\\/.*)?$")) {
-
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-
-    }
-
-}
+//package com.ieumsae.jwt;
+//
+//import com.ieumsae.domain.CustomUserDetails;
+//import com.ieumsae.domain.User;
+//import jakarta.servlet.FilterChain;
+//import jakarta.servlet.ServletException;
+//import jakarta.servlet.http.Cookie;
+//import jakarta.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.HttpServletResponse;
+//import lombok.extern.slf4j.Slf4j;
+//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.util.AntPathMatcher;
+//import org.springframework.web.filter.OncePerRequestFilter;
+//
+//import java.io.IOException;
+//
+//@Slf4j
+//public class JwtFilter extends OncePerRequestFilter {
+//
+//    private final JwtUtil jwtUtil;
+//
+//    public JwtFilter(JwtUtil jwtUtil) {
+//        this.jwtUtil = jwtUtil;
+//    }
+//
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+//        log.info("JwtFilter 시작");
+//        String requestUri = request.getRequestURI();
+//
+//        if (requestUri.matches("^\\/signup(?:\\/.*)?$") ||
+//                requestUri.matches("^\\/signup2(?:\\/.*)?$") ||
+//                requestUri.matches("^\\/login(?:\\/.*)?$") ||
+//                requestUri.matches("^\\/oauth2(?:\\/.*)?$") ||
+//                requestUri.startsWith("/api/users/") ||
+//                requestUri.startsWith("/js/") ||
+//                requestUri.startsWith("/images/") ||
+//                requestUri.startsWith("/css/") ||
+//                requestUri.startsWith("/scss/")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//
+//
+//        // 쿠키에서 Authorization 토큰을 찾습니다.
+//        String authorization = null;
+//        Cookie[] cookies = request.getCookies();
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                if ("Authorization".equals(cookie.getName())) {
+//                    authorization = cookie.getValue();
+//                    break;
+//                }
+//            }
+//        }
+//
+//        // Authorization 쿠키가 없는 경우
+//        if (authorization == null) {
+//            log.warn("Authorization 쿠키가 없음");
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        log.info("토큰 추출: {}", authorization);
+//
+//        // 토큰 만료 검증
+//        if (jwtUtil.isExpired(authorization)) {
+//            log.warn("토큰 만료됨");
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        // 토큰에서 username과 role 획득
+//        String userId = jwtUtil.getUserId(authorization);
+//        String userRole = jwtUtil.getRole(authorization);
+//
+//        // User 객체 생성 및 설정
+//        User user = new User();
+//        user.setUserName(userId);
+//        user.setUserRole(userRole);
+//
+//        // CustomUserDetails 생성
+//        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+//
+//        // 인증 객체 생성
+//        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+//
+//        // SecurityContext에 인증 객체 설정
+//        SecurityContextHolder.getContext().setAuthentication(authToken);
+//
+//        filterChain.doFilter(request, response);
+//    }
+//}
