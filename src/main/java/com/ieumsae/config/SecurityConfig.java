@@ -1,8 +1,9 @@
 package com.ieumsae.config;
 
-import com.ieumsae.jwt.JwtFilter;
+//import com.ieumsae.jwt.JwtFilter;
 import com.ieumsae.jwt.JwtUtil;
 import com.ieumsae.oauth.CustomSuccessHandler;
+import com.ieumsae.repository.UserRepository;
 import com.ieumsae.service.CustomOAuth2UserService;
 import com.ieumsae.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,9 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +45,7 @@ public class SecurityConfig {
     }
 
     @Bean // Spring Security 필터 체인 구성
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UserRepository userRepository) throws Exception {
         log.info("SecurityFilterChain 구성 중");
         http
 
@@ -66,14 +65,13 @@ public class SecurityConfig {
                 }))
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 기능 비활성화
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/signup", "/signupNickname", "/login", "/api/users/**", "/api/users/", "/", "/oauth2/**").permitAll()
+                    auth.requestMatchers("/signup", "/signup1","/signup2","/login", "/api/**", "/api/users/", "/", "/oauth2/**").permitAll()
                             .requestMatchers("/admin/**").hasRole("ADMIN")
                             .requestMatchers("/js/**", "/images/**", "/css/**", "/scss/**").permitAll()
                             .anyRequest().authenticated(); // 그 외 모든 요청은 인증 필요
                     log.info("인증 규칙 구성 완료");
                 })
-                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new JwtFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
+//                .addFilterAfter(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
 
                 .oauth2Login(oauth2 -> {
                     oauth2
@@ -81,7 +79,7 @@ public class SecurityConfig {
                                     .userService(customOAuth2UserService))
                             .loginPage("/login")
 
-                            .successHandler(new CustomSuccessHandler(jwtUtil, userService));
+                            .successHandler(new CustomSuccessHandler(jwtUtil, userService,userRepository));
                     log.info("OAuth2 로그인 구성 완료");
                 })
                 .formLogin(form -> {
@@ -89,7 +87,7 @@ public class SecurityConfig {
                             .usernameParameter("userId")
                             .passwordParameter("userPw")
                             .loginPage("/login")
-                            .successHandler(new CustomSuccessHandler(jwtUtil, userService))
+                            .successHandler(new CustomSuccessHandler(jwtUtil, userService, userRepository))
                             .defaultSuccessUrl("/", true)
                             .permitAll();
                     log.info("폼 로그인 구성 완료");
