@@ -1,14 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅방</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #chat-messages {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message { margin-bottom: 10px; }
+        .own-message { text-align: right; color: blue; }
+        .other-message { text-align: left; color: green; }
+        .system-message { text-align: center; color: gray; font-style: italic; }
+        .entrance-message { text-align: center; color: purple; font-weight: bold; }
+        .user-idx { font-weight: bold; }
+        .content { margin: 0 5px; }
+        .time { font-size: 0.8em; color: #888; }
+    </style>
 </head>
 <body>
-<h1>Welcome to Chat Application</h1>
-<button id="personalChatButton">Start Personal Chat</button>
-<button id="groupChatButton">Start Group Chat</button>
-<script src="/js/chat.js"></script>
+<div id="chat-page">
+    <div id="chat-messages"></div>
+    <form id="message-form">
+        <input type="text" id="message" placeholder="메시지를 입력하세요..." autocomplete="off" />
+        <button type="submit">전송</button>
+    </form>
+    <button id="personalChatButton">개인 채팅 시작</button>
+    <button id="groupChatButton">그룹 채팅 시작</button>
+</div>
+
+<script src="chat.js"></script>
 <script>
     const chatClient = new ChatClient();
 
@@ -18,6 +46,20 @@
 
     document.getElementById('groupChatButton').addEventListener('click', () => {
         chatClient.connect('GROUP');
+    });
+
+    document.getElementById('message-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const messageInput = document.getElementById('message');
+        const messageContent = messageInput.value.trim();
+        if (messageContent) {
+            chatClient.sendMessage(messageContent);
+            messageInput.value = '';
+        }
+    });
+
+    window.addEventListener('beforeunload', () => {
+        chatClient.leaveChat();
     });
 </script>
 </body>

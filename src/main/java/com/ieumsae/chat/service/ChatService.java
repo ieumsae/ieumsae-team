@@ -170,6 +170,6 @@ public class ChatService {
         });
         return messages;
     }
-    
-    // 추가 로직 예정 
+
+    // 추가 로직 예정
 }

@@ -1,11 +1,12 @@
 class ChatClient {
     constructor() {
         this.stompClient = null;
-        this.chatIdx = null;
-        this.userIdx = null; // 세션을 통해 사용자 ID를 가져오므로 초기화 필요 없음
+        this.chatIdx = 1234;
+        this.userIdx = 1234; // 세션을 통해 사용자 ID를 가져오므로 초기화 필요 없음
         this.chatType = null;
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 5;
+        this.isConnected = false;
     }
 
     // 서버에서 chatIdx를 받아오는 함수
@@ -46,6 +47,7 @@ class ChatClient {
 
         this.stompClient.connect({}, (frame) => {
             console.log('Connected: ' + frame);
+            this.isConnected = true;
             this.reconnectAttempts = 0;
             this.subscribeToChat();
             this.joinChat();
@@ -107,6 +109,11 @@ class ChatClient {
     }
 
     sendMessage(content) {
+        if (!this.isConnected) {
+            console.error("WebSocket is not connected yet. Message not sent.");
+            return;
+        }
+
         const chatMessage = {
             chatIdx: this.chatIdx,
             userIdx: this.userIdx,

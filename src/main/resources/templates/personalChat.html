@@ -1,34 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Personal Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인 채팅</title>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/js/chat.js"></script>
+    <style>
+        #chat-messages { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
+        .message { margin-bottom: 10px; }
+        .own-message { text-align: right; color: blue; }
+        .other-message { text-align: left; color: green; }
+        .system-message { text-align: center; color: gray; font-style: italic; }
+    </style>
 </head>
 <body>
-<h1>Personal Chat Room</h1>
+<h1>개인 채팅</h1>
 <div id="chat-messages"></div>
-<input type="text" id="message-input" placeholder="Type your message here...">
-<button id="send-button">Send</button>
-<input type="hidden" id="previousMessages" value='${previousMessages}'>
-<script src="/js/chat.js"></script>
-<script>
+<input type="text" id="message-input" placeholder="메시지를 입력하세요...">
+<button onclick="sendMessage()">전송</button>
+
+<input type="hidden" id="chatIdx" th:value="${chatIdx}">
+<input type="hidden" id="userIdx" th:value="${userIdx}">
+<input type="hidden" id="previousMessages" th:value="${previousMessages}">
+
+<script th:inline="javascript">
     const chatClient = new ChatClient();
+    const chatIdx = /*[[${chatIdx}]]*/ null;
+    const userIdx = /*[[${userIdx}]]*/ null;
+    const previousMessages = /*[[${previousMessages}]]*/ null;
 
-    document.addEventListener('DOMContentLoaded', () => {
+    window.onload = function() {
+        chatClient.chatIdx = chatIdx;
+        chatClient.userIdx = userIdx;
+        chatClient.chatType = 'PERSONAL';
         chatClient.connect('PERSONAL');
+        if (previousMessages) {
+            chatClient.loadPreviousMessages(JSON.parse(previousMessages));
+        }
+    };
 
-        document.getElementById('send-button').addEventListener('click', () => {
-            const messageContent = document.getElementById('message-input').value;
-            chatClient.sendMessage(messageContent);
-            document.getElementById('message-input').value = '';
-        });
-    });
+    function sendMessage() {
+        const messageInput = document.getElementById('message-input');
+        const content = messageInput.value.trim();
+        if (content) {
+            chatClient.sendMessage(content);
+            messageInput.value = '';
+        }
+    }
 
     window.addEventListener('beforeunload', () => {
-        if (chatClient.subscription) {
-            chatClient.subscription.unsubscribe();
-        }
-        chatClient.stompClient.disconnect();
+        chatClient.leaveChat();
     });
 </script>
 </body>
