@@ -6,13 +6,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserInfoRequest
-
 {
     private String newNickname;
 
     public UserInfoRequest() {
-
-
     }
 
     public UserInfoRequest(String newNickname) {
