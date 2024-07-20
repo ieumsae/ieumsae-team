@@ -1,6 +1,5 @@
 package com.ieumsae.chat.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,15 +23,9 @@ public class Chat {
     @Column(name = "chat_content")
     private String content;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd'T'HH:mm")
     @Column(name = "chat_send_dt")
     private LocalDateTime sendDateTime;
 
     private String chatType;
 
-    private String nickName;
-
-
-
 }
-
