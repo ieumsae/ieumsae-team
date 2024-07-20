@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>1:1 채팅</title>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
+</head>
+<body>
+<div id="login-page" class="page">
+    <h1>1:1 채팅 시작하기</h1>
+    <form action="/enterChat" method="post">
+        <input type="number" name="chatIdx" placeholder="채팅방 번호 입력" required>
+        <input type="number" name="userIdx" placeholder="사용자 번호 입력" required>
+        <button type="submit">채팅 참여하기</button>
+    </form>
+</div>
+</body>
+</html>

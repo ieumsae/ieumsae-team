@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>채팅방</title>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:src="@{/js/chat.js}"></script>
+</head>
+<body>
+<div id="chat-page">
+    <input type="hidden" id="chat-idx" th:value="${chatIdx}">
+    <input type="hidden" id="user-idx" th:value="${userIdx}">
+    <input type="hidden" id="chat-type" value="PERSONAL">
+    <div id="chat-messages"></div>
+    <div id="message-input-container">
+        <input type="text" id="message-input" placeholder="메시지를 입력하세요...">
+        <button id="send-button">전송</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // Thymeleaf를 통해 서버에서 전달된 값들을 JavaScript 변수로 설정
+    const chatIdx = /*[[${chatIdx}]]*/ null;
+    const userIdx = /*[[${userIdx}]]*/ null;
+    const chatType = "PERSONAL";
+    const previousMessages = /*[[${previousMessages}]]*/ [];
+
+    console.log("chatIdx:", chatIdx, "userIdx:", userIdx);
+
+    if (chatIdx === null || userIdx === null) {
+        console.error("chatIdx or userIdx is null");
+        // 에러 처리 로직
+        alert("채팅방 정보를 불러오는데 실패했습니다. 이전 페이지로 돌아갑니다.");
+        window.history.back();
+    } else {
+        const chatClient = new ChatClient();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // WebSocket 연결 및 이전 메시지 로드
+            chatClient.connect(chatIdx, userIdx, chatType);
+
+            // 이전 메시지 표시
+            if (previousMessages && previousMessages.length > 0) {
+                chatClient.loadPreviousMessages(previousMessages);
+            }
+
+            // 메시지 전송 버튼 이벤트 리스너
+            document.getElementById('send-button').addEventListener('click', sendMessage);
+
+            // 엔터 키 입력 시 메시지 전송
+            document.getElementById('message-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+
+        // 메시지 전송 함수
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            if (message) {
+                chatClient.sendMessage(message);
+                messageInput.value = '';
+            }
+        }
+
+        // 페이지 나갈 때 연결 종료
+        window.addEventListener('beforeunload', function() {
+            chatClient.leaveChat();
+        });
+    }
+</script>
+</body>
+</html>
