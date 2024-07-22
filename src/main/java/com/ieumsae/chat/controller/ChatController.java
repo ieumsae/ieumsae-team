@@ -70,7 +70,7 @@ public class ChatController {
                     List<Chat> previousMessages = chatService.getPreviousMessages(chatIdx, userIdx, chatType);
                     model.addAttribute("previousMessages", previousMessages);
                 }
-                return "chatRoom"; // chatRoom.html로 이동
+                return "personalChatRoom"; // chatRoom.html로 이동
             } catch (Exception e) {
                 logger.error("Error while entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx, e);
                 return "error";
