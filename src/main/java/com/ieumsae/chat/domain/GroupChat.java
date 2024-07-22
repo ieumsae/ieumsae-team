@@ -18,7 +18,7 @@ public class GroupChat {
     private Integer studyIdx;
 
     @Column(name = "group_chat_idx")
-    private Integer groupChatIdx;
+    private Integer chatIdx;
 
     @Column(name = "user_idx")
     private Integer userIdx;
@@ -28,5 +28,7 @@ public class GroupChat {
 
     @Column(name = "chat_send_dt")
     private LocalDateTime sendDateTime;
+
+    private String chatType;
 
 }
