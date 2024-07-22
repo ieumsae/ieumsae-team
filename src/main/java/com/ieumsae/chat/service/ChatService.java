@@ -71,7 +71,7 @@ public class ChatService {
                 chatEntranceLogRepository.save(entranceLog);
             }
 
-            // 특별한 타입의 메시지를 생성합니다.
+            // 특별한 타입의 메시지를 생성
             chatMessage.setContent(chatMessage.getUserIdx() + "님이 입장하셨습니다.");
             chatMessage.setChatType("ENTRANCE");  // 새로운 타입 추가
             return chatMessage;
