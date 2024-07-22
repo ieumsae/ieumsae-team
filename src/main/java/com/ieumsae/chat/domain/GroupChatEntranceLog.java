@@ -18,7 +18,7 @@ public class GroupChatEntranceLog {
     private Integer studyIdx;
 
     @Column(name = "group_chat_idx")
-    private Integer groupChatIdx;
+    private Integer chatIdx;
 
     @Column(name = "user_idx")
     private Integer userIdx;
