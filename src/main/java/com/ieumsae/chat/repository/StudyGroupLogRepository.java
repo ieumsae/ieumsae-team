@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface StudyGroupLogRepository extends JpaRepository<StudyGroupLog, Long> {
+
     @Query("SELECT s.userIdx FROM StudyGroupLog s WHERE s.studyIdx = :studyIdx")
     Optional<Integer> findUserIdxByStudyIdx(Integer studyIdx);
 
