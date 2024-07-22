@@ -68,7 +68,7 @@ public class ChatService {
     }
 
 
-    // 채팅방에 입장 시 CHAT_ENTRANCE_LOG 테이블에 데이터 저장 및 입장메시지 출력
+    // 1:1 채팅방에 입장 시 CHAT_ENTRANCE_LOG 테이블에 데이터 저장 및 입장메시지 출력
     public Chat addUserToChat(Chat chatMessage, Integer chatIdx) {
         if ("PERSONAL".equals(chatMessage.getChatType())) {
             chatMessage.setChatIdx(chatIdx);
@@ -89,10 +89,11 @@ public class ChatService {
             chatMessage.setChatType("ENTRANCE");  // 입장 시
             return chatMessage;
         } else {
-            throw new UnsupportedOperationException("적절한 chatType이 아닙니다." + chatMessage.getChatType());
+            throw new IllegalArgumentException("적절한 chatType이 아닙니다." + chatMessage.getChatType());
         }
     }
 
+    // 그룹 채팅방에 입장 시 GROUP_CHAT_ENTRANCE_LOG 테이블에 데이터 저장 및 입장메시지 출력
     public GroupChat addUserToGroupChat(GroupChat groupChatMessage, Integer chatIdx) {
         if ("GROUP".equals(groupChatMessage.getChatType())) {
             groupChatMessage.setChatIdx(chatIdx);
@@ -117,7 +118,7 @@ public class ChatService {
         }
     }
 
-    // 이전 채팅 내용 가져오기
+    // 이전 채팅 내용 가져오기 (1:1 채팅, 그룹채팅)
     public List<Chat> getPreviousMessages(Integer chatIdx, Integer userIdx, String chatType) {
 
         if ("PERSONAL".equals(chatType)) {
@@ -144,7 +145,7 @@ public class ChatService {
         // 반환값이 "PERSONAL"과 "GROUP" 둘 다 아닐 때 (예상치 못한 예외상황이 발생했을 때)
     }
 
-    // 1:1 chatIdx 만들기
+    // chatIdx 만들기 (1:1 채팅, 그룹 채팅)
     public int createChatIdx(Integer userIdx, Integer studyIdx, String chatType) {
 
         if ("PERSONAL".equals(chatType)) {
