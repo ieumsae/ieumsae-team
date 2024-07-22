@@ -1,7 +1,7 @@
 //package com.ieumsae.jwt;
 //
-//import com.ieumsae.domain.CustomUserDetails;
-//import com.ieumsae.domain.User;
+//import com.ieumsae.user.domain.CustomUserDetails;
+//import com.ieumsae.user.domain.User;
 //import jakarta.servlet.FilterChain;
 //import jakarta.servlet.ServletException;
 //import jakarta.servlet.http.Cookie;

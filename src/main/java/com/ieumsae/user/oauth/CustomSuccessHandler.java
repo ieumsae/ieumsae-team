@@ -29,7 +29,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 
 
-    // JwtUtil과 UserService를 주입받는 생성자
+//     JwtUtil과 UserService를 주입받는 생성자
     public CustomSuccessHandler(JwtUtil jwtUtil, UserService userService, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
