@@ -54,7 +54,7 @@ class ChatClient {
         this.stompClient.subscribe(topic, (message) => {
             const chatMessage = JSON.parse(message.body);
             this.displayMessage(chatMessage);
-        });
+        }); 
     }
 
     joinChat() {
