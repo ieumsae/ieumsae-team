@@ -35,6 +35,7 @@ public class ChatService {
         this.studyGroupLogRepository = studyGroupLogRepository;
     }
 
+    // 1:1 채팅 내용 포맷팅 및 DB 저장
     public Chat saveAndFormatChatMessage(Chat chatMessage) {
         if ("PERSONAL".equals(chatMessage.getChatType())) {
             if (chatMessage.getChatIdx() == null) {
@@ -50,6 +51,7 @@ public class ChatService {
         }
     }
 
+    // 그룹 채팅 내용 포맷팅 및 DB 저장
     public GroupChat saveAndFormatGroupChatMessage(GroupChat groupChatMessage) {
         if ("GROUP".equals(groupChatMessage.getChatType())) {
             if (groupChatMessage.getChatIdx() == null) {
@@ -66,6 +68,7 @@ public class ChatService {
     }
 
 
+    // 채팅방에 입장 시 CHAT_ENTRANCE_LOG 테이블에 데이터 저장 및 입장메시지 출력
     public Chat addUserToChat(Chat chatMessage, Integer chatIdx) {
         if ("PERSONAL".equals(chatMessage.getChatType())) {
             chatMessage.setChatIdx(chatIdx);
@@ -83,15 +86,35 @@ public class ChatService {
 
             // 특별한 타입의 메시지를 생성
             chatMessage.setContent(chatMessage.getUserIdx() + "님이 입장하셨습니다.");
-            chatMessage.setChatType("ENTRANCE");  // 새로운 타입 추가
+            chatMessage.setChatType("ENTRANCE");  // 입장 시
             return chatMessage;
         } else {
-            throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
+            throw new UnsupportedOperationException("적절한 chatType이 아닙니다." + chatMessage.getChatType());
         }
     }
 
-    public GroupChat addUserToGroupChat(GroupChat groupChatMessage, Integer groupChatIdx) {
-        throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
+    public GroupChat addUserToGroupChat(GroupChat groupChatMessage, Integer chatIdx) {
+        if ("GROUP".equals(groupChatMessage.getChatType())) {
+            groupChatMessage.setChatIdx(chatIdx);
+            groupChatMessage.setSendDateTime(LocalDateTime.now());
+
+            Optional<GroupChatEntranceLog> existingLog = groupChatEntranceLogRepository.findByChatIdxAndUserIdx(chatIdx, groupChatMessage.getUserIdx());
+
+            if (existingLog.isEmpty()) {
+                GroupChatEntranceLog entranceLog = new GroupChatEntranceLog();
+                entranceLog.setChatIdx(chatIdx);
+                entranceLog.setUserIdx(groupChatMessage.getUserIdx());
+                entranceLog.setEntranceDateTime(LocalDateTime.now());
+                groupChatEntranceLogRepository.save(entranceLog);
+            }
+
+            // 특별한 타입의 메시지를 생성
+            groupChatMessage.setContent(groupChatMessage.getUserIdx() + "님이 입장하셨습니다.");
+            groupChatMessage.setChatType("ENTRANCE"); // 입장 시
+            return groupChatMessage;
+        } else {
+            throw new IllegalArgumentException("적절한 chatType이 아닙니다." + groupChatMessage.getChatType());
+        }
     }
 
     // 이전 채팅 내용 가져오기
