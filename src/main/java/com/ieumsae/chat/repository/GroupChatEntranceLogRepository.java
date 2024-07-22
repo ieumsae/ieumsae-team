@@ -16,5 +16,6 @@ public interface GroupChatEntranceLogRepository extends JpaRepository<GroupChatE
     // 특정 그룹 채팅방에 특정 사용자가 가장 최근에 입장한 기록을 조회
     Optional<GroupChatEntranceLog> findFirstByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(Integer groupChatIdx, Integer userIdx);
 
+    // 로그 테이블에 저장 전, 이미 기록이 있는지 확인하는 메소드
     Optional<GroupChatEntranceLog> findByChatIdxAndUserIdx(Integer chatIdx, Integer userIdx);
 }
