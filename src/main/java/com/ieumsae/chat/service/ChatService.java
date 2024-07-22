@@ -3,10 +3,7 @@ package com.ieumsae.chat.service;
 import com.ieumsae.chat.domain.Chat;
 import com.ieumsae.chat.domain.ChatEntranceLog;
 import com.ieumsae.chat.domain.GroupChat;
-import com.ieumsae.chat.repository.ChatEntranceLogRepository;
-import com.ieumsae.chat.repository.ChatRepository;
-import com.ieumsae.chat.repository.GroupChatEntranceLogRepository;
-import com.ieumsae.chat.repository.GroupChatRepository;
+import com.ieumsae.chat.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +21,17 @@ public class ChatService {
     private final GroupChatRepository groupChatRepository;
     private final ChatEntranceLogRepository chatEntranceLogRepository;
     private final GroupChatEntranceLogRepository groupChatEntranceLogRepository;
+    private final StudyGroupLogRepository studyGroupLogRepository;
 
     @Autowired
     public ChatService(ChatRepository chatRepository, GroupChatRepository groupChatRepository,
                        ChatEntranceLogRepository chatEntranceLogRepository,
-                       GroupChatEntranceLogRepository groupChatEntranceLogRepository) {
+                       GroupChatEntranceLogRepository groupChatEntranceLogRepository, StudyGroupLogRepository studyGroupLogRepository) {
         this.chatRepository = chatRepository;
         this.groupChatRepository = groupChatRepository;
         this.chatEntranceLogRepository = chatEntranceLogRepository;
         this.groupChatEntranceLogRepository = groupChatEntranceLogRepository;
+        this.studyGroupLogRepository = studyGroupLogRepository;
     }
 
     public Chat saveAndFormatChatMessage(Chat chatMessage) {
@@ -95,4 +94,24 @@ public class ChatService {
         return chatRepository.findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(chatIdx, firstEntranceDateTime);
     }
 
+    // chatIdx 만들기
+    public String createChatIdx(Integer userIdx, Integer studyIdx) {
+
+        // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
+        Integer matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx).orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
+
+        // 찾은 userIdx 값으로 chatIdx값을 생성 (1 + userIdx + matchingUserIdx) 9자리
+        return "1" + String.format("%04d", userIdx) + String.format("%04d", matchingUserIdx);
+    }
+
 }
+
+
+
+
+
+
+
+
+
+

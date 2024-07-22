@@ -4,6 +4,7 @@ import com.ieumsae.chat.domain.Chat;
 import com.ieumsae.chat.domain.GroupChat;
 import com.ieumsae.chat.repository.ChatEntranceLogRepository;
 import com.ieumsae.chat.service.ChatService;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +45,14 @@ public class ChatController {
     // 채팅방 연결
     @PostMapping("/enterChat")
     public String enterChat(@RequestParam(value = "chatIdx", required = false) Integer chatIdx,
-                            @RequestParam(value = "userIdx", required = false) Integer userIdx,
+                            HttpSession session,
                             Model model) {
+
+        // 세션에서 userIdx를 받아오기
+        Integer userIdx = (Integer)session.getAttribute("userIdx");
+
+        // 서버에서 studyIdx를 받아오기
+        Integer studyIdx = 1234; // 임시 값
 
         // 파라미터 유효성 검사 및 로깅
         if (chatIdx == null || userIdx == null) {
@@ -56,6 +63,11 @@ public class ChatController {
         logger.info("Entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx);
 
         try {
+            String chatIdx = chatService.createChatIdx(userIdx, studyIdx);
+            logger.info("생성된 chatIdx={}", chatIdx);
+
+
+            // CHAT_ENTRANCE_LOG 테이블에 존재하는지 확인
             if (!chatEntranceLogRepository.existsByChatIdxAndUserIdx(chatIdx, userIdx)) {
                 // 최초 접속 시
                 logger.info("First-time access for chatIdx={}, userIdx={}", chatIdx, userIdx);
@@ -68,6 +80,7 @@ public class ChatController {
                 List<Chat> previousMessages = chatService.getPreviousMessages(chatIdx, userIdx);
                 model.addAttribute("previousMessages", previousMessages);
             }
+
 
             // 공통 속성 설정
             model.addAttribute("chatIdx", chatIdx);
