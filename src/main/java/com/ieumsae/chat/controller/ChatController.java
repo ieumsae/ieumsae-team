@@ -44,18 +44,19 @@ public class ChatController {
 
     // 채팅방 연결
     @PostMapping("/enterChat")
-    public String enterChat(@RequestParam(value = "chatIdx", required = false) Integer chatIdx,
-                            HttpSession session,
-                            Model model) {
+    public String enterChat(HttpSession session, Model model) {
 
         // 세션에서 userIdx를 받아오기
         Integer userIdx = (Integer)session.getAttribute("userIdx");
 
         // 서버에서 studyIdx를 받아오기
-        Integer studyIdx = 1234; // 임시 값
+        int studyIdx = 1234; // 임시 값
+
+        // 만든 chatIdx값을 가져옴 (int)
+        int chatIdx = chatService.createChatIdx(userIdx, studyIdx);
 
         // 파라미터 유효성 검사 및 로깅
-        if (chatIdx == null || userIdx == null) {
+        if (studyIdx == 0 || userIdx == 0) {
             logger.error("Invalid parameters: chatIdx={}, userIdx={}", chatIdx, userIdx);
             return "error"; // 에러 페이지로 리다이렉트
         }
@@ -63,9 +64,8 @@ public class ChatController {
         logger.info("Entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx);
 
         try {
-            String chatIdx = chatService.createChatIdx(userIdx, studyIdx);
-            logger.info("생성된 chatIdx={}", chatIdx);
 
+            logger.info("생성된 chatIdx={}", chatIdx);
 
             // CHAT_ENTRANCE_LOG 테이블에 존재하는지 확인
             if (!chatEntranceLogRepository.existsByChatIdxAndUserIdx(chatIdx, userIdx)) {

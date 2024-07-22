@@ -95,13 +95,17 @@ public class ChatService {
     }
 
     // chatIdx 만들기
-    public String createChatIdx(Integer userIdx, Integer studyIdx) {
+    public int createChatIdx(Integer userIdx, Integer studyIdx) {
 
         // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
-        Integer matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx).orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
+        Integer matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
 
         // 찾은 userIdx 값으로 chatIdx값을 생성 (1 + userIdx + matchingUserIdx) 9자리
-        return "1" + String.format("%04d", userIdx) + String.format("%04d", matchingUserIdx);
+        String chatIdxString = "1" + String.format("%04d", userIdx) + String.format("%04d", matchingUserIdx);
+
+        // int 타입으로 형변환
+        return Integer.parseInt(chatIdxString);
     }
 
 }
