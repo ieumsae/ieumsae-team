@@ -3,6 +3,7 @@ package com.ieumsae.chat.service;
 import com.ieumsae.chat.domain.Chat;
 import com.ieumsae.chat.domain.ChatEntranceLog;
 import com.ieumsae.chat.domain.GroupChat;
+import com.ieumsae.chat.domain.GroupChatEntranceLog;
 import com.ieumsae.chat.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,7 @@ public class ChatService {
             if (chatMessage.getChatIdx() == null) {
                 throw new IllegalArgumentException("chat_idx cannot be null");
             }
-            // 채팅 메시지의 content 부분에 시간 나오는 기능을 삭제
-            // String formattedTime = chatMessage.getSendDateTime().format(TIME_FORMATTER);
+
             String formattedContent = String.format("%s: %s", chatMessage.getUserIdx(), chatMessage.getContent());
             chatMessage.setContent(formattedContent);
             chatMessage.setSendDateTime(LocalDateTime.now());
@@ -84,30 +84,63 @@ public class ChatService {
     }
 
     // 이전 채팅 내용 가져오기
-    public List<Chat> getPreviousMessages(Integer chatIdx, Integer userIdx) {
-        LocalDateTime firstEntranceDateTime = chatEntranceLogRepository
-                .findFirstByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(chatIdx, userIdx) // 최근 입장기록 하나만 가져옴
-                .map(ChatEntranceLog::getEntranceDateTime) // 찾은 입장기록에서 입장 시간만 추출한다.
-                .orElse(null); // 입장기록이 없을 경우 가장 오래된 시간
+    public List<Chat> getPreviousMessages(Integer chatIdx, Integer userIdx, String chatType) {
 
-        //최초 입장 시간 이후의 채팅 내용을 시간순으로 조회
-        return chatRepository.findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(chatIdx, firstEntranceDateTime);
+        if ("PERSONAL".equals(chatType)) {
+            LocalDateTime firstEntranceDateTime = chatEntranceLogRepository
+                    .findFirstByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(chatIdx, userIdx) // 최근 입장기록 하나만 가져옴
+                    .map(ChatEntranceLog::getEntranceDateTime) // 찾은 입장기록에서 입장 시간만 추출한다.
+                    .orElse(null); // 입장기록이 없을 경우 가장 오래된 시간
+
+            //최초 입장 시간 이후의 채팅 내용을 시간순으로 조회
+            return chatRepository.findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(chatIdx, firstEntranceDateTime);
+
+        } else if ("GROUP".equals(chatType)) {
+            LocalDateTime firstEntranceDateTime = groupChatEntranceLogRepository
+                    .findFirstByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(chatIdx, userIdx) // 최근 입장기록 하나만 가져옴
+                    .map(GroupChatEntranceLog::getEntranceDateTime) // 찾은 입장기록에서 입장 시간만 추출한다.
+                    .orElse(null); // 입장기록이 없을 경우 가장 오래된 시간
+
+            //최초 입장 시간 이후의 채팅 내용을 시간순으로 조회
+            return groupChatRepository.findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(chatIdx, firstEntranceDateTime);
+        }
+
+        // 모든 경로에서 값을 반환하도록 빈 리스트 반환
+        return List.of();
+        // 반환값이 "PERSONAL"과 "GROUP" 둘 다 아닐 때 (예상치 못한 예외상황이 발생했을 때)
     }
 
-    // chatIdx 만들기
-    public int createChatIdx(Integer userIdx, Integer studyIdx) {
+    // 1:1 chatIdx 만들기
+    public int createChatIdx(Integer userIdx, Integer studyIdx, String chatType) {
 
-        // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
-        Integer matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
+        if ("PERSONAL".equals(chatType)) {
 
-        // 찾은 userIdx 값으로 chatIdx값을 생성 (1 + userIdx + matchingUserIdx) 9자리
-        String chatIdxString = "1" + String.format("%04d", userIdx) + String.format("%04d", matchingUserIdx);
+            // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
+            Integer matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
+                    .orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
 
-        // int 타입으로 형변환
-        return Integer.parseInt(chatIdxString);
+            // 1 + userIdx(사용자) + matchingUserIdx (스터디 방장) (찾은 userIdx 값으로 chatIdx값을 생성, 9자리)
+            String chatIdxString = "1" + String.format("%04d", userIdx) + String.format("%04d", matchingUserIdx);
+
+            // Integer 타입으로 형변환
+            return Integer.parseInt(chatIdxString);
+
+        } else {
+            // 그룹 chatIdx 만들기
+
+            // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
+            Integer matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
+                    .orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
+
+            // 2 + userIdx (스터디 방장) + studyIdx (스터디 번호)
+            String chatIdxString = "2" + String.format("%04d", studyIdx) + String.format("%04d", matchingUserIdx);
+
+            // Integer 타입으로 형변환
+            return Integer.parseInt(chatIdxString);
+        }
+
+
     }
-
 }
 
 
