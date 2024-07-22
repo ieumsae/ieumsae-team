@@ -38,7 +38,7 @@ public class ChatService {
     public Chat saveAndFormatChatMessage(Chat chatMessage) {
         if ("PERSONAL".equals(chatMessage.getChatType())) {
             if (chatMessage.getChatIdx() == null) {
-                throw new IllegalArgumentException("chat_idx cannot be null");
+                throw new IllegalArgumentException("chat_idx은 null이 될 수 없습니다.");
             }
 
             String formattedContent = String.format("%s: %s", chatMessage.getUserIdx(), chatMessage.getContent());
@@ -46,12 +46,23 @@ public class ChatService {
             chatMessage.setSendDateTime(LocalDateTime.now());
             return chatRepository.save(chatMessage);
         } else {
-            throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
+            throw new IllegalArgumentException("적절한 chatType이 아닙니다." + chatMessage.getChatType());
         }
     }
 
     public GroupChat saveAndFormatGroupChatMessage(GroupChat groupChatMessage) {
-        throw new UnsupportedOperationException("그룹 채팅은 현재 지원되지 않습니다.");
+        if ("GROUP".equals(groupChatMessage.getChatType())) {
+            if (groupChatMessage.getChatIdx() == null) {
+                throw new IllegalArgumentException("chat_idx은 null이 될 수 없습니다.");
+            }
+
+            String formattedContent = String.format("%s: %s", groupChatMessage.getUserIdx(), groupChatMessage.getContent());
+            groupChatMessage.setContent(formattedContent);
+            groupChatMessage.setSendDateTime(LocalDateTime.now());
+            return groupChatRepository.save(groupChatMessage);
+        } else {
+            throw new IllegalArgumentException("적절한 chatType이 아닙니다." + groupChatMessage.getChatType());
+        }
     }
 
 
