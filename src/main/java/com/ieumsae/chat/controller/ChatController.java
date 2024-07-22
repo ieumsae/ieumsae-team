@@ -3,6 +3,7 @@ package com.ieumsae.chat.controller;
 import com.ieumsae.chat.domain.Chat;
 import com.ieumsae.chat.domain.GroupChat;
 import com.ieumsae.chat.repository.ChatEntranceLogRepository;
+import com.ieumsae.chat.repository.GroupChatEntranceLogRepository;
 import com.ieumsae.chat.service.ChatService;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -26,12 +27,14 @@ public class ChatController {
     private final ChatService chatService;
     private final ChatEntranceLogRepository chatEntranceLogRepository;
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
+    private final GroupChatEntranceLogRepository groupChatEntranceLogRepository;
 
 
     @Autowired
-    public ChatController(ChatService chatService, ChatEntranceLogRepository chatEntranceLogRepository) {
+    public ChatController(ChatService chatService, ChatEntranceLogRepository chatEntranceLogRepository, GroupChatEntranceLogRepository groupChatEntranceLogRepository) {
         this.chatService = chatService;
         this.chatEntranceLogRepository = chatEntranceLogRepository;
+        this.groupChatEntranceLogRepository = groupChatEntranceLogRepository;
     }
 
     // 채팅 페이지 연결
@@ -42,42 +45,56 @@ public class ChatController {
 
     // 채팅방 연결
     @PostMapping("/enterChat")
-    public String enterChat(@RequestParam("studyIdx") Integer studyIdx, HttpSession session, Model model) {
-        // studyIdx 값은 프론트에서 {studyIdx} URL GET 방식으로 받아옴
-
+    public String enterChat(@RequestParam("studyIdx") Integer studyIdx, HttpSession session, Model model, @RequestParam("chatType") String chatType) {
         // 세션에서 userIdx를 받아오기
-        // session.getAttribute는 반환타입이 객체타입
         Integer userIdx = (Integer) session.getAttribute("userIdx");
 
-        // 만든 chatIdx값을 가져옴 (int)
-        int chatIdx = chatService.createChatIdx(userIdx, studyIdx);
-
-        // 파라미터 유효성 검사 및 로깅
-        if (studyIdx == 0 || userIdx == 0) {
-            logger.error("Invalid parameters: chatIdx={}, userIdx={}", chatIdx, userIdx);
+        // 파라미터 유효성 검사
+        if (userIdx == null || studyIdx == null || chatType == null) {
+            logger.error("Invalid parameters: studyIdx={}, userIdx={}, chatType={}", studyIdx, userIdx, chatType);
             return "error"; // 에러 페이지로 리다이렉트
         }
 
-        logger.info("Entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx);
+        //chatIdx 생성하는 로직
+        int chatIdx = chatService.createChatIdx(userIdx, studyIdx, chatType);
 
-        try {
-            logger.info("생성된 chatIdx={}", chatIdx);
+        if ("PERSONAL".equals(chatType)) {
+            logger.info("Entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx);
 
-            // CHAT_ENTRANCE_LOG 테이블에 존재하는지 확인
-            if (!chatEntranceLogRepository.existsByChatIdxAndUserIdx(chatIdx, userIdx)) {
-                // 최초 접속 시
-                logger.info("최초 접속: chatIdx={}, userIdx={}", chatIdx, userIdx);
-            } else {
-                // 재접속 시
-                logger.info("재접속: chatIdx={}, userIdx={}", chatIdx, userIdx);
-                List<Chat> previousMessages = chatService.getPreviousMessages(chatIdx, userIdx);
-                model.addAttribute("previousMessages", previousMessages);
+            try {
+                logger.info("생성된 chatIdx={}", chatIdx);
+
+                if (!chatEntranceLogRepository.existsByChatIdxAndUserIdx(chatIdx, userIdx)) {
+                    logger.info("최초 접속: chatIdx={}, userIdx={}", chatIdx, userIdx);
+                } else {
+                    List<Chat> previousMessages = chatService.getPreviousMessages(chatIdx, userIdx, chatType);
+                    model.addAttribute("previousMessages", previousMessages);
+                }
+                return "chatRoom"; // chatRoom.html로 이동
+            } catch (Exception e) {
+                logger.error("Error while entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx, e);
+                return "error";
             }
-            return "chatRoom"; // chatRoom.html로 이동
-        } catch (Exception e) {
-            logger.error("Error while entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx, e);
-            return "error";
+
+        } else if ("GROUP".equals(chatType)) {
+            logger.info("Entering group: chatIdx={}, userIdx={}", chatIdx, userIdx);
+
+            try {
+                if (!groupChatEntranceLogRepository.existsByChatIdxAndUserIdx(chatIdx, userIdx)) {
+                    logger.info("최초 접속: chatIdx={}, userIdx={}", chatIdx, userIdx);
+                } else {
+                    List<Chat> previousMessages = chatService.getPreviousMessages(chatIdx, userIdx, chatType);
+                    model.addAttribute("previousMessages", previousMessages);
+                }
+                return "groupChatRoom"; // groupChatRoom.html로 이동
+            } catch (Exception e) {
+                logger.error("Error while entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx, e);
+                return "error";
+            }
         }
+
+        logger.error("Invalid chatType: {}", chatType);
+        return "error"; // 에러 페이지로 리다이렉트
     }
 
 
