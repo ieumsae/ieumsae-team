@@ -86,7 +86,6 @@ public class ChatController {
 
         if ("PERSONAL".equals(chatType)) {
             logger.info("Entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx);
-
             try {
                 logger.info("생성된 chatIdx={}", chatIdx);
 
