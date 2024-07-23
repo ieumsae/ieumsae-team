@@ -10,7 +10,7 @@ class ChatClient {
 
     connect(chatIdx, userIdx, chatType) {
         if (chatIdx == null || userIdx == null) {
-            console.error("Invalid chatIdx or userIdx", {chatIdx, userIdx, chatType});
+            console.error("chatIdx나 userIdx 값이 올바르지 않습니다.", {chatIdx, userIdx, chatType});
             alert("채팅 연결에 필요한 정보가 올바르지 않습니다. 페이지를 새로고침하거나 다시 접속해주세요.");
             return;
         }
@@ -66,7 +66,7 @@ class ChatClient {
             chatType: this.chatType
         };
         this.stompClient.send(destination, {}, JSON.stringify(joinMessage));
-        this.displaySystemMessage(`사용자(${this.userIdx})님이 입장하셨습니다.`);
+        // this.displaySystemMessage(`사용자(${this.userIdx})님이 입장하셨습니다.`); => 입장메시지 출력인데, 서버측에서 이미 처리
     }
 
     leaveChat() {
@@ -137,12 +137,13 @@ class ChatClient {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    displaySystemMessage(content) {
-        const chatMessages = document.getElementById('chat-messages');
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('system-message');
-        messageElement.textContent = content;
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+    // 입장 메시지 띄워주는 로직
+    // displaySystemMessage(content) {
+    //     const chatMessages = document.getElementById('chat-messages');
+    //     const messageElement = document.createElement('div');
+    //     messageElement.classList.add('system-message');
+    //     messageElement.textContent = content;
+    //     chatMessages.appendChild(messageElement);
+    //     chatMessages.scrollTop = chatMessages.scrollHeight;
+    // }
 }
