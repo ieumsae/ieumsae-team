@@ -50,7 +50,7 @@ public class ChatController {
         Integer userIdx = (Integer) session.getAttribute("userIdx");
 
         // 파라미터 유효성 검사
-        if (userIdx == null || studyIdx == null || chatType == null) {
+        if (userIdx == null || chatType == null) {
             logger.error("Invalid parameters: studyIdx={}, userIdx={}, chatType={}", studyIdx, userIdx, chatType);
             return "error"; // 에러 페이지로 리다이렉트
         }

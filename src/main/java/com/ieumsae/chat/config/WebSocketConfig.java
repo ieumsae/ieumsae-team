@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // 메시지 브로커를 구성합니다.
+        // 메시지 브로커를 구성
 
         config.enableSimpleBroker("/topic");
         // topic 주제에 대해 메시지 브로커를 사용하도록 설정
