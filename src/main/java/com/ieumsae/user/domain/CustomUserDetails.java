@@ -87,6 +87,10 @@ public class CustomUserDetails implements UserDetails {
         return true;  // 항상 true 반환 (필요에 따라 로직 변경 가능)
     }
 
+    public Long getUserIdx () {
+        return user.getUserIdx();
+    }
+
     @Override
     public String toString() {
         return "CustomUserDetails{" +

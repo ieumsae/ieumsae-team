@@ -10,17 +10,21 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker // 웹소켓과 STOMP를 사용하기 위한 설정 클래스
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    /**
+     @WebSocket 연결을 위한 엔드포인트를 등록
+     @AddEndpoint 웹소켓 연결을 시작할 때 사용할 URL 경로
+     @withSockJS() 웹소켓을 지원하지 않는 환경에서도 실시간 통신이 가능하게 함 (버전이 낮은 브라우저)
+     */
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-endpoint").withSockJS();
     }
-    // WebSocket 연결을 위한 엔드포인트를 등록
-    // AddEndpoint 메소드는 웹소켓 연결을 시작할 때 사용할 URL 경로
-    // withSockJS()는 웹소켓을 지원하지 않는 환경에서도 실시간 통신이 가능하게 함 (버전이 낮은 브라우저)
+
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // 메시지 브로커를 구성합니다.
+        // 메시지 브로커를 구성
 
         config.enableSimpleBroker("/topic");
         // topic 주제에 대해 메시지 브로커를 사용하도록 설정

@@ -9,16 +9,13 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "CHAT")
 public class Chat {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idx")
-    private Long id;
 
+    @Id
     @Column(name = "chat_idx")
-    private Integer chatIdx;
+    private Long chatIdx;
 
     @Column(name = "user_idx")
-    private Integer userIdx;
+    private Long userIdx;
 
     @Column(name = "chat_content")
     private String content;
