@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserChatRepository extends JpaRepository<UserChat, Long> {
-    Optional<UserChat> findByUserIdx(Integer userIdx);
+    Optional<UserChat> findByUserIdx(Long userIdx);
 }

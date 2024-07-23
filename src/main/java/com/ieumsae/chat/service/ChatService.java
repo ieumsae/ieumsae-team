@@ -66,7 +66,7 @@ public class ChatService {
 
 
     // 1:1 채팅방에 입장 시 CHAT_ENTRANCE_LOG 테이블에 데이터 저장 및 입장메시지 출력
-    public Chat addUserToChat(Chat chatMessage, Integer chatIdx) {
+    public Chat addUserToChat(Chat chatMessage, Long chatIdx) {
         if ("PERSONAL".equals(chatMessage.getChatType())) {
             chatMessage.setChatIdx(chatIdx);
             chatMessage.setSendDateTime(LocalDateTime.now());
@@ -91,10 +91,10 @@ public class ChatService {
     }
 
     // 그룹 채팅방에 입장 시 GROUP_CHAT_ENTRANCE_LOG 테이블에 데이터 저장 및 입장메시지 출력
-    public GroupChat addUserToGroupChat(GroupChat groupChatMessage, Integer chatIdx) {
+    public GroupChat addUserToGroupChat(GroupChat groupChatMessage, Long chatIdx) {
         if ("GROUP".equals(groupChatMessage.getChatType())) {
-            Integer userIdx = groupChatMessage.getUserIdx();
-            Integer studyIdx = groupChatMessage.getStudyIdx();
+            Long userIdx = groupChatMessage.getUserIdx();
+            Long studyIdx = groupChatMessage.getStudyIdx();
 
             // 유저가 스터디 그룹의 구성원인지 확인하는 로직
             boolean isUserInGroup = isUserInStudyGroup(userIdx, studyIdx);
@@ -126,7 +126,7 @@ public class ChatService {
     }
 
     // 이전 채팅 내용 가져오기 (1:1 채팅, 그룹채팅)
-    public List<Chat> getPreviousMessages(Integer chatIdx, Integer userIdx, String chatType) {
+    public List<Chat> getPreviousMessages(Long chatIdx, Long userIdx, String chatType) {
 
         if ("PERSONAL".equals(chatType)) {
             LocalDateTime firstEntranceDateTime = chatEntranceLogRepository
@@ -153,38 +153,40 @@ public class ChatService {
     }
 
     // chatIdx 만들기 (1:1 채팅, 그룹 채팅)
-    public int createChatIdx(Integer userIdx, Integer studyIdx, String chatType) {
+    public Long createChatIdx(Long userIdx, Long studyIdx, String chatType) {
 
         if ("PERSONAL".equals(chatType)) {
 
             // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
-            Integer matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
+            Long matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
                     .orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
 
             // 1 + userIdx(사용자) + matchingUserIdx (스터디 방장) (찾은 userIdx 값으로 chatIdx값을 생성, 9자리)
             String chatIdxString = "1" + String.format("%04d", userIdx) + String.format("%04d", matchingUserIdx);
 
-            // Integer 타입으로 형변환
-            return Integer.parseInt(chatIdxString);
+            // Long 타입으로 형변환
+            return Long.parseLong(chatIdxString);
 
         } else if ("GROUP".equals(chatType)) {
             // 그룹 chatIdx 만들기
 
             // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
-            Integer matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
+            Long matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
                     .orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
 
             // 2 + userIdx (스터디 방장) + studyIdx (스터디 번호)
             String chatIdxString = "2" + String.format("%04d", studyIdx) + String.format("%04d", matchingUserIdx);
 
-            // Integer 타입으로 형변환
-            return Integer.parseInt(chatIdxString);
+            // Long 타입으로 형변환
+            return Long.parseLong(chatIdxString);
         }
-        return 0;
+        return 0L;
     }
 
-    public boolean isUserInStudyGroup(Integer userIdx, Integer studyIdx) {
+    public boolean isUserInStudyGroup(Long userIdx, Long studyIdx) {
         Optional<StudyGroupLog> logEntry = studyGroupLogRepository.findByUserIdxAndStudyIdx(userIdx, studyIdx);
         return logEntry.isPresent();
     }
+
+
 }

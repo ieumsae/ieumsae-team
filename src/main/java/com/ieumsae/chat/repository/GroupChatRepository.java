@@ -14,7 +14,7 @@ import java.util.List;
 public interface GroupChatRepository extends JpaRepository<GroupChat, Long> {
 
     // 특정 그룹 채팅방에서 주어진 시간 이후의 모든 메시지를 조회 (메소드 이름으로 쿼리 생성)
-    List<Chat> findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(Integer chatIdx, LocalDateTime entranceDateTime);
+    List<Chat> findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(Long chatIdx, LocalDateTime entranceDateTime);
 
 
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,8 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class
-UserChat {
+public class UserChat {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_idx")
@@ -62,7 +63,6 @@ UserChat {
     private boolean signUpCompleted;
 
 }
-
 
 
 // Getters and setters Lombok 라이브러리 이용 생략
