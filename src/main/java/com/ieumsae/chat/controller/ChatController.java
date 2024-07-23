@@ -83,6 +83,8 @@ public class ChatController {
 
         //chatIdx 생성하는 로직
         Long chatIdx = chatService.createChatIdx(userIdx, studyIdx, chatType);
+        model.addAttribute("chatIdx", chatIdx); // ChatClient 쪽으로 값을 넘겨줘야 함
+        model.addAttribute("userIdx", userIdx); // ChatClient 쪽으로 값을 넘겨줘야 함
 
         if ("PERSONAL".equals(chatType)) {
             logger.info("Entering chat: chatIdx={}, userIdx={}", chatIdx, userIdx);
