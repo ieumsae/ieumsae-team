@@ -1,9 +1,6 @@
 package com.ieumsae.chat.service;
 
-import com.ieumsae.chat.domain.Chat;
-import com.ieumsae.chat.domain.ChatEntranceLog;
-import com.ieumsae.chat.domain.GroupChat;
-import com.ieumsae.chat.domain.GroupChatEntranceLog;
+import com.ieumsae.chat.domain.*;
 import com.ieumsae.chat.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,7 +81,7 @@ public class ChatService {
                 chatEntranceLogRepository.save(entranceLog);
             }
 
-            // 특별한 타입의 메시지를 생성
+            // 입장 메시지 설정
             chatMessage.setContent(chatMessage.getUserIdx() + "님이 입장하셨습니다.");
             chatMessage.setChatType("ENTRANCE");  // 입장 시
             return chatMessage;
@@ -96,23 +93,33 @@ public class ChatService {
     // 그룹 채팅방에 입장 시 GROUP_CHAT_ENTRANCE_LOG 테이블에 데이터 저장 및 입장메시지 출력
     public GroupChat addUserToGroupChat(GroupChat groupChatMessage, Integer chatIdx) {
         if ("GROUP".equals(groupChatMessage.getChatType())) {
-            groupChatMessage.setChatIdx(chatIdx);
-            groupChatMessage.setSendDateTime(LocalDateTime.now());
+            Integer userIdx = groupChatMessage.getUserIdx();
+            Integer studyIdx = groupChatMessage.getStudyIdx();
 
-            Optional<GroupChatEntranceLog> existingLog = groupChatEntranceLogRepository.findByChatIdxAndUserIdx(chatIdx, groupChatMessage.getUserIdx());
+            // 유저가 스터디 그룹의 구성원인지 확인하는 로직
+            boolean isUserInGroup = isUserInStudyGroup(userIdx, studyIdx);
 
-            if (existingLog.isEmpty()) {
-                GroupChatEntranceLog entranceLog = new GroupChatEntranceLog();
-                entranceLog.setChatIdx(chatIdx);
-                entranceLog.setUserIdx(groupChatMessage.getUserIdx());
-                entranceLog.setEntranceDateTime(LocalDateTime.now());
-                groupChatEntranceLogRepository.save(entranceLog);
+            if (isUserInGroup) {
+                groupChatMessage.setChatIdx(chatIdx);
+                groupChatMessage.setSendDateTime(LocalDateTime.now());
+
+                Optional<GroupChatEntranceLog> existingLog = groupChatEntranceLogRepository.findByChatIdxAndUserIdx(chatIdx, groupChatMessage.getUserIdx());
+
+                if (existingLog.isEmpty()) {
+                    GroupChatEntranceLog entranceLog = new GroupChatEntranceLog();
+                    entranceLog.setChatIdx(chatIdx);
+                    entranceLog.setUserIdx(groupChatMessage.getUserIdx());
+                    entranceLog.setEntranceDateTime(LocalDateTime.now());
+                    groupChatEntranceLogRepository.save(entranceLog);
+                }
+
+                // 입장메시지 설정
+                groupChatMessage.setContent(groupChatMessage.getUserIdx() + "님이 입장하셨습니다.");
+                groupChatMessage.setChatType("ENTRANCE"); // 입장 시
+                return groupChatMessage;
+            } else {
+                throw new IllegalArgumentException("유저가 스터디 그룹의 구성원이 아닙니다. userIdx: " + userIdx + ", studyIdx: " + studyIdx);
             }
-
-            // 특별한 타입의 메시지를 생성
-            groupChatMessage.setContent(groupChatMessage.getUserIdx() + "님이 입장하셨습니다.");
-            groupChatMessage.setChatType("ENTRANCE"); // 입장 시
-            return groupChatMessage;
         } else {
             throw new IllegalArgumentException("적절한 chatType이 아닙니다." + groupChatMessage.getChatType());
         }
@@ -160,7 +167,7 @@ public class ChatService {
             // Integer 타입으로 형변환
             return Integer.parseInt(chatIdxString);
 
-        } else {
+        } else if ("GROUP".equals(chatType)) {
             // 그룹 chatIdx 만들기
 
             // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
@@ -173,17 +180,11 @@ public class ChatService {
             // Integer 타입으로 형변환
             return Integer.parseInt(chatIdxString);
         }
+        return 0;
+    }
 
-
+    public boolean isUserInStudyGroup(Integer userIdx, Integer studyIdx) {
+        Optional<StudyGroupLog> logEntry = studyGroupLogRepository.findByUserIdxAndStudyIdx(userIdx, studyIdx);
+        return logEntry.isPresent();
     }
 }
-
-
-
-
-
-
-
-
-
-
