@@ -78,7 +78,7 @@
     });
 
     function fetchUserInfo() {
-        fetch('/api/user-info')
+        fetch('/api/userChat-info')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('네트워크 응답이 정상적이지 않습니다.');
@@ -152,7 +152,7 @@
             e.preventDefault();
             const newNickname = document.getElementById('newNickname').value;
 
-            fetch('/api/user-info', {
+            fetch('/api/userChat-info', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
