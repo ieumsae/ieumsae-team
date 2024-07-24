@@ -5,7 +5,7 @@ import com.ieumsae.chat.repository.ChatRoomRepository;
 import com.ieumsae.chat.repository.MessageRepository;
 import com.ieumsae.chat.repository.StudyMemberRepository;
 import com.ieumsae.common.entity.*;
-import com.ieumsae.chat.repository.UserRepository_chat;
+import com.ieumsae.chat.repository.UserRepository;
 import com.ieumsae.user.domain.CustomOAuth2User;
 import com.ieumsae.user.domain.CustomUserDetails;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -24,7 +24,7 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMemberRepository chatMemberRepository;
     private final MessageRepository messageRepository;
-    private final UserRepository_chat userRepositoryChat;
+    private final UserRepository userRepositoryChat;
     private final StudyMemberRepository studyMemberRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -32,7 +32,7 @@ public class ChatService {
     public ChatService(ChatRoomRepository chatRoomRepository,
                        ChatMemberRepository chatMemberRepository,
                        MessageRepository messageRepository,
-                       UserRepository_chat userRepositoryChat,
+                       UserRepository userRepositoryChat,
                        StudyMemberRepository studyMemberRepository,
                        SimpMessagingTemplate messagingTemplate) {
         this.chatRoomRepository = chatRoomRepository;
@@ -121,7 +121,7 @@ public class ChatService {
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
         // 유저 존재 여부 확인
-        User_chat userChat = userRepositoryChat.findById(userId)
+        User userChat = userRepositoryChat.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
         // 현재 인증된 유저의 ID 가져오기
@@ -183,7 +183,7 @@ public class ChatService {
      */
 
     public String createEntryMessage(Long userId) {
-        User_chat userChat = userRepositoryChat.findById(userId)
+        User userChat = userRepositoryChat.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
         return userChat.getNickname() + "님이 입장하셨습니다.";
     }
@@ -214,29 +214,3 @@ public class ChatService {
         throw new RuntimeException("알 수 없는 유저 타입입니다. " + principal.getClass().getName());
     }
 }
-
-/* 변경 전의 addUserToChat - 지워도 상관 없음 (참고용)
-  @Transactional
-    public void addUserToChat(Long chatRoomId, Long userId, ChatRoom.ChatType chatType, Long studyId) {
-        if (chatType == ChatRoom.ChatType.GROUP && !canJoinGroupChat(studyId, userId)) {
-            throw new RuntimeException("해당 유저는 스터디원이 아닙니다.");
-        }
-
-        chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
-        
-        userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-
-        if (!chatMemberRepository.existsByChatRoomIdAndUserId(chatRoomId, userId)) {
-            ChatMember chatMember = new ChatMember();
-            chatMember.setChatRoomId(chatRoomId);
-            chatMember.setUserId(userId);
-            chatMember.setJoinedAt(LocalDateTime.now());
-            chatMemberRepository.save(chatMember);
-
-            String entryMessage = createEntryMessage(userId);
-            messagingTemplate.convertAndSend("/topic/chat/" + chatRoomId, entryMessage);
-        }
-    }
-* */

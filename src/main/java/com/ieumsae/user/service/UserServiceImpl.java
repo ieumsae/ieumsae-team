@@ -1,9 +1,7 @@
 package com.ieumsae.user.service;
 
 import com.ieumsae.user.domain.CustomOAuth2User;
-import com.ieumsae.user.domain.User;
 import com.ieumsae.user.domain.UserForm;
-import com.ieumsae.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

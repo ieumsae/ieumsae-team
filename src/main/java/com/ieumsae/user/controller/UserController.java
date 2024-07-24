@@ -1,6 +1,5 @@
 package com.ieumsae.user.controller;
 
-import com.ieumsae.user.domain.User;
 import com.ieumsae.user.domain.UserForm;
 import com.ieumsae.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,6 @@
 package com.ieumsae.user.service;
 
 import com.ieumsae.user.domain.CustomUserDetails;
-import com.ieumsae.user.domain.User;
-import com.ieumsae.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

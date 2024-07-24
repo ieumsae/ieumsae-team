@@ -2,7 +2,6 @@ package com.ieumsae.user.controller;
 
 
 import com.ieumsae.user.domain.*;
-import com.ieumsae.user.repository.UserRepository;
 import com.ieumsae.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table (name = "USER")
-public class User_chat {
+public class User {
 
     // 회원 식별번호
     @Id

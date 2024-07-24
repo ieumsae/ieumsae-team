@@ -1,9 +1,7 @@
 package com.ieumsae.user.oauth;
 
 import com.ieumsae.user.domain.CustomOAuth2User;
-import com.ieumsae.user.domain.User;
 import com.ieumsae.user.jwt.JwtUtil;
-import com.ieumsae.user.repository.UserRepository;
 import com.ieumsae.user.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

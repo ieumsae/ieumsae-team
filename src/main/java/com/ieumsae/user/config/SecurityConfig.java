@@ -3,7 +3,6 @@ package com.ieumsae.user.config;
 //import com.ieumsae.jwt.JwtFilter;
 import com.ieumsae.user.jwt.JwtUtil;
 import com.ieumsae.user.oauth.CustomSuccessHandler;
-import com.ieumsae.user.repository.UserRepository;
 import com.ieumsae.user.service.CustomOAuth2UserService;
 import com.ieumsae.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;

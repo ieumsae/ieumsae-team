@@ -1,7 +1,6 @@
 package com.ieumsae.user.service;
 
 import com.ieumsae.user.domain.CustomOAuth2User;
-import com.ieumsae.user.domain.User;
 import com.ieumsae.user.domain.UserForm;
 import org.springframework.transaction.annotation.Transactional;
 
