@@ -15,8 +15,15 @@ public class ChatRoom {
     private Long chatRoomId;
 
     // 채팅방 타입
+    @Enumerated(EnumType.STRING)
     @Column(name = "chat_type")
-    private String chatType;
+    private ChatType chatType;
+
+    // Enum 타입 설정
+    public enum ChatType {
+        PERSONAL,
+        GROUP;
+    }
     
     // 스터디 식별번호
     @Column(name = "study_id")
@@ -24,3 +31,5 @@ public class ChatRoom {
 
 
 }
+
+

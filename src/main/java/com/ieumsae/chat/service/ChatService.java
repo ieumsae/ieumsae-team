@@ -1,193 +1,242 @@
 package com.ieumsae.chat.service;
 
-
-import com.ieumsae.chat.domain.*;
-import com.ieumsae.chat.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ieumsae.chat.repository.ChatMemberRepository;
+import com.ieumsae.chat.repository.ChatRoomRepository;
+import com.ieumsae.chat.repository.MessageRepository;
+import com.ieumsae.chat.repository.StudyMemberRepository;
+import com.ieumsae.common.entity.*;
+import com.ieumsae.chat.repository.UserRepository;
+import com.ieumsae.user.domain.CustomOAuth2User;
+import com.ieumsae.user.domain.CustomUserDetails;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ChatService {
 
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-
-    private final ChatRepository chatRepository;
-    private final GroupChatRepository groupChatRepository;
-    private final ChatEntranceLogRepository chatEntranceLogRepository;
-    private final GroupChatEntranceLogRepository groupChatEntranceLogRepository;
-    private final StudyGroupLogRepository studyGroupLogRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatMemberRepository chatMemberRepository;
+    private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
+    private final StudyMemberRepository studyMemberRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public ChatService(ChatRepository chatRepository, GroupChatRepository groupChatRepository,
-                       ChatEntranceLogRepository chatEntranceLogRepository,
-                       GroupChatEntranceLogRepository groupChatEntranceLogRepository, StudyGroupLogRepository studyGroupLogRepository) {
-        this.chatRepository = chatRepository;
-        this.groupChatRepository = groupChatRepository;
-        this.chatEntranceLogRepository = chatEntranceLogRepository;
-        this.groupChatEntranceLogRepository = groupChatEntranceLogRepository;
-        this.studyGroupLogRepository = studyGroupLogRepository;
+    public ChatService(ChatRoomRepository chatRoomRepository,
+                       ChatMemberRepository chatMemberRepository,
+                       MessageRepository messageRepository,
+                       UserRepository userRepository,
+                       StudyMemberRepository studyMemberRepository,
+                       SimpMessagingTemplate messagingTemplate) {
+        this.chatRoomRepository = chatRoomRepository;
+        this.chatMemberRepository = chatMemberRepository;
+        this.messageRepository = messageRepository;
+        this.userRepository = userRepository;
+        this.studyMemberRepository = studyMemberRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
-    // 1:1 채팅 내용 포맷팅 및 DB 저장
-    public Chat saveAndFormatChatMessage(Chat chatMessage) {
-        if ("PERSONAL".equals(chatMessage.getChatType())) {
-            if (chatMessage.getChatIdx() == null) {
-                throw new IllegalArgumentException("chat_idx은 null이 될 수 없습니다.");
-            }
+    /**
+     * @param studyId
+     * @param chatType
+     * @return ChatRoom 객체 타입
+     * @note findByStudyIdAndChatType 메소드를 통해 기존에 채팅방이 존재하는지 확인
+     * @note 기존에 채팅방이 존재하지 않는다면 새로운 ChatRoom 객체에 studyId, chatType을 추가해서 채팅방을 생성
+     */
 
-            String formattedContent = String.format("%s: %s", chatMessage.getUserIdx(), chatMessage.getContent());
-            chatMessage.setContent(formattedContent);
-            chatMessage.setSendDateTime(LocalDateTime.now());
-            return chatRepository.save(chatMessage);
+    public ChatRoom getOrCreateChatRoom(Long studyId, ChatRoom.ChatType chatType) {
+        return chatRoomRepository.findByStudyIdAndChatType(studyId, chatType)
+                .orElseGet(() -> {
+                    ChatRoom newChatRoom = new ChatRoom();
+                    newChatRoom.setStudyId(studyId);
+                    newChatRoom.setChatType(chatType);
+                    return chatRoomRepository.save(newChatRoom);
+                });
+    }
+
+    /**
+     * @param chatRoomId
+     * @param userId
+     * @param chatType
+     * @param studyId
+     * @note 그룹채팅의 경우 유저가 해당 스터디원인지 확인
+     * @note 각 chatRoomId와 userId를 통해 유효성 확인
+     * @note chatRoomId와 userId로 조회했을 때, 채팅멤버에 맞는 값이 없다면 chatRoomId, userId, joinedAt DB에 저장
+     * @note entryMessage에 입장메시지를 담아서 messagingTemplate로 해당 채팅방에 입장메시지를 띄워줌
+     * @note ChatMember 테이블에 채팅방 인원을 추가하는 메소드
+     */
+
+    @Transactional
+    public void addUserToChat(Long chatRoomId, Long userId, ChatRoom.ChatType chatType, Long studyId) {
+        if (chatType == ChatRoom.ChatType.GROUP && !canJoinGroupChat(studyId, userId)) {
+            throw new IllegalArgumentException("해당 유저는 스터디원이 아닙니다.");
+        }
+
+        // 유저가 채팅방에 속해있는지 확인
+        verifyChatRoomAndUserExistence(chatRoomId, userId);
+
+        // chatRoomId, userId로 ChatMember 테이블에 정보가 있는지 확인하고 없으면 addChatMember 메소드로 데이터를 저장
+        if (!chatMemberRepository.existsByChatRoomIdAndUserId(chatRoomId, userId)) {
+            addChatMember(chatRoomId, userId);
+            String entryMessage = createEntryMessage(userId);
+            messagingTemplate.convertAndSend("/topic/chat/" + chatRoomId, entryMessage);
+        }
+    }
+
+    private void verifyChatRoomAndUserExistence(Long chatRoomId, Long userId) {
+        chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+
+        userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+    }
+
+    private void addChatMember(Long chatRoomId, Long userId) {
+        ChatMember chatMember = new ChatMember();
+        chatMember.setChatRoomId(chatRoomId);
+        chatMember.setUserId(userId);
+        chatMember.setJoinedAt(LocalDateTime.now());
+        chatMemberRepository.save(chatMember);
+    }
+
+    /**
+     * @param chatRoomId
+     * @param userId
+     * @param content
+     * @return Message 객체 타입
+     * @note 메시지를 받아서 저장하고 문자열 포맷팅 후 채팅방에 띄워주는 메소드
+     */
+
+    @Transactional
+    public Message saveAndSendMessage(Long chatRoomId, Long userId, String content, Authentication authentication) {
+        // 채팅방 존재 여부 확인
+        chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+
+        // 유저 존재 여부 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        // 현재 인증된 유저의 ID 가져오기
+        Long currentUserId = getCurrentUserId(authentication);
+
+        // 메시지 포맷팅
+        String formattedContent;
+        if (userId.equals(currentUserId)) {
+            formattedContent = String.format("나: %s", content);
         } else {
-            throw new IllegalArgumentException("적절한 chatType이 아닙니다." + chatMessage.getChatType());
-        }
-    }
-
-    // 그룹 채팅 내용 포맷팅 및 DB 저장
-    public GroupChat saveAndFormatGroupChatMessage(GroupChat groupChatMessage) {
-        if ("GROUP".equals(groupChatMessage.getChatType())) {
-            if (groupChatMessage.getChatIdx() == null) {
-                throw new IllegalArgumentException("chat_idx은 null이 될 수 없습니다.");
-            }
-
-            String formattedContent = String.format("%s: %s", groupChatMessage.getUserIdx(), groupChatMessage.getContent());
-            groupChatMessage.setContent(formattedContent);
-            groupChatMessage.setSendDateTime(LocalDateTime.now());
-            return groupChatRepository.save(groupChatMessage);
-        } else {
-            throw new IllegalArgumentException("적절한 chatType이 아닙니다." + groupChatMessage.getChatType());
-        }
-    }
-
-
-    // 1:1 채팅방에 입장 시 CHAT_ENTRANCE_LOG 테이블에 데이터 저장 및 입장메시지 출력
-    public Chat addUserToChat(Chat chatMessage, Long chatIdx) {
-        if ("PERSONAL".equals(chatMessage.getChatType())) {
-            chatMessage.setChatIdx(chatIdx);
-            chatMessage.setSendDateTime(LocalDateTime.now());
-
-            Optional<ChatEntranceLog> existingLog = chatEntranceLogRepository.findByChatIdxAndUserIdx(chatIdx, chatMessage.getUserIdx());
-
-            if (existingLog.isEmpty()) {
-                ChatEntranceLog entranceLog = new ChatEntranceLog();
-                entranceLog.setChatIdx(chatIdx);
-                entranceLog.setUserIdx(chatMessage.getUserIdx());
-                entranceLog.setEntranceDateTime(LocalDateTime.now());
-                chatEntranceLogRepository.save(entranceLog);
-            }
-
-            // 입장 메시지 설정
-            chatMessage.setContent(chatMessage.getUserIdx() + "님이 입장하셨습니다.");
-            chatMessage.setChatType("ENTRANCE");  // 입장 시
-            return chatMessage;
-        } else {
-            throw new IllegalArgumentException("적절한 chatType이 아닙니다." + chatMessage.getChatType());
-        }
-    }
-
-    // 그룹 채팅방에 입장 시 GROUP_CHAT_ENTRANCE_LOG 테이블에 데이터 저장 및 입장메시지 출력
-    public GroupChat addUserToGroupChat(GroupChat groupChatMessage, Long chatIdx) {
-        if ("GROUP".equals(groupChatMessage.getChatType())) {
-            Long userIdx = groupChatMessage.getUserIdx();
-            Long studyIdx = groupChatMessage.getStudyIdx();
-
-            // 유저가 스터디 그룹의 구성원인지 확인하는 로직
-            boolean isUserInGroup = isUserInStudyGroup(userIdx, studyIdx);
-
-            if (isUserInGroup) {
-                groupChatMessage.setChatIdx(chatIdx);
-                groupChatMessage.setSendDateTime(LocalDateTime.now());
-
-                Optional<GroupChatEntranceLog> existingLog = groupChatEntranceLogRepository.findByChatIdxAndUserIdx(chatIdx, groupChatMessage.getUserIdx());
-
-                if (existingLog.isEmpty()) {
-                    GroupChatEntranceLog entranceLog = new GroupChatEntranceLog();
-                    entranceLog.setChatIdx(chatIdx);
-                    entranceLog.setUserIdx(groupChatMessage.getUserIdx());
-                    entranceLog.setEntranceDateTime(LocalDateTime.now());
-                    groupChatEntranceLogRepository.save(entranceLog);
-                }
-
-                // 입장메시지 설정
-                groupChatMessage.setContent(groupChatMessage.getUserIdx() + "님이 입장하셨습니다.");
-                groupChatMessage.setChatType("ENTRANCE"); // 입장 시
-                return groupChatMessage;
-            } else {
-                throw new IllegalArgumentException("유저가 스터디 그룹의 구성원이 아닙니다. userIdx: " + userIdx + ", studyIdx: " + studyIdx);
-            }
-        } else {
-            throw new IllegalArgumentException("적절한 chatType이 아닙니다." + groupChatMessage.getChatType());
-        }
-    }
-
-    // 이전 채팅 내용 가져오기 (1:1 채팅, 그룹채팅)
-    public List<Chat> getPreviousMessages(Long chatIdx, Long userIdx, String chatType) {
-
-        if ("PERSONAL".equals(chatType)) {
-            LocalDateTime firstEntranceDateTime = chatEntranceLogRepository
-                    .findFirstByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(chatIdx, userIdx) // 최근 입장기록 하나만 가져옴
-                    .map(ChatEntranceLog::getEntranceDateTime) // 찾은 입장기록에서 입장 시간만 추출한다.
-                    .orElse(null); // 입장기록이 없을 경우 가장 오래된 시간
-
-            //최초 입장 시간 이후의 채팅 내용을 시간순으로 조회
-            return chatRepository.findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(chatIdx, firstEntranceDateTime);
-
-        } else if ("GROUP".equals(chatType)) {
-            LocalDateTime firstEntranceDateTime = groupChatEntranceLogRepository
-                    .findFirstByChatIdxAndUserIdxOrderByEntranceDateTimeDesc(chatIdx, userIdx) // 최근 입장기록 하나만 가져옴
-                    .map(GroupChatEntranceLog::getEntranceDateTime) // 찾은 입장기록에서 입장 시간만 추출한다.
-                    .orElse(null); // 입장기록이 없을 경우 가장 오래된 시간
-
-            //최초 입장 시간 이후의 채팅 내용을 시간순으로 조회
-            return groupChatRepository.findByChatIdxAndSendDateTimeGreaterThanOrderBySendDateTimeAsc(chatIdx, firstEntranceDateTime);
+            formattedContent = String.format("%s: %s", user.getNickname(), content);
         }
 
-        // 모든 경로에서 값을 반환하도록 빈 리스트 반환
-        return List.of();
-        // 반환값이 "PERSONAL"과 "GROUP" 둘 다 아닐 때 (예상치 못한 예외상황이 발생했을 때)
+        // 메시지 생성 및 저장
+        Message message = new Message();
+        message.setChatRoomId(chatRoomId);
+        message.setUserId(userId);
+        message.setContent(formattedContent); // 포맷팅된 내용 설정
+        message.setSentAt(LocalDateTime.now());
+
+        Message savedMessage = messageRepository.save(message);
+
+        // WebSocket을 통해 메시지 전송
+        messagingTemplate.convertAndSend("/topic/chat/" + chatRoomId, savedMessage);
+
+        return savedMessage;
     }
 
-    // chatIdx 만들기 (1:1 채팅, 그룹 채팅)
-    public Long createChatIdx(Long userIdx, Long studyIdx, String chatType) {
+    /**
+     * @param chatRoomId
+     * @return List 형태
+     * @note 이전 채팅 기록 불러오기 메소드
+     */
 
-        if ("PERSONAL".equals(chatType)) {
+    public List<Message> getPreviousMessages(Long chatRoomId) {
+        return messageRepository.findByChatRoomIdOrderBySentAtDesc(chatRoomId);
+    }
 
-            // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
-            Long matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
-                    .orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
 
-            // 1 + userIdx(사용자) + matchingUserIdx (스터디 방장) (찾은 userIdx 값으로 chatIdx값을 생성, 9자리)
-            String chatIdxString = "1" + String.format("%04d", userIdx) + String.format("%04d", matchingUserIdx);
+    /**
+     * @param studyId
+     * @param userId
+     * @return 채팅방에 참여할 수 있는지 없는지 확인
+     * @note .map은 일반적은 map이 아니라 Optional 타입에서 값이 존재할 때만 특정 메소드(isStatus)를 호출 -> boolean 값을 반환
+     * @note studyId, userId를 통해 StudyMember 테이블에서 해당 스터디의 멤버 정보를 조회
+     * @note 즉, userId를 가진 회원이 스터디에 속해있는지 확인하는 메소드
+     */
 
-            // Long 타입으로 형변환
-            return Long.parseLong(chatIdxString);
+    public boolean canJoinGroupChat(Long studyId, Long userId) {
+        return studyMemberRepository.findByStudyIdAndUserId(studyId, userId)
+                .map(StudyMember::isStatus) // Optional 값이 존재할 경우 isStatus 메소드를 호출, isStatus는 status 필드에 대한 getter
+                .orElse(false); // Optional 객체의 값이 존재하지 않을 경우 default 값을 false로 설정
+    }
 
-        } else if ("GROUP".equals(chatType)) {
-            // 그룹 chatIdx 만들기
+    /**
+     * @param userId
+     * @return '닉네임' 님이 입장하셨습니다. 라는 입장메시지가 반환
+     * @note User 테이블에서 userId에 해당하는 닉네임을 불러온다.
+     */
 
-            // studyIdx와 매칭되는 userIdx를 가져옴 (STUDY_GROUP_LOG 테이블에 studyIdx를 통해 userIdx를 불러온다. -> 스터디 방장의 userIdx)
-            Long matchingUserIdx = studyGroupLogRepository.findUserIdxByStudyIdx(studyIdx)
-                    .orElseThrow(() -> new IllegalArgumentException("일치하는 studyIdx 값이 없습니다."));
+    public String createEntryMessage(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
+        return user.getNickname() + "님이 입장하셨습니다.";
+    }
 
-            // 2 + userIdx (스터디 방장) + studyIdx (스터디 번호)
-            String chatIdxString = "2" + String.format("%04d", studyIdx) + String.format("%04d", matchingUserIdx);
+    /**
+     * @param chatRoomId
+     * @return 채팅방을 조회하는 기능
+     */
 
-            // Long 타입으로 형변환
-            return Long.parseLong(chatIdxString);
+    public ChatRoom getChatRoomById(Long chatRoomId) {
+        return chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("Chat room not found"));
+    }
+
+    /**
+     * @param authentication
+     * @return userId 값을 반환
+     * @note 현재 인증된 사용자의 "Authentication" 객체에서 userId를 가져오는 역할을 한다.
+     * @note 인증된 사용자의 principal 객체가 OAuth / UserDetails 중 어떤 유형인지 확인하고 해당 객체에서 userId를 추출한다.
+     */
+    public Long getCurrentUserId(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof CustomOAuth2User) {
+            return ((CustomOAuth2User) principal).getUserIdx();
+        } else if (principal instanceof CustomUserDetails) {
+            return ((CustomUserDetails) principal).getUserIdx();
         }
-        return 0L;
+        throw new RuntimeException("알 수 없는 유저 타입입니다. " + principal.getClass().getName());
     }
-
-    public boolean isUserInStudyGroup(Long userIdx, Long studyIdx) {
-        Optional<StudyGroupLog> logEntry = studyGroupLogRepository.findByUserIdxAndStudyIdx(userIdx, studyIdx);
-        return logEntry.isPresent();
-    }
-
-
 }
+
+/* 변경 전의 addUserToChat - 지워도 상관 없음 (참고용)
+  @Transactional
+    public void addUserToChat(Long chatRoomId, Long userId, ChatRoom.ChatType chatType, Long studyId) {
+        if (chatType == ChatRoom.ChatType.GROUP && !canJoinGroupChat(studyId, userId)) {
+            throw new RuntimeException("해당 유저는 스터디원이 아닙니다.");
+        }
+
+        chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+        
+        userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        if (!chatMemberRepository.existsByChatRoomIdAndUserId(chatRoomId, userId)) {
+            ChatMember chatMember = new ChatMember();
+            chatMember.setChatRoomId(chatRoomId);
+            chatMember.setUserId(userId);
+            chatMember.setJoinedAt(LocalDateTime.now());
+            chatMemberRepository.save(chatMember);
+
+            String entryMessage = createEntryMessage(userId);
+            messagingTemplate.convertAndSend("/topic/chat/" + chatRoomId, entryMessage);
+        }
+    }
+* */

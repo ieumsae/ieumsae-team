@@ -25,4 +25,8 @@ public class StudyMember {
     // 스터디 가입 상태
     @Column(name = "status")
     private boolean status;
+
+    public boolean isStatus() {
+        return status;
+    }
 }

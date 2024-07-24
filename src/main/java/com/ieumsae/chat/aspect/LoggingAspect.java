@@ -28,7 +28,7 @@ public class LoggingAspect {
      * @정리 @Before 어노테이션을 사용한 AOP는 실제 메소드가 사용되기 이전에 매개변수로 들어와야하는 값이 제대로 들어왔는지 확인하는 기능
      */
 
-    @Before("execution(* com.ieumsae.chat.controller.*.*(..)) || execution(* com.ieumsae.chat.service.*.*(..))")
+    @Before("execution(* com.ieumsae.chat.controller.*Impl.*(..)) || execution(* com.ieumsae.chat.service.*Impl.*(..))")
     public void logBeforeAllMethods(JoinPoint joinPoint) {
         log.info("실행될 메소드 이름: {} / 매개변수: {}", joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
     }
@@ -42,7 +42,7 @@ public class LoggingAspect {
      @summary @After 어노테이션을 사용한 AOP는 실제 메소드가 성공적으로 수행된 이후 어떤 값을 반환하는지 확인하는 기능
      */
 
-    @AfterReturning(pointcut = "execution(* com.ieumsae.chat.controller.*.*(..)) || execution(* com.ieumsae.chat.service.*.*(..))", returning = "result")
+    @AfterReturning(pointcut = "execution(* com.ieumsae.chat.controller.*Impl.*(..)) || execution(* com.ieumsae.chat.service.*Impl.*(..))", returning = "result")
     public void logAfterAllMethods(JoinPoint joinPoint, Object result) {
         log.info("실행된 메소드 이름: {} / 메소드 반환값: {}", joinPoint.getSignature().getName(), result);
     }
