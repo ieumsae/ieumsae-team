@@ -11,8 +11,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +42,7 @@ public class ChatController {
      * @note 현재 접속한 회원의 userId 값으로 채팅방을 조회하거나 생성한 후, 해당 채팅방으로 이동
      */
 
-    @PostMapping("/enterChat")
+    @GetMapping("/enterChat")
     public String enterChat(@RequestParam("studyId") Long studyId, @RequestParam("chatType") ChatRoom.ChatType chatType, Model model) {
         Long userId = SecurityUtils.getCurrentUserId();
 

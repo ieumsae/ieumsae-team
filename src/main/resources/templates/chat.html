@@ -9,11 +9,11 @@
 <div id="login-page" class="page">
     <h1>채팅 시작하기</h1>
     <form action="/enterChat" method="post">
-        <input type="hidden" name="studyId" value="1234">
-      <!--  <input type="hidden" name="studyId" th:value="${studyId}"> -->
+        <input type="hidden" name="studyId" th:value="${studyId}">
         <input type="hidden" name="chatType" value="PERSONAL">
         <button type="submit">1:1 채팅 참여하기</button>
     </form>
+
     <form action="/enterChat" method="post">
         <input type="hidden" name="studyId" th:value="${studyId}">
         <input type="hidden" name="chatType" value="GROUP">
@@ -22,4 +22,27 @@
 
 </div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // URL에서 studyId 추출
+        function getStudyIdFromUrl() {
+            const pathSegments = window.location.pathname.split('/');
+            const studyIdIndex = pathSegments.indexOf('studies') + 1;
+            return pathSegments[studyIdIndex];
+        }
+
+        const studyId = getStudyIdFromUrl();
+
+        if (studyId) {
+            // 모든 studyId input 필드에 값 설정
+            document.querySelectorAll('.studyIdInput').forEach(input => {
+                input.value = studyId;
+            });
+        } else {
+            console.error('StudyId not found in URL');
+            // studyId를 찾지 못했을 때의 처리 (예: 버튼 비활성화)
+        }
+    });
+</script>
+
 </html>
