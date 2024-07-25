@@ -4,7 +4,9 @@ import com.ieumsae.user.domain.CustomOAuth2User;
 import com.ieumsae.user.domain.OAuth2Response.GoogleResponse;
 import com.ieumsae.user.domain.OAuth2Response.NaverResponse;
 import com.ieumsae.user.domain.OAuth2Response.OAuth2Response;
+import com.ieumsae.common.entity.User;
 import com.ieumsae.user.domain.UserForm;
+import com.ieumsae.common.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -38,33 +40,30 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.info("등록 ID: {}", registrationId);
 
         OAuth2Response oAuth2Response = createOAuth2Response(registrationId, oAuth2User.getAttributes());
-        String userId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
-        log.info("생성된 사용자 ID: {}", userId);
+        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        log.info("생성된 사용자 ID: {}", username);
 
         UserForm userForm = new UserForm();
-        userForm.setUserId(userId);
-        userForm.setUserEmail(oAuth2Response.getEmail());
-        userForm.setUserName(oAuth2Response.getName());
-        userForm.setUserNickName(userForm.getUserNickName());
+        userForm.setUsername(username);
+        userForm.setEmail(oAuth2Response.getEmail());
+        userForm.setName(oAuth2Response.getName());
+        userForm.setNickname(userForm.getNickname());
 
-        Long userIdx = userService.socialSignup(new CustomOAuth2User(userForm, oAuth2User.getAttributes()));
+        Long userId = userService.socialSignup(new CustomOAuth2User(userForm, oAuth2User.getAttributes()));
 
-        User savedUser = userRepository.findById(userIdx)
+        User savedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found after social signup"));
 
-        userForm.setUserIdx(savedUser.getUserIdx());
+        userForm.setUserId(savedUser.getUserId());
 
         return new CustomOAuth2User(userForm, oAuth2User.getAttributes());
     }
 
     private OAuth2Response createOAuth2Response(String registrationId, Map<String, Object> attributes) {
-        switch (registrationId) {
-            case "naver":
-                return new NaverResponse(attributes);
-            case "google":
-                return new GoogleResponse(attributes);
-            default:
-                throw new IllegalArgumentException("Unsupported OAuth2 provider: " + registrationId);
-        }
+        return switch (registrationId) {
+            case "naver" -> new NaverResponse(attributes);
+            case "google" -> new GoogleResponse(attributes);
+            default -> throw new IllegalArgumentException("Unsupported OAuth2 provider: " + registrationId);
+        };
     }
 }

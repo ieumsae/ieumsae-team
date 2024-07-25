@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 public class UserInfoResponse {
 
-    private String userId;
-    private String userNickname;
+    private String username;
+    private String nickname;
 
-    public UserInfoResponse(String userId, String userNickname) {
-        this.userId = userId;
-        this.userNickname = userNickname;
+    public UserInfoResponse(String userId, String nickname) {
+        this.username = userId;
+        this.nickname = nickname;
     }
 }

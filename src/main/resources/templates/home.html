@@ -78,7 +78,7 @@
     });
 
     function fetchUserInfo() {
-        fetch('/api/userChat-info')
+        fetch('/api/user-info')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('네트워크 응답이 정상적이지 않습니다.');
@@ -96,9 +96,9 @@
 
     function updateUserInfo(data) {
         const userInfoDiv = document.getElementById('userInfo');
-        if (data.userId && data.userId !== 'unknown') {
+        if (data.username && data.username !== 'unknown') {
             userInfoDiv.innerHTML = `
-                <p>${data.userNickname}님 환영합니다!</p>
+                <p>${data.nickname}님 환영합니다!</p>
                 <button class="button" onclick="showNicknameForm()">마이페이지</button>
                 <button class="button" onclick="logout()">로그아웃</button>
                 <form id="nicknameForm" style="display: none;">
@@ -132,7 +132,7 @@
             return;
         }
 
-        fetch(`/check/userNickName/${encodeURIComponent(newNickname)}`)
+        fetch(`/check/nickname/${encodeURIComponent(newNickname)}`)
             .then(response => response.json())
             .then(isDuplicate => {
                 if (isDuplicate) {
@@ -152,7 +152,7 @@
             e.preventDefault();
             const newNickname = document.getElementById('newNickname').value;
 
-            fetch('/api/userChat-info', {
+            fetch('/api/user-info', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

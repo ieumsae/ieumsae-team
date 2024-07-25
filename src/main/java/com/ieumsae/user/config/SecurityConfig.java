@@ -3,6 +3,7 @@ package com.ieumsae.user.config;
 //import com.ieumsae.jwt.JwtFilter;
 import com.ieumsae.user.jwt.JwtUtil;
 import com.ieumsae.user.oauth.CustomSuccessHandler;
+import com.ieumsae.common.repository.UserRepository;
 import com.ieumsae.user.service.CustomOAuth2UserService;
 import com.ieumsae.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -83,8 +84,8 @@ public class SecurityConfig {
                 })
                 .formLogin(form -> {
                     form.loginProcessingUrl("/login")
-                            .usernameParameter("userId")
-                            .passwordParameter("userPw")
+                            .usernameParameter("username")
+                            .passwordParameter("password")
                             .loginPage("/login")
                             .successHandler(new CustomSuccessHandler(jwtUtil, userService, userRepository))
                             .defaultSuccessUrl("/", true)

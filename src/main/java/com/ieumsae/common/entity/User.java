@@ -43,4 +43,7 @@ public class User {
     // 회원가입 일자
     @Column(name = "joindate")
     private LocalDateTime joinDate;
+
+    //
+    private String userRole;
 }

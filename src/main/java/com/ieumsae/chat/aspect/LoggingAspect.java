@@ -28,7 +28,7 @@ public class LoggingAspect {
      * @정리 @Before 어노테이션을 사용한 AOP는 실제 메소드가 사용되기 이전에 매개변수로 들어와야하는 값이 제대로 들어왔는지 확인하는 기능
      */
 
-    @Before("execution(* com.ieumsae.chat.controller.*Impl.*(..)) || execution(* com.ieumsae.chat.service.*Impl.*(..))")
+    @Before("execution(* com.ieumsae.chat.controller.*(..)) || execution(* com.ieumsae.chat.service.*(..))")
     public void logBeforeAllMethods(JoinPoint joinPoint) {
         log.info("실행될 메소드 이름: {} / 매개변수: {}", joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
     }

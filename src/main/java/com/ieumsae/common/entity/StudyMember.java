@@ -26,7 +26,4 @@ public class StudyMember {
     @Column(name = "status")
     private boolean status;
 
-    public boolean isStatus() {
-        return status;
-    }
 }

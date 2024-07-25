@@ -1,4 +1,4 @@
-package com.ieumsae.chat.repository;
+package com.ieumsae.common.repository;
 
 import com.ieumsae.common.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,5 +10,5 @@ import java.util.List;
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
     // 이전 채팅 불러오기 -> chatRoomId로 모든 content를 조회해서 발신 시간을 기준으로 내림차순 정렬
-    List<Message> findByChatRoomIdOrderBySentAtDesc(Long chatRoomId);
+    List<Message> findByChatRoomIdOrderBySentAtAsc(Long chatRoomId);
 }

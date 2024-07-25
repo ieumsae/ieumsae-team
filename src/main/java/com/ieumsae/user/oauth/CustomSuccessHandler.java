@@ -1,7 +1,9 @@
 package com.ieumsae.user.oauth;
 
 import com.ieumsae.user.domain.CustomOAuth2User;
+import com.ieumsae.common.entity.User;
 import com.ieumsae.user.jwt.JwtUtil;
+import com.ieumsae.common.repository.UserRepository;
 import com.ieumsae.user.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -40,41 +42,41 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         log.info("로그인 성공. 인증 처리 중...");
 
-        String userId;
+        String username;
         String role;
         String redirectUrl;
 
         if (authentication.getPrincipal() instanceof CustomOAuth2User) {
             // OAuth2 로그인 처리
             CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-            userId = customUserDetails.getUserID();
-            Long userIdx = customUserDetails.getUserIdx();
-            log.info("인증된 OAuth2 사용자 ID: {}", userId);
+            username = customUserDetails.getUsername();
+            Long userId = customUserDetails.getUserId();
+            log.info("인증된 OAuth2 사용자 ID: {}", username);
 
             // 사용자 권한 정보 추출
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
             GrantedAuthority auth = iterator.next();
             role = auth.getAuthority();
-            User user = userRepository.findById(userIdx).orElse(null);
-            String userNickname = user != null ? user.getUserNickName() : null;
-            boolean hasNickname = userNickname != null && !userNickname.trim().isEmpty();
-            log.info("사용자 닉네임: {}, 닉네임 존재 여부: {}", userNickname, hasNickname);
+            User user = userRepository.findById(userId).orElse(null);
+            String nickname = user != null ? user.getNickname() : null;
+            boolean hasNickname = nickname != null && !nickname.trim().isEmpty();
+            log.info("사용자 닉네임: {}, 닉네임 존재 여부: {}", nickname, hasNickname);
 
             // 리다이렉트 URL 설정
             if (hasNickname) {
                 redirectUrl = "/";
                 log.info("사용자가 닉네임을 가지고 있습니다. 메인 페이지로 리다이렉트합니다.");
             } else {
-                redirectUrl = "/signup2?userIdx=" + userIdx;
+                redirectUrl = "/signup2?userId=" + userId;
                 log.info("사용자가 닉네임을 가지고 있지 않습니다. 닉네임 설정 페이지로 리다이렉트합니다.");
                 log.info("세션에 저장된 데이터: {}", customUserDetails);
             }
         } else if (authentication.getPrincipal() instanceof UserDetails) {
             // 폼 로그인 처리
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            userId = userDetails.getUsername();
-            log.info("인증된 폼 로그인 사용자 ID: {}", userId);
+            username = userDetails.getUsername();
+            log.info("인증된 폼 로그인 사용자 ID: {}", username);
 
             role = userDetails.getAuthorities().iterator().next().getAuthority();
             redirectUrl = "/";
@@ -86,7 +88,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("사용자 권한: {}", role);
 
         // JWT 토큰 생성
-        String token = jwtUtil.createJwt(userId, role, 60 * 60 * 60L);
+        String token = jwtUtil.createJwt(username, role, 60 * 60 * 60L);
         log.info("JWT 토큰 생성 완료");
 
         // 응답에 JWT 토큰을 담은 쿠키 추가

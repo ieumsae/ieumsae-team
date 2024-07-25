@@ -2,71 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>채팅방</title>
-    <script src="/js/chat.js"></script> <!-- ChatClient 클래스가 정의된 파일 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <title>1:1 채팅방</title>
     <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:src="@{/js/chatRoom.js}"></script>
 </head>
 <body>
 <div id="chat-page">
+    <input type="hidden" id="study-idx" th:value="${studyIdx}">
+    <input type="hidden" id="user-idx" th:value="${userIdx}">
+    <input type="hidden" id="chat-type" value="PERSONAL">
     <div id="chat-container">
-        <div id="chat-messages">
-            <!-- 채팅 메시지들이 여기에 추가됩니다 -->
-        </div>
-
+        <div id="chat-messages"></div>
         <div id="message-input-container">
             <input type="text" id="message-input" placeholder="메시지를 입력하세요...">
             <button id="send-button">전송</button>
         </div>
     </div>
 </div>
-
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    document.addEventListener('DOMContentLoaded', function() {
-        const chatIdx = [[${chatIdx}]];
-        const userIdx = [[${userIdx}]];
-        const chatType = "PERSONAL"; // "PERSONAL" 또는 "GROUP"
-        const previousMessages = [[${previousMessages}]];
-
-        console.log("chatIdx:", chatIdx, "userIdx:", userIdx);
-
-        if (chatIdx === null || userIdx === null) {
-            console.error("chatIdx나 userIdx가 null입니다.");
-            alert("채팅방 정보를 불러오는데 실패했습니다. 이전 페이지로 돌아갑니다.");
-            window.history.back();
-        } else {
-            const chatClient = new ChatClient();
-            chatClient.connect(chatIdx, userIdx, chatType);
-
-            if (previousMessages && previousMessages.length > 0) {
-                chatClient.loadPreviousMessages(previousMessages);
-            }
-
-            document.getElementById('send-button').addEventListener('click', sendMessage);
-
-            document.getElementById('message-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-        }
-
-        function sendMessage() {
-            const messageInput = document.getElementById('message-input');
-            const message = messageInput.value.trim();
-            if (message) {
-                chatClient.sendMessage(message);
-                messageInput.value = '';
-            }
-        }
-
-        window.addEventListener('beforeunload', function() {
-            chatClient.leaveChat();
-        });
-    });
-    /*]]>*/
-</script>
 </body>
 </html>

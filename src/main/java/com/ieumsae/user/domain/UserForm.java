@@ -7,11 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserForm {
-    private Long userIdx;
-    private String userId;
-    private String userName;
-    private String userNickName;
-    private String userPw;
-    private String userEmail;
+    private Long userId;
+    private String username;
+    private String name;
+    private String nickname;
+    private String password;
+    private String email;
     private boolean socialLogin;
 }

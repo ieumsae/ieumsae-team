@@ -3,6 +3,7 @@ package com.ieumsae.chat.controller;
 import com.ieumsae.chat.service.ChatService;
 import com.ieumsae.common.entity.ChatRoom;
 import com.ieumsae.common.entity.Message;
+import com.ieumsae.common.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,7 @@ public class ChatController {
 
     @PostMapping("/enterChat")
     public String enterChat(@RequestParam("studyId") Long studyId, @RequestParam("chatType") ChatRoom.ChatType chatType, Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); // 세션에 담겨있는 회원정보를 가져옴
-        Long userId = chatService.getCurrentUserId(authentication);
+        Long userId = SecurityUtils.getCurrentUserId();
 
         try {
             ChatRoom chatRoom = chatService.getOrCreateChatRoom(studyId, chatType);
@@ -75,11 +75,17 @@ public class ChatController {
      * @payload 메시지 본문
      * @note chatRoomId와 message 본문을 DB에 저장하고 채팅방에 띄워주는 기능을 하는 메소드
      */
-    
+
     @MessageMapping("/chat.sendMessage/{chatRoomId}")
     @SendTo("/topic/chat/{chatRoomId}")
-    public Message sendMessage(@DestinationVariable Long chatRoomId, @Payload Message message, Authentication authentication) {
-        return chatService.saveAndSendMessage(chatRoomId, message.getUserId(), message.getContent(), authentication);
+    public Message sendMessage(@DestinationVariable Long chatRoomId, @Payload Message message) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        logger.info("Received message for room {}: {} from user {}", chatRoomId, message.getContent(), currentUserId);
+
+        Message savedMessage = chatService.saveAndSendMessage(chatRoomId, message.getUserId(), message.getContent(), currentUserId);
+
+        logger.info("Sending message: {}", savedMessage);
+        return savedMessage;
     }
 
     /**

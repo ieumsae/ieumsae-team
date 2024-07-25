@@ -90,17 +90,15 @@
         }
     </style>
 </head>
-<head>
-    <!-- 다른 head 내용 -->
-</head>
+
 <body>
 <div class="container">
     <h1>닉네임 설정</h1>
     <form id="signupFormStep2">
-        <label for="userNickName">닉네임</label>
+        <label for="nickname">닉네임</label>
         <div class="input-group">
-            <input type="text" id="userNickName" name="userNickName" required>
-            <button type="button" id="checkUserNickNameDuplicate" class="check-button">중복 확인</button>
+            <input type="text" id="nickname" name="nickname" required>
+            <button type="button" id="checkNickNameDuplicate" class="check-button">중복 확인</button>
         </div>
         <button type="submit" id="submit-button">가입하기</button>
     </form>
@@ -117,7 +115,7 @@
             .then(response => response.json())
             .then(isDuplicate => {
                 let fieldName = {
-                    'userNickName': '닉네임'
+                    'nickname': '닉네임'
                 }[field];
                 alert(isDuplicate ? `이미 사용 중인 ${fieldName}입니다.` : `사용 가능한 ${fieldName}입니다.`);
             })
@@ -127,18 +125,18 @@
             });
     }
 
-    document.getElementById('checkUserNickNameDuplicate').addEventListener('click', () => {
-        checkDuplicate('userNickName', document.getElementById('userNickName').value);
+    document.getElementById('checkNickNameDuplicate').addEventListener('click', () => {
+        checkDuplicate('nickname', document.getElementById('nickname').value);
     });
 
     document.getElementById('signupFormStep2').addEventListener('submit', function(e) {
         e.preventDefault();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const userIdx = urlParams.get('userIdx');
-        const userNickname = document.getElementById('userNickName').value;
+        const userId = urlParams.get('userId');
+        const nickname = document.getElementById('nickname').value;
 
-        if (!userIdx) {
+        if (!userId) {
             alert('잘못된 접근입니다. 처음부터 다시 시도해주세요.');
             window.location.href = '/signup1';
             return;
@@ -150,13 +148,13 @@
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                userIdx: userIdx,
-                userNickname: userNickname
+                userId: userId,
+                nickname: nickname
             })
         })
             .then(response => response.json())
             .then(data => {
-                if (data.userIdx) {
+                if (data.userId) {
                     alert('회원가입이 완료되었습니다!');
                     window.location.href = '/login';
                 } else {

@@ -40,36 +40,36 @@ public class CustomOAuth2User implements OAuth2User {
     // 사용자 식별자 반환 (여기서는 이메일 사용)
     @Override
     public String getName() {
-        return userForm.getUserEmail();
+        return userForm.getEmail();
     }
 
-    public Long getUserIdx(){
-        return userForm.getUserIdx();
+    public Long getUserId(){
+        return userForm.getUserId();
     }
 
     // 사용자 이메일 반환
-    public String getUserEmail() {
-        return userForm.getUserEmail();
+    public String getEmail() {
+        return userForm.getEmail();
     }
 
-    // 사용자 이름 반환
-    public String getUserID() {
-        return userForm.getUserId();
+    // 사용자 유저 이름 반환
+    public String getUsername() {
+        return userForm.getUsername();
     }
     //
 
     // 사용자 닉네임 반환
-    public String getUserNickName() {
-        return userForm.getUserNickName();
+    public String getNickName() {
+        return userForm.getNickname();
     }
 
-    public String getUserName(){
-        return userForm.getUserName();
+    public String getRealName(){
+        return userForm.getName();
 
     }
 
     // 닉네임 설정 필요 여부 확인
     public boolean isNicknameSetupRequired() {
-        return userForm.getUserNickName() == null || userForm.getUserNickName().isEmpty();
+        return userForm.getNickname() == null || userForm.getNickname().isEmpty();
     }
 }

@@ -1,11 +1,10 @@
 package com.ieumsae.chat.service;
 
-import com.ieumsae.chat.repository.ChatMemberRepository;
-import com.ieumsae.chat.repository.ChatRoomRepository;
-import com.ieumsae.chat.repository.MessageRepository;
-import com.ieumsae.chat.repository.StudyMemberRepository;
+import com.ieumsae.common.repository.*;
+import com.ieumsae.common.repository.MessageRepository;
 import com.ieumsae.common.entity.*;
-import com.ieumsae.chat.repository.UserRepository;
+import com.ieumsae.common.repository.UserRepository;
+import com.ieumsae.common.utils.SecurityUtils;
 import com.ieumsae.user.domain.CustomOAuth2User;
 import com.ieumsae.user.domain.CustomUserDetails;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -13,10 +12,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.ieumsae.common.utils.SecurityUtils;
 
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.ieumsae.common.utils.SecurityUtils.getCurrentUserId;
 
 @Service
 public class ChatService {
@@ -115,7 +117,8 @@ public class ChatService {
      */
 
     @Transactional
-    public Message saveAndSendMessage(Long chatRoomId, Long userId, String content, Authentication authentication) {
+    public Message saveAndSendMessage(Long chatRoomId, Long userId, String content, Long currentUserId) {
+
         // 채팅방 존재 여부 확인
         chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
@@ -123,9 +126,6 @@ public class ChatService {
         // 유저 존재 여부 확인
         User userChat = userRepositoryChat.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-
-        // 현재 인증된 유저의 ID 가져오기
-        Long currentUserId = getCurrentUserId(authentication);
 
         // 메시지 포맷팅
         String formattedContent;
@@ -139,15 +139,11 @@ public class ChatService {
         Message message = new Message();
         message.setChatRoomId(chatRoomId);
         message.setUserId(userId);
-        message.setContent(formattedContent); // 포맷팅된 내용 설정
+        message.setContent(formattedContent);
         message.setSentAt(LocalDateTime.now());
 
-        Message savedMessage = messageRepository.save(message);
-
         // WebSocket을 통해 메시지 전송
-        messagingTemplate.convertAndSend("/topic/chat/" + chatRoomId, savedMessage);
-
-        return savedMessage;
+        return messageRepository.save(message);
     }
 
     /**
@@ -157,7 +153,7 @@ public class ChatService {
      */
 
     public List<Message> getPreviousMessages(Long chatRoomId) {
-        return messageRepository.findByChatRoomIdOrderBySentAtDesc(chatRoomId);
+        return messageRepository.findByChatRoomIdOrderBySentAtAsc(chatRoomId);
     }
 
 
@@ -204,13 +200,13 @@ public class ChatService {
      * @note 현재 인증된 사용자의 "Authentication" 객체에서 userId를 가져오는 역할을 한다.
      * @note 인증된 사용자의 principal 객체가 OAuth / UserDetails 중 어떤 유형인지 확인하고 해당 객체에서 userId를 추출한다.
      */
-    public Long getCurrentUserId(Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof CustomOAuth2User) {
-            return ((CustomOAuth2User) principal).getUserIdx();
-        } else if (principal instanceof CustomUserDetails) {
-            return ((CustomUserDetails) principal).getUserIdx();
-        }
-        throw new RuntimeException("알 수 없는 유저 타입입니다. " + principal.getClass().getName());
-    }
+//    public Long getCurrentUserId(Authentication authentication) {
+//        Object principal = authentication.getPrincipal();
+//        if (principal instanceof CustomOAuth2User) {
+//            return ((CustomOAuth2User) principal).getUserId();
+//        } else if (principal instanceof CustomUserDetails) {
+//            return ((CustomUserDetails) principal).getUserId();
+//        }
+//        throw new RuntimeException("알 수 없는 유저 타입입니다. " + principal.getClass().getName());
+//    }
 }

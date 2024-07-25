@@ -1,5 +1,6 @@
 package com.ieumsae.user.domain;
 
+import com.ieumsae.common.entity.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,7 +42,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getPassword() {
         // User 엔티티의 getUserPw 메서드를 호출하여 비밀번호 반환
-        return user.getUserPw();
+        return user.getPassword();
     }
 
     // 사용자의 아이디 반환 (Spring Security에서는 이를 username으로 취급)
@@ -49,13 +50,13 @@ public class CustomUserDetails implements UserDetails {
     public String getUsername() {
 
         // User 엔티티의 getUserId 메서드를 호출하여 사용자 ID 반환
-        return user.getUserId();
+        return user.getUsername();
     }
 
     //
-    public String getUserNickname() {
+    public String getNickname() {
         // User엔티티의 getUserNickname 메서드를 호출하여 사용자 ID 반환
-        return user.getUserNickName();
+        return user.getNickname();
     }
 
 
@@ -87,17 +88,13 @@ public class CustomUserDetails implements UserDetails {
         return true;  // 항상 true 반환 (필요에 따라 로직 변경 가능)
     }
 
-    public Long getUserIdx () {
-        return user.getUserIdx();
-    }
-
     @Override
     public String toString() {
         return "CustomUserDetails{" +
-                "userId='" + user.getUserId() + '\'' +
-                ", userPw='[PROTECTED]'" + // 비밀번호 보호
+                "username='" + user.getUsername() + '\'' +
+                ", password='[PROTECTED]'" + // 비밀번호 보호
                 ", userRole='" + user.getUserRole() + '\'' +
-                ", userNickName='" + user.getUserNickName() + '\'' +
+                ", nickname='" + user.getNickname() + '\'' +
                 '}';
 
     }

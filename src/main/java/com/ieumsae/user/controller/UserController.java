@@ -1,9 +1,11 @@
 package com.ieumsae.user.controller;
 
+import com.ieumsae.common.entity.User;
 import com.ieumsae.user.domain.UserForm;
 import com.ieumsae.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -28,8 +30,8 @@ public class UserController {
     @PostMapping("/signup1")
     public ResponseEntity<?> signUp1(@RequestBody UserForm userForm) {
         try {
-            Long userIdx = userService.signUp1(userForm);
-            return ResponseEntity.ok().body(Map.of("userIdx", userIdx, "message", "첫 번째 단계 회원가입 성공"));
+            Long userId = userService.signUp1(userForm);
+            return ResponseEntity.ok().body(Map.of("userId", userId, "message", "첫 번째 단계 회원가입 성공"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -43,10 +45,10 @@ public class UserController {
     @PostMapping("/signup2")
     public ResponseEntity<?> signUp2(@RequestBody Map<String, Object> requestBody) {
         try {
-            Long userIdx = Long.parseLong(requestBody.get("userIdx").toString());
-            String userNickname = (String) requestBody.get("userNickname");
-            User user = userService.signUp2(userIdx, userNickname);
-            return ResponseEntity.ok().body(Map.of("userIdx", user.getUserIdx(), "message", "회원가입 완료"));
+            Long userId = Long.parseLong(requestBody.get("userId").toString());
+            String nickname = (String) requestBody.get("nickname");
+            User user = userService.signUp2(userId, nickname);
+            return ResponseEntity.ok().body(Map.of("userId", user.getUsername(), "message", "회원가입 완료"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }

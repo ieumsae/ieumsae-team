@@ -1,4 +1,4 @@
-package com.ieumsae.chat.repository;
+package com.ieumsae.common.repository;
 
 import com.ieumsae.common.entity.ChatMember;
 import org.springframework.data.jpa.repository.JpaRepository;
