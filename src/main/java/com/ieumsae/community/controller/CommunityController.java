@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -36,26 +35,24 @@ public class CommunityController {
     public String communityDetail(@PathVariable Long communityId, Model model) {
         CommunityDTO communityDTO = communityService.getCommunityById(communityId);
 
+        model.addAttribute("communityId", communityDTO.getCommunityId());
         model.addAttribute("title", communityDTO.getTitle());
         model.addAttribute("content", communityDTO.getContent());
-        model.addAttribute("writeDt", communityDTO.getWriteDt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        model.addAttribute("writeDt", communityDTO.getWriteDt());
         model.addAttribute("nickname", communityDTO.getNickname());
         return "community_detail"; // community_detail.html 뷰를 반환
     }
 
-
-    /* 커뮤니티 생성 */
-
     // 커뮤니티 생성 페이지 이동
     @GetMapping("/create")
-    public String showCreateCommunityForm() {
+    public String showCreateCommunityForm(Model model) {
+        model.addAttribute("communityId", null);
         return "community_create"; // community_create.html 뷰를 반환
     }
 
     // 커뮤니티 생성 처리
     @PostMapping("/create")
-    public String createCommunity(@RequestParam("title") String title,
-                                  @RequestParam("content") String content) {
+    public String createCommunity(@RequestParam("title") String title, @RequestParam("content") String content, Model model) {
         CommunityDTO communityDTO = new CommunityDTO();
         communityDTO.setTitle(title);
         communityDTO.setContent(content);
@@ -63,7 +60,6 @@ public class CommunityController {
         return "redirect:/community"; // 커뮤니티 목록 페이지로 리다이렉트
     }
 
-    // 커뮤니티 삭제
     // 커뮤니티 삭제 처리
     @PostMapping("/{communityId}/delete")
     public String deleteCommunity(@PathVariable Long communityId) {
@@ -71,7 +67,6 @@ public class CommunityController {
         return "redirect:/community"; // 삭제 후 목록 페이지로 리다이렉트
     }
 
-    // 커뮤니티 수정
     // 커뮤니티 수정 페이지 이동 (생성 폼 재사용)
     @GetMapping("/{communityId}/edit")
     public String showEditCommunityForm(@PathVariable Long communityId, Model model) {
@@ -84,9 +79,7 @@ public class CommunityController {
 
     // 커뮤니티 수정 처리
     @PostMapping("/{communityId}/edit")
-    public String updateCommunity(@PathVariable Long communityId,
-                                  @RequestParam("title") String title,
-                                  @RequestParam("content") String content) {
+    public String updateCommunity(@PathVariable Long communityId, @RequestParam("title") String title, @RequestParam("content") String content) {
         CommunityDTO communityDTO = new CommunityDTO();
         communityDTO.setTitle(title);
         communityDTO.setContent(content);

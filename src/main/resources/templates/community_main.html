@@ -48,9 +48,7 @@
             <div class="col-12">
                 <nav class="main-nav">
                     <!-- Logo Start -->
-                    <a href="./index.html" class="logo">
-                        IEUMSAE
-                    </a>
+                    <a th:href="@{/}" class="logo">IEUMSAE</a>
                     <!-- Logo End -->
                     <!-- Menu Start -->
                     <ul class="nav">
@@ -82,13 +80,13 @@
 </section>
 
 <section style="margin-top: 15px;" class="position-relative">
-    <nav class="navbar bg-body-tertiary" style="background-image: url(../static/images/meetings-bg.jpg); ">
+    <nav class="navbar bg-body-tertiary" style="background-image: url(/images/meetings-bg.jpg); ">
         <div class="container-fluid" style="display: inline-block; width: 35%;">
             <form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
                 <button type="button" class="btn btn-primary" style="margin-left: 8px; width: 30%;"><a
-                        href="./community_create.html" style="color: white;">글 작성</a></button>
+                        href="./community/create" style="color: white;">글 작성</a></button>
             </form>
         </div>
     </nav>
