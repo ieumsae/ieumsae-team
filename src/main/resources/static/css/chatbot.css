@@ -1,0 +1,107 @@
+/* 채팅 봇 아이콘 */
+#chatbot-icon {
+    border: none;
+    background: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px; /* 아이콘을 오른쪽에서 20px 떨어지도록 조정 */
+    cursor: pointer;
+    z-index: 1000;
+}
+
+#chatbot-icon img {
+    width: 15%;
+}
+
+/* 채팅 컨테이너 */
+#chatbot-container {
+    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    bottom: 20px; /* 채팅 컨테이너를 화면 하단에서 20px 떨어지도록 설정 */
+    right: 20px; /* 채팅 컨테이너를 오른쪽에서 20px 떨어지도록 설정 */
+    width: 350px; /* 컨테이너의 폭을 조정 */
+    height: 600px; /* 컨테이너의 높이를 600px로 설정 */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 카드 스타일 */
+.card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* 닫기 버튼 */
+#close-button {
+    text-align: right;
+    padding: 10px;
+}
+
+#close-chat {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* 메시지 컨테이너 */
+#message-container {
+    padding: 10px;
+    overflow-y: auto; /* 스크롤 가능 */
+    flex: 1; /* 남은 공간을 차지하도록 설정 */
+}
+
+/* 메시지 박스 스타일 */
+.message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    display: inline-flex; /* 메시지 박스의 크기를 내용에 맞게 자동 조절 */
+    max-width: 100%; /* 메시지 박스가 부모 컨테이너의 폭을 넘어가지 않도록 설정 */
+    box-sizing: border-box; /* 패딩과 테두리를 박스의 크기에 포함시킴 */
+}
+
+/* 사용자 메시지 스타일 */
+.user-message {
+    background-color: #e0f7fa;
+    align-self: flex-end; /* 오른쪽 정렬 */
+    text-align: right;
+    float: right;
+}
+
+/* 봇 메시지 스타일 */
+.bot-message {
+    background-color: #e0e0e0;
+    align-self: flex-start; /* 왼쪽 정렬 */
+    text-align: left;
+}
+
+/* 입력 컨테이너 */
+#input-container {
+    border-top: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f9f9f9; /* 배경색 추가 */
+}
+
+/* 입력 그룹 */
+.input-group {
+    display: flex;
+    gap: 10px; /* 입력 필드와 버튼 사이 간격 */
+}
+
+#input-message {
+    flex: 1; /* 입력 필드가 가능한 공간을 차지하도록 설정 */
+}
+
+#send-button {
+    padding: 10px 20px;
+}

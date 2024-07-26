@@ -1,0 +1,16 @@
+.section-header{
+    position: relative;
+    color: white;
+    text-align: center;
+    margin-bottom: 100px;
+}
+.table{
+    position: relative;
+    left: 73px;
+    width: 90%;
+    margin-bottom: 100px;
+}
+.more-link {
+    position: inherit;
+    right: 200;
+}
