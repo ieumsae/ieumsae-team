@@ -42,6 +42,7 @@ public class UserController {
      * @param requestBody 회원가입 1단계에서 반환된 사용자 인덱스
      * @return ResponseEntity<?> 회원가입 완료 결과 (userIdx 또는 에러 메시지)
      */
+
     @PostMapping("/signup2")
     public ResponseEntity<?> signUp2(@RequestBody Map<String, Object> requestBody) {
         try {

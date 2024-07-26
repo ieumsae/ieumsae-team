@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class SignController {
 
-    @GetMapping("/signup1")
+    @GetMapping("/login")
     public String signupStep1() {
-        return "signupStep1";
+        return "login";
     }
 
     @GetMapping("/signup2")

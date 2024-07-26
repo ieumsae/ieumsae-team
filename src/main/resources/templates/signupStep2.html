@@ -1,6 +1,4 @@
-<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +12,7 @@
         }
 
         body {
-            background-image: url(/static/front/assets/images/meetings-bg.jpg);
+            background-image: url(/images/meetings-bg.jpg);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -142,7 +140,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.userId) {
-                    alert('회원가입이 완료되었습니다. 환영합니다 ' + nickname + '님');
+                    alert('회원가입이 완료되었습니다. 환영합니다 ' + nickname + '님! 로그인 해주세요!');
                     window.location.href = '/login';
                 } else {
                     alert(data.message || '회원가입 중 오류가 발생했습니다.');

@@ -237,12 +237,26 @@
 <div class="container" id="container">
     <div class="form-container sign-up-container">
         <form id="signupFormStep1">
+            <div>
+
+
+            </div>
             <h1>회원가입</h1>
+            <div class="id-check-container" style="display: flex; align-items: center; gap: 10px;">
             <input type="text" id="username" name="username" placeholder="아이디" required>
+            <button type="button" id="checkUsernameDuplicate" class="btn btn-primary">중복 확인</button>
+            </div>
+
             <input type="password" id="password" name="password" placeholder="비밀번호" required>
+
             <input type="text" id="name" name="name" placeholder="이름" required>
+
+            <div class="id-check-container" style="display: flex; align-items: center; gap: 10px;">
             <input type="email" id="email" name="email" placeholder="이메일" required>
-            <button type="submit">가입하기</button>
+            <button type="button" id="checkEmailDuplicate" class="btn btn-primary">중복 확인</button>
+            </div>
+
+            <button type="submit">다음</button>
         </form>
     </div>
     <div class="form-container sign-in-container">
@@ -288,6 +302,37 @@
 
     signInButton.addEventListener('click', () => {
         container.classList.remove("right-panel-active");
+    });
+
+    function checkDuplicate(field, value) {
+        fetch(`/api/check/${field}/${encodeURIComponent(value)}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(isDuplicate => {
+                let fieldName = {
+                    'username': '아이디',
+                    'email': '이메일'
+                }[field];
+                alert(isDuplicate ? `이미 사용 중인 ${fieldName}입니다.` : `사용 가능한 ${fieldName}입니다.`);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
+    }
+
+
+
+    document.getElementById('checkUsernameDuplicate').addEventListener('click', () => {
+        checkDuplicate('username', document.getElementById('username').value);
+    });
+
+    document.getElementById('checkEmailDuplicate').addEventListener('click', () => {
+        checkDuplicate('email', document.getElementById('email').value);
     });
 
     document.getElementById('signupFormStep1').addEventListener('submit', function(e) {
