@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -37,10 +38,11 @@ public class CommunityController {
 
         model.addAttribute("title", communityDTO.getTitle());
         model.addAttribute("content", communityDTO.getContent());
-        model.addAttribute("writeDt", communityDTO.getWriteDt());
+        model.addAttribute("writeDt", communityDTO.getWriteDt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         model.addAttribute("nickname", communityDTO.getNickname());
-        return "community_detail"; // community_detail.html 뷰를 반환 (아직 없음)
+        return "community_detail"; // community_detail.html 뷰를 반환
     }
+
 
     /* 커뮤니티 생성 */
 
@@ -91,14 +93,4 @@ public class CommunityController {
         communityService.updateCommunity(communityId, communityDTO);
         return "redirect:/community/" + communityId; // 수정 후 상세 페이지로 리다이렉트
     }
-
-
-
-
-
-
-
-
-
-
 }
