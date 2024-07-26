@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
 
   <head>
 
@@ -8,29 +8,19 @@
     <meta name="description" content="">
     <meta name="author" content="TemplateMo">
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
-
     <title>ieumsae</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="http://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-              integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="assets/css/fontawesome.css">
-    <link rel="stylesheet" href="assets/css/templatemo-edu-meeting.css">
-    <link rel="stylesheet" href="assets/css/owl.css">
-    <link rel="stylesheet" href="assets/css/lightbox.css">
-    <link rel="stylesheet" href="assets/css/notice_board.css">
-    <link rel="stylesheet" href="assets/css/community.css">
-    <link rel="stylesheet" href="assets/css/review.css">
-<!--
-
-TemplateMo 569 Edu Meeting
-
-https://templatemo.com/tm-569-edu-meeting
-
--->
+    <link rel="stylesheet" href="../static/css/fontawesome.css">
+    <link rel="stylesheet" href="../static/css/templatemo-edu-meeting.css">
+    <link rel="stylesheet" href="../static/css/owl.css">
+    <link rel="stylesheet" href="../static/css/lightbox.css">
+    <link rel="stylesheet" href="../static/css/table.css">
+    <link rel="stylesheet" href="../static/css/tabs.css">
+    <link rel="stylesheet" href="../static/css/chatbot.css">
   </head>
 
 <body>
@@ -41,14 +31,13 @@ https://templatemo.com/tm-569-edu-meeting
       <div class="row">
         <div class="col-lg-8 col-sm-8">
           <div class="left-content">
-            <p>동준이가 만든 프론트</p>
+            <p>ieumsae</p>
           </div>
         </div>
         <div class="col-lg-4 col-sm-4">
           <div class="right-icons">
             <ul>
-              <li><a href="#">로그인 / 회원가입</a></li>
-              <li><a href="#"></a></li>
+              <li><a href="./login.html">로그인 / 회원가입</a></li>
             </ul>
           </div>
         </div>
@@ -58,57 +47,51 @@ https://templatemo.com/tm-569-edu-meeting
 
   <!-- ***** Header Area Start ***** -->
   <header class="header-area header-sticky">
-      <div class="container">
-          <div class="row">
-              <div class="col-12">
-                  <nav class="main-nav">
-                      <!-- ***** Logo Start ***** -->
-                      <a href="index.html" class="logo">
-                          IEUMSAE
-                      </a>
-                      <!-- ***** Logo End ***** -->
-                      <!-- ***** Menu Start ***** -->
-                      <ul class="nav">
-                          <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
-                          <li><a href="meetings.html">STUDY GROUP</a></li>
-                          <li class="scroll-to-section"><A href="#">COMMUNITY</A></li>
-                          <li class="has-sub">
-                              <a href="javascript:void(0)">NOTICE BOARD</a>
-                              <ul class="sub-menu">
-                                  <li><a href="meetings.html">CERTIFICATE</a></li>
-                                  <li><a href="meeting-details.html">NEWS</a></li>
-                              </ul>
-                          </li> 
-                          <li class="scroll-to-section"><a href="#contact">Contact Us</a></li> 
-                      </ul>        
-                      <a class='menu-trigger'>
-                          <span>Menu</span>
-                      </a>
-                      <!-- ***** Menu End ***** -->
-                  </nav>
-              </div>
-          </div>
-      </div>
-  </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                    <!-- ***** Logo Start ***** -->
+                    <a href="./index.html" class="logo">
+                        IEUMSAE
+                    </a>
+                    <!-- ***** Logo End ***** -->
+                    <!-- ***** Menu Start ***** -->
+                    <ul class="nav">
+                        <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+                        <li><a href="./study_main.html">STUDY</a></li>
+                        <li><a href="./community_main.html">COMMUNITY</a></li>
+                        <li><a href="./review_main.html">review</a></li>
+                        <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
+                        <li><a href="./contact_us.html">Contact Us</a></li> 
+                    </ul>        
+                    <a class='menu-trigger'>
+                        <span>Menu</span>
+                    </a>
+                    <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
   <!-- ***** Header Area End ***** -->
 
   <!-- ***** Main Banner Area Start ***** -->
   <section class="section main-banner" id="top" data-section="section1">
       <video autoplay muted loop id="bg-video">
-          <source src="assets/images/course-video.mp4" type="video/mp4" />
+          <source src="../static/images/study_main.mp4" type="video/mp4" />
       </video>
 
       <div class="video-overlay header-text">
-          <div class="container">
+          <div class="container1">
             <div class="row">
               <div class="col-lg-12">
                 <div class="caption">
-              <h6>Hello Students</h6>
-              <h2>Welcome to ieumsae</h2>
-              <p></p>
-              <div class="main-button-red">
+              <h6 style="position: relative; left: 150px; top: -100px;">Hello Students</h6>
+              <h2 style="color: white; position:relative; left: 150px; top: -100px;">Welcome to <SPAN style="color: yellow;">IEUMSAE</SPAN></h2>
+              <!--<div class="main-button-red" style="left: 100px;">
                   <div class="scroll-to-section"><a href="#contact">Join Us Now!</a></div>
-              </div>
+              </div>-->
           </div>
               </div>
             </div>
@@ -117,79 +100,20 @@ https://templatemo.com/tm-569-edu-meeting
   </section>
   <!-- ***** Main Banner Area End ***** -->
 
-  
-  <section>
-    <div class="container2">
-      <div class="sidebar">
-          <button onclick="showContent('certification')">공모전 / 대회</button>
-          <button onclick="showContent('domesticNews')">국내뉴스</button>
-          <button onclick="showContent('internationalNews')">해외뉴스</button>
-      </div>
-      <div class="content">
-          <div id="certification" class="hidden">
-              <table>
-                  <thead>
-                      <tr>
-                          <th width="350px">대회명</th>
-                          <th width="150px">신청 시작 시간</th>
-                          <th width="150px">신청 종료 시간</th>
-                          <th>주최</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <!-- 자격증 data rows go here -->
-                       <tr>
-                          <th>종항 옷벗기기</th>
-                          <th>언제나</th>
-                          <th>항상</th>
-                          <th>현우</th>
-                       </tr>
-                  </tbody>
-              </table>
-          </div>
-          <div id="domesticNews" class="hidden">
-              <table>
-                  <thead>
-                      <tr>
-                          <th>뉴스 제목</th>
-                          <th>보도 날짜</th>                      
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <!-- 국내뉴스 data rows go here -->
-                  </tbody>
-              </table>
-          </div>
-          <div id="internationalNews" class="hidden">
-              <table>
-                  <thead>
-                      <tr>
-                        <th width="100px">뉴스 제목</th>
-                        <th>보도 날짜</th> 
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <!-- 해외뉴스 data rows go here -->
-                  </tbody>
-              </table>
-          </div>
-      </div>
-  </div>
-
   <section class="our-courses" id="courses">
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
           <div class="section-heading">
-            <h2>recommend study</h2>
+            <h2>RECOMMEND STUDY GROUP</h2>
           </div>
         </div>
         <div class="col-lg-12">
           <div class="owl-courses-item owl-carousel">
             <div class="item">
-              <img src="assets/images/course-01.jpg" alt="Course One">
+              <img src="../static/images/course-01.jpg" alt="Course One">
               <div class="down-content">
-                <h4>자격증 따기</h4>
+                <h4>Morbi tincidunt elit vitae justo rhoncus</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -202,16 +126,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                        <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-02.jpg" alt="Course Two">
+              <img src="../static/images/course-02.jpg" alt="Course Two">
               <div class="down-content">
-                <h4>4조 화이팅</h4>
+                <h4>Curabitur molestie dignissim purus vel</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -222,16 +146,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-03.jpg" alt="">
+              <img src="../static/images/course-03.jpg" alt="">
               <div class="down-content">
-                <h4>이름 진짜 할거 없네</h4>
+                <h4>Nulla at ipsum a mauris egestas tempor</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -243,16 +167,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-04.jpg" alt="">
+              <img src="../static/images/course-04.jpg" alt="">
               <div class="down-content">
-                <h4>프론트 왜 내가 해</h4>
+                <h4>Aenean molestie quis libero gravida</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -265,16 +189,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-01.jpg" alt="">
+              <img src="../static/images/course-01.jpg" alt="">
               <div class="down-content">
-                <h4>이종항 개변태</h4>
+                <h4>Lorem ipsum dolor sit amet adipiscing elit</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -287,16 +211,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-02.jpg" alt="">
+              <img src="../static/images/course-02.jpg" alt="">
               <div class="down-content">
-                <h4>이름 뭐 넣지</h4>
+                <h4>TemplateMo is the best website for Free CSS</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -309,16 +233,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-03.jpg" alt="">
+              <img src="../static/images/course-03.jpg" alt="">
               <div class="down-content">
-                <h4>현수 나와</h4>
+                <h4>Web Design Templates at your finger tips</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -331,16 +255,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-04.jpg" alt="">
+              <img src="../static/images/course-04.jpg" alt="">
               <div class="down-content">
-                <h4>승주야 열심히 하자</h4>
+                <h4>Please visit our website again</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -353,16 +277,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-01.jpg" alt="">
+              <img src="../static/images/course-01.jpg" alt="">
               <div class="down-content">
-                <h4>광우형은 사귀는거 같네</h4>
+                <h4>Responsive HTML Templates for you</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -375,16 +299,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-02.jpg" alt="">
+              <img src="../static/images/course-02.jpg" alt="">
               <div class="down-content">
-                <h4>현우형이 고백을 할까</h4>
+                <h4>Download Free CSS Layouts for your business</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -397,16 +321,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-03.jpg" alt="">
+              <img src="../static/images/course-03.jpg" alt="">
               <div class="down-content">
-                <h4>차은우 만나보기</h4>
+                <h4>Morbi in libero blandit lectus cursus</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -419,16 +343,16 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="item">
-              <img src="assets/images/course-04.jpg" alt="">
+              <img src="../static/images/course-04.jpg" alt="">
               <div class="down-content">
-                <h4>ㅈ목질</h4>
+                <h4>Curabitur molestie dignissim purus</h4>
                 <div class="info">
                   <div class="row">
                     <div class="col-8">
@@ -441,7 +365,7 @@ https://templatemo.com/tm-569-edu-meeting
                       </ul>
                     </div>
                     <div class="col-4">
-                      <span><a href="#">신청</a></span>
+                      <A href="./study_detail.html">신청</A>
                     </div>
                   </div>
                 </div>
@@ -452,78 +376,297 @@ https://templatemo.com/tm-569-edu-meeting
       </div>
     </div>
   </section>
+  
+  <section class="notice-board" id="notice-board">
+    <div class="tabs is-centered is-boxed is-medium">
+        <ul>
+            <li class="is-active">
+                <a href="#" data-tab="competition">
+                    <span style="color: rgb(216, 202, 254);">공모전 / 대회</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-tab="news_kor">
+                    <span style="color: rgb(216, 202, 254);">한국 뉴스</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-tab="news_eng">
+                    <span style="color: rgb(216, 202, 254);">외국 뉴스</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- competition 탭의 테이블 -->
+    <div id="competition" class="content active">
+        <table class="table" bgcolor="white">
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>공모전 / 대회 명</th>
+                    <th>주최</th>
+                    <th>게시 날짜</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>1</th>
+                    <td>사진 촬영 스터디</td>
+                    <td>첫 사진 촬영 후기</td>
+                    <td>2024-07-01</td>
+                </tr>
+                <!-- 추가 행을 여기에 넣을 수 있습니다 -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- news_kor 탭의 테이블 -->
+    <div id="news_kor" class="content">
+        <table class="table" bgcolor="white">
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th style="text-align: center;">뉴스 제목</th>
+                    <th style="text-align: center;">게시 날짜</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>1</th>
+                    <td style="text-align: center;">음악 작곡 스터디</td>
+                    <td style="text-align: center;">작곡 스터디 시작</td>
+                </tr>
+                <!-- 추가 행을 여기에 넣을 수 있습니다 -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- news_eng 탭의 테이블 -->
+    <div id="news_eng" class="content">
+        <table class="table" bgcolor="white">
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th style="text-align: center;">뉴스 제목</th>
+                    <th style="text-align: center;">게시 날짜</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>1</th>
+                    <td style="text-align: center;">영상 편집 스터디</td>
+                    <td style="text-align: center;">편집 기술 배우기</td>
+                </tr>
+                <!-- 추가 행을 여기에 넣을 수 있습니다 -->
+            </tbody>
+        </table>
+    </div>
+
+</section>
+  
   <section>
-    <div class="review">
-    <div class="section-header">
-        <h3>스터디 후기</h3>
-        <div class="more-link">
-            <a href="#" id="study-more">+ 더보기</a>
-        </div>
+    <table class="table" bgcolor="white">
+      <DIV class="section-header" style="margin-bottom: 10px;">
+        <h3 color="white" style="font-size: 2em;">STUDY REVIEW</h3>
+      </DIV>
+      <div class="more-link" style="margin-left: 1300px;">
+        <a href="./review_main.html" id="board-more">
+          + 더보기
+        </a>
     </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>분야</th>
-                <th>스터디명</th>
-                <th>제목</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>예시 분야</td>
-                <td>예시 스터디</td>
-                <td>예시 제목</td>
-            </tr>
-            <!-- 추가 행 추가 가능 -->
-        </tbody>
-    </table>
-</div>
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>스터디 명</th>
+          <th >후기 제목</th>
+          <th style="text-align: center;">작성 시간</th>
+        </tr>
+      </thead>
+      <!--여기부터 리뷰 내용-->
+      <tbody>
+        
+        <tr>
+          <th>1</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
 
-<div class="community">
-    <div class="section-header">
-        <h3>자유 게시판</h3>
-        <div class="more-link">
-            <a href="#" id="board-more">+ 더보기</a>
-        </div>
-    </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>작성일자</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>예시 제목</td>
-                <td>홍길동</td>
-                <td>2024-07-18</td>
-            </tr>
-            <!-- 추가 행 추가 가능 -->
-        </tbody>
+        <tr>
+          <th>2</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
     </table>
-</div></section>
-
-  <section class="contact-us" id="contact">
-    <div class="footer">
-      <p>Copyright © 2022 Edu Meeting Co., Ltd. All Rights Reserved. 
-          <br>Design: <a href="https://templatemo.com" target="_parent" title="free css templates">TemplateMo</a></p>
-    </div>
   </section>
+  <table class="table">
+    <DIV class="section-header" style="margin-bottom: 10px;">
+      <h3 color="white" style="font-size: 2em">COMMUNITY</h3>
+    </DIV>
+    <div class="more-link" style="margin-left: 1300px;">
+      <a href="./community_main.html" id="board-more">
+        + 더보기
+      </a>
+  </div>
+    <thead>
+      <tr>
+        <th>번호</th>
+        <th >제목</th>
+        <th style="text-align: center;">작성자</th>
+        <th style="text-align: center;">작성 시간</th>
+      </tr>
+    </thead>
+    <!--여기부터 리뷰 내용-->
+    <tbody>
+      
+      <tr>
+        <th>1</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
 
+      <tr>
+        <th>2</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>3</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>4</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>5</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>6</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>7</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>8</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>9</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <th>10</th>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+    <div class="footer">
+      <p>Copyright © 2024 ieumsae Co., Ltd. All Rights Reserved. 
+          <br>Design: <a href="https://templatemo.com" target="_parent" title="free css templates">ieumsae</a></p>
+    </div>
+
+    <!-------------------------------- Chatbot container -------------------------->
+ <!-- Chatbot icon -->
+ <button id="chatbot-icon" style="border: none; background: none; position: fixed; bottom: 20px; right: -120px; cursor: pointer; z-index: 1000;">
+  <img src="../static/images/chatbot.png" alt="Chatbot Icon" style="width: 15%;">
+</button>
+
+<!-- Chatbot container -->
+<div id="chatbot-container" style="display: none;">
+  <div id="chat-container" class="card">
+      <div id="close-button" style="text-align: right; padding: 5px;">
+          <button class="btn btn-secondary" id="close-chat" style="color: black;">X</button>
+      </div>
+      <div id="message-container" class="card-body"></div>
+      <div id="input-container" class="card-footer">
+          <div class="input-group">
+              <input type="text" id="input-message" class="form-control" placeholder="Type your message..." />
+              <button id="send-button" class="btn btn-primary">Send</button>
+          </div>
+      </div>
+  </div>
+</div>
+<!-------------------------------- Chatbot container 끝 -------------------------->
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/notice_board.js"></script>
-    <script src="assets/js/isotope.min.js"></script>
-    <script src="assets/js/owl-carousel.js"></script>
-    <script src="assets/js/lightbox.js"></script>
-    <script src="assets/js/tabs.js"></script>
-    <script src="assets/js/video.js"></script>
-    <script src="assets/js/slick-slider.js"></script>
-    <script src="assets/js/custom.js"></script>
+    <script src="../static/jquery/jquery.min.js"></script>
+    <script src="../static/js/isotope.min.js"></script>
+    <script src="../static/js/owl-carousel.js"></script>
+    <script src="../static/js/custom.js"></script>
     <script>
         //according to loftblog tut
         $('.nav li:first').addClass('active');
@@ -569,7 +712,28 @@ https://templatemo.com/tm-569-edu-meeting
         $(window).scroll(function () {
           checkSection();
         });
-        // 로그인 상태를 확인하는 함수 (여기서는 단순히 예제로 로그인된 상태로 가정)
+        //notice_board java script
+        // 탭 클릭 시 컨텐츠 전환을 위한 JavaScript 코드
+    document.querySelectorAll('.tabs a').forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // 모든 탭의 active 클래스 제거
+            document.querySelectorAll('.tabs li').forEach(li => li.classList.remove('is-active'));
+            
+            // 현재 클릭된 탭에 active 클래스 추가
+            this.parentNode.classList.add('is-active');
+            
+            // 모든 컨텐츠 숨기기
+            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+            
+            // 클릭된 탭에 해당하는 컨텐츠 표시
+            const contentId = this.getAttribute('data-tab');
+            document.getElementById(contentId).classList.add('active');
+        });
+    });
+    //로그인하면 로그인/회원가입을 마이페이지로 바꿔주는 js
+    // 로그인 상태를 확인하는 함수 (여기서는 단순히 예제로 로그인된 상태로 가정)
     function checkLoginStatus() {
       // 이 함수는 실제로 서버에서 로그인 상태를 받아오는 로직을 포함해야 합니다.
       // 예를 들어, 쿠키, 로컬 스토리지 또는 서버의 응답을 확인할 수 있습니다.
@@ -581,21 +745,68 @@ https://templatemo.com/tm-569-edu-meeting
       if (checkLoginStatus()) {
         // 로그인 상태일 때 "로그인"과 "회원가입"을 "마이페이지"로 변경
         document.getElementById('login').textContent = '마이페이지';
-        document.getElementById('login').href = '/mypage'; // 마이페이지 링크로 변경
-        // 회원가입 버튼 숨기기
+        document.getElementById('login').href = '/my_page.html'; // 마이페이지 링크로 변경
+
       }
     });
-    // "스터디 후기" +더보기 클릭 시
-    document.getElementById('study-more').addEventListener('click', function(event) {
-            event.preventDefault(); // 기본 동작(페이지 이동) 방지
-            window.location.href = 'study-review-detail.html'; // 상세 페이지 URL로 이동
-        });
-
-        // "자유 게시판" +더보기 클릭 시
-        document.getElementById('board-more').addEventListener('click', function(event) {
-            event.preventDefault(); // 기본 동작(페이지 이동) 방지
-            window.location.href = 'board-detail.html'; // 상세 페이지 URL로 이동
-        });
     </script>
+
+    <!-----------------------------chatbot script--------------------------------->
+    <script>
+      const chatContainer = document.getElementById('chatbot-container');
+      const chatbotIcon = document.getElementById('chatbot-icon');
+      const closeChatButton = document.getElementById('close-chat');
+  
+      // Toggle chat window on clicking the chatbot icon
+      chatbotIcon.addEventListener('click', () => {
+          chatContainer.style.display = 'flex';
+          chatbotIcon.style.display = 'none';
+      });
+  
+      // Close chat window and show chatbot icon again
+      closeChatButton.addEventListener('click', () => {
+          chatContainer.style.display = 'none';
+          chatbotIcon.style.display = 'block';
+      });
+  
+      const messageContainer = document.getElementById('message-container');
+      const inputMessage = document.getElementById('input-message');
+      const sendButton = document.getElementById('send-button');
+  
+      function sendMessage() {
+          const message = inputMessage.value.trim();
+  
+          if (message) {
+              // User message
+              const userMessageElement = document.createElement('div');
+              userMessageElement.classList.add('message', 'user-message');
+              userMessageElement.textContent = message;
+              messageContainer.appendChild(userMessageElement);
+              inputMessage.value = '';
+  
+              // Simulated bot response
+              setTimeout(() => {
+                  const botMessage = "This is a simulated bot response.";
+                  const botMessageElement = document.createElement('div');
+                  botMessageElement.classList.add('message', 'bot-message');
+                  botMessageElement.textContent = botMessage;
+                  messageContainer.appendChild(botMessageElement);
+  
+                  // Scroll to the bottom of the message container
+                  messageContainer.scrollTop = messageContainer.scrollHeight;
+              }, 1000);
+          }
+      }
+  
+      sendButton.addEventListener('click', sendMessage);
+      inputMessage.addEventListener('keyup', (event) => {
+          if (event.key === 'Enter') {
+              sendMessage();
+          }
+      });
+  </script>
+  <!----------------------------chat bot script 종료---------------------------------->
+</body>
+
 </body>
 </html>

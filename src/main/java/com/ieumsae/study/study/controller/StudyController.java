@@ -33,6 +33,18 @@ public class StudyController {
         this.studyService = studyService;
     }
 
+    // 스터디 개설
+    @PostMapping("/createStudy")
+    public String createStudy(@ModelAttribute StudyDTO studyDTO, Model model) {
+        try {
+            studyService.createStudy(studyDTO);
+            model.addAttribute("message", "스터디가 성공적으로 개설되었습니다.");
+        } catch (RuntimeException e) {
+            model.addAttribute("message", "오류: " + e.getMessage());
+        }
+        return "redirect:/studies"; // 개설 후 스터디 목록으로 리다이렉트
+    }
+
     // 모든 스터디를 조회 (게시판에 스터디 목록으로 다 띄워주는 메소드)
     @GetMapping("/studies")
     public String getAllStudies(Model model) {

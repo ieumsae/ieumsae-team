@@ -1,24 +1,14 @@
 package com.ieumsae.chat.service;
 
-import com.ieumsae.common.repository.*;
-import com.ieumsae.common.repository.MessageRepository;
 import com.ieumsae.common.entity.*;
-import com.ieumsae.common.repository.UserRepository;
-import com.ieumsae.common.utils.SecurityUtils;
-import com.ieumsae.user.domain.CustomOAuth2User;
-import com.ieumsae.user.domain.CustomUserDetails;
+import com.ieumsae.common.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.ieumsae.common.utils.SecurityUtils;
-
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.ieumsae.common.utils.SecurityUtils.getCurrentUserId;
 
 @Service
 public class ChatService {
