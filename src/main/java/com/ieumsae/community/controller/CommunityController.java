@@ -69,6 +69,7 @@ public class CommunityController {
         return "redirect:/community"; // 삭제 후 목록 페이지로 리다이렉트
     }
 
+
     // 커뮤니티 수정
     // 커뮤니티 수정 페이지 이동 (생성 폼 재사용)
     @GetMapping("/{communityId}/edit")

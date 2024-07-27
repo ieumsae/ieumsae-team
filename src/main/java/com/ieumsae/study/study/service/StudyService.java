@@ -11,7 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,6 +39,7 @@ public class StudyService {
 
     public List<StudyDTO> getAllStudies() {
         List<Study> studies = studyRepository.findAll();
+        studies.sort(Comparator.comparing(Study::getStudyId).reversed());
         return studies.stream().map(study -> {
             User user = userRepository.findByUserId(study.getCreatorId());
             String nickname = user.getNickname();
@@ -81,22 +83,6 @@ public class StudyService {
             studyRepository.deleteByStudyId(studyId);
         } else {
             throw new RuntimeException("스터디 방장이 아닙니다.");
-        }
-    }
-
-    // 스터디 수정
-    @Transactional
-    public void updateStudy(Long studyId, StudyDTO studyDTO) {
-        Long userId = SecurityUtils.getCurrentUserId();
-        Study study = studyRepository.findById(studyId)
-                .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
-
-        if (userId.equals(study.getCreatorId())) {
-            study.setTitle(studyDTO.getTitle());
-            study.setContent(studyDTO.getContent());
-            studyRepository.save(study);
-        } else {
-            throw new NullPointerException("스터디 방장이 아닙니다.");
         }
     }
 
@@ -163,5 +149,33 @@ public class StudyService {
         } else {
             throw new RuntimeException("이미 승인된 스터디 멤버는 거절할 수 없습니다.");
         }
+    }
+
+    @Transactional
+    // 커뮤니티 수정
+    public void updatestudy(Long studyId ,StudyDTO studyDTO) {
+        Long userId = SecurityUtils.getCurrentUserId();
+        Study study = studyRepository.findById(studyId)
+                .orElseThrow(() -> new RuntimeException("커뮤니티를 찾을 수 없습니다."));
+
+        // 커뮤니티 개설자만 수정할 수 있게 권한 부여
+        if (study.getCreatorId().equals(userId)) {
+            study.setTitle(studyDTO.getTitle());
+            study.setContent(studyDTO.getContent());
+            study.setCreatedDt(LocalDateTime.now());
+            studyRepository.save(study);
+        } else {
+            throw new RuntimeException("커뮤니티 게시자가 아닙니다.");
+        }
+
+    }
+
+    // 커뮤니티 상세 조회 메서드
+    public StudyDTO getStudyById(Long studyId) {
+        Study study = studyRepository.findById(studyId)
+                .orElseThrow(() -> new RuntimeException("커뮤니티를 찾을 수 없습니다."));
+        User user = userRepository.findByUserId(study.getCreatorId());
+        String nickname = user.getNickname();
+        return new StudyDTO(study.getStudyId(), study.getTitle(), study.getContent(), study.getCreatedDt(), nickname);
     }
 }

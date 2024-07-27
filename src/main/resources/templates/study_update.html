@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="utf-8">
@@ -10,180 +10,97 @@
   <title>ieumsae</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <!-- Additional CSS Files -->
-  <link rel="stylesheet" href="../static/css/fontawesome.css">
-  <link rel="stylesheet" href="../static/css/templatemo-edu-meeting.css">
-  <link rel="stylesheet" href="../static/css/owl.css">
-  <link rel="stylesheet" href="../static/css/lightbox.css">
-  <link rel="stylesheet" href="../static/css/table.css">
-  <link rel="stylesheet" href="../static/css/tabs.css">
-  <!--
-
-TemplateMo 569 Edu Meeting
-
-https://templatemo.com/tm-569-edu-meeting
-
--->
-  <style>
-
-  </style>
+  <link rel="stylesheet" href="/css/fontawesome.css">
+  <link rel="stylesheet" href="/css/templatemo-edu-meeting.css">
+  <link rel="stylesheet" href="/css/owl.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/css/table.css">
+  <link rel="stylesheet" href="/css/tabs.css">
 </head>
 
 <body>
-
-  <!-- Sub Header -->
-  <div class="sub-header">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-sm-8">
-          <div class="left-content">
-            <p>ieumsae</p>
-          </div>
+<!-- Sub Header -->
+<div class="sub-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-sm-8">
+        <div class="left-content">
+          <p>ieumsae</p>
         </div>
-        <div class="col-lg-4 col-sm-4">
-          <div class="right-icons">
-            <ul>
-              <li><a href="./login.html">로그인 / 회원가입</a></li>
-            </ul>
-          </div>
+      </div>
+      <div class="col-lg-4 col-sm-4">
+        <div class="right-icons">
+          <ul>
+            <li><a href="./login.html">로그인 / 회원가입</a></li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- ***** Header Area Start ***** -->
-  <header class="header-area header-sticky">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <nav class="main-nav">
-            <!-- ***** Logo Start ***** -->
-            <a th:href="@{/}" class="logo">IEUMSAE</a>
-            <!-- ***** Logo End ***** -->
-            <!-- ***** Menu Start ***** -->
-            <ul class="nav">
-              <li class="scroll-to-section"><a href="./index.html" class="active">Home</a></li>
-              <li><a href="./study_main.html">STUDY</a></li>
-              <li><a href="./community_main.html">COMMUNITY</a></li>
-              <li><a href="./review_main.html">review</a></li>
-              <li><a href="./contact_us.html">Contact Us</a></li>
-            </ul>
-            <a class='menu-trigger'>
-              <span>Menu</span>
-            </a>
-            <!-- ***** Menu End ***** -->
-          </nav>
-        </div>
+</div>
+<!-- ***** Header Area Start ***** -->
+<header class="header-area header-sticky">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <nav class="main-nav">
+          <!-- ***** Logo Start ***** -->
+          <a th:href="@{/}" class="logo">IEUMSAE</a>
+          <!-- ***** Logo End ***** -->
+          <!-- ***** Menu Start ***** -->
+          <ul class="nav">
+            <li class="scroll-to-section"><a href="./index.html" class="active">Home</a></li>
+            <li><a href="./study_main.html">STUDY</a></li>
+            <li><a href="./community_main.html">COMMUNITY</a></li>
+            <li><a href="./review_main.html">review</a></li>
+            <li><a href="./contact_us.html">Contact Us</a></li>
+          </ul>
+          <a class='menu-trigger'>
+            <span>Menu</span>
+          </a>
+          <!-- ***** Menu End ***** -->
+        </nav>
       </div>
     </div>
-  </header>
-  <!-- ***** Header Area End ***** -->
-
-  <section class="heading-page header-text" id="top">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12">
-          <h2>스터디 수정</h2>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section style="color: white; width: 30%; margin: 0 auto; margin-top: 10px; text-align: center;">
-    <form id="studyForm">
-      <div class="mb-3">
-        <label for="exampleInputStudyName" class="form-label">스터디 명</label>
-        <input type="text" class="form-control" id="exampleInputStudyName">
-      </div>
-      <div class="mb-3" style="width: 150%;position: relative; right: 110px;">
-        <label for="exampleFormControlTextarea1" class="form-label">스터디 상세설명</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="30"></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">수정 신청</button>
-      <div class="mb-3" style="visibility: hidden;">
-        <label for="exampleInputStudyName" class="form-label">닉네임</label>
-        <input type="text" class="form-control" id="exampleInputStudyName">
-      </div>
-    </form>
-
-  </section>
-
-
-  <div class="footer">
-    <p>Copyright © 2024 ieumsae Co., Ltd. All Rights Reserved. 
-        <br>Design: <a href="https://templatemo.com" target="_parent" title="free css templates">ieumsae</a></p>
   </div>
+</header>
+<!-- ***** Header Area End ***** -->
 
+<section class="heading-page header-text" id="top">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h2>스터디 수정</h2>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- Scripts -->
-  <!-- Bootstrap core JavaScript -->
-  <script src="../static/js/jquery.min.js"></script>
-  <script src="../static/bootstrap/js/bootstrap.bundle.min.js"></script>
+<section style="color: white; width: 30%; margin: 0 auto; margin-top: 10px; text-align: center;">
+  <form id="studyForm" th:action="@{/study/{studyId}/edit(studyId=${studyDTO.studyId})}" th:object="${studyDTO}" method="post">
+    <div class="mb-3">
+      <label for="title" class="form-label">스터디 명</label>
+      <input type="text" class="form-control" id="title" th:field="*{title}">
+    </div>
+    <div class="mb-3" style="width: 150%; position: relative; right: 110px;">
+      <label for="content" class="form-label">스터디 상세설명</label>
+      <textarea class="form-control" id="content" rows="30" th:field="*{content}"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">수정 신청</button>
+  </form>
+</section>
 
-  <script src="../static/js/isotope.min.js"></script>
-  <script src="../static/js/owl-carousel.js"></script>
-  <script src="../static/js/lightbox.js"></script>
-  <script src="../static/js/tabs.js"></script>
-  <script src="../static/js/isotope.js"></script>
-  <script src="../static/js/video.js"></script>
-  <script src="../static/js/slick-slider.js"></script>
-  <script src="../static/js/custom.js"></script>
-  
-  <script>
-    // 페이지 이동 및 알림 메시지
-    document.getElementById('studyForm').addEventListener('submit', function (event) {
-      event.preventDefault(); // 기본 제출 동작 방지
-      alert('개설 신청이 완료되었습니다.');
-      window.location.href = 'study_main.html'; // study_main.html로 이동
-    });
+<div class="footer">
+  <p>Copyright © 2024 ieumsae Co., Ltd. All Rights Reserved.
+    <br>Design: <a href="https://templatemo.com" target="_parent" title="free css templates">ieumsae</a></p>
+</div>
 
-    // 페이지 섹션 표시
-    var showSection = function showSection(section, isAnimate) {
-      var
-        direction = section.replace(/#/, ''),
-        reqSection = $('.section').filter('[data-section="' + direction + '"]'),
-        reqSectionPos = reqSection.offset().top - 0;
-
-      if (isAnimate) {
-        $('body, html').animate({
-          scrollTop: reqSectionPos
-        },
-          800);
-      } else {
-        $('body, html').scrollTop(reqSectionPos);
-      }
-
-    };
-
-    // 현재 섹션 확인
-    var checkSection = function checkSection() {
-      $('.section').each(function () {
-        var
-          $this = $(this),
-          topEdge = $this.offset().top - 80,
-          bottomEdge = topEdge + $this.height(),
-          wScroll = $(window).scrollTop();
-        if (topEdge < wScroll && bottomEdge > wScroll) {
-          var
-            currentId = $this.data('section'),
-            reqLink = $('a').filter('[href*=\\#' + currentId + ']');
-          reqLink.closest('li').addClass('active').
-            siblings().removeClass('active');
-        }
-      });
-    };
-
-    // 메뉴 클릭 시 섹션 표시
-    $('.main-menu, .responsive-menu, .scroll-to-section').on('click', 'a', function (e) {
-      e.preventDefault();
-      showSection($(this).attr('href'), true);
-    });
-
-    $(window).scroll(function () {
-      checkSection();
-    });
-  </script>
+<!-- Scripts -->
+<script src="/js/jquery.min.js"></script>
+<script src="/js/custom.js"></script>
 </body>
 
 </html>

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,6 +75,9 @@ public class CommunityService {
     // 커뮤니티 목록 조회 메서드
     public List<CommunityDTO> getAllCommunities() {
         List<Community> communities = communityRepository.findAll();
+        // 커뮤니티 리스트를 내림차순으로 정렬
+        communities.sort(Comparator.comparing(Community::getCommunityId).reversed());
+
         return communities.stream().map(community -> {
             User user = userRepository.findByUserId(community.getUserId());
             String nickname = user.getNickname();
