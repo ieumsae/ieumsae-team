@@ -11,13 +11,13 @@
     <title>ieumsae</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
 
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="../static/css/templatemo-edu-meeting.css">
-    <link rel="stylesheet" href="../static/css/table.css">
-    <link rel="stylesheet" href="../static/css/tabs.css">
+    <link rel="stylesheet" href="/css/templatemo-edu-meeting.css">
+    <link rel="stylesheet" href="/css/table.css">
+    <link rel="stylesheet" href="/css/tabs.css">
     
 <style>
 
@@ -202,8 +202,8 @@
 
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->
-    <script src="../static/jquery/jquery.min.js"></script>
-    <script src="../static/js/custom.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/custom.js"></script>
     <script>
         //according to loftblog tut
         $('.nav li:first').addClass('active');
@@ -241,7 +241,6 @@
       if (checkLoginStatus()) {
         // 로그인 상태일 때 "로그인"과 "회원가입"을 "마이페이지"로 변경
         document.getElementById('login').textContent = '마이페이지';
-        document.getElementById('login').href = '/mypage'; // 마이페이지 링크로 변경
         // 회원가입 버튼 숨기기
       }
     });
