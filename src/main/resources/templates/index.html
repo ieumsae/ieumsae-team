@@ -25,25 +25,25 @@
 
 <body>
 
-  <!-- Sub Header -->
-  <div class="sub-header">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-sm-8">
-          <div class="left-content">
-            <p>ieumsae</p>
-          </div>
+<!-- Sub Header -->
+<div class="sub-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-sm-8">
+        <div class="left-content">
+          <p>ieumsae</p>
         </div>
-        <div class="col-lg-4 col-sm-4">
-          <div class="right-icons">
-            <ul>
-              <li><a href="/login">로그인 / 회원가입</a></li>
-            </ul>
-          </div>
+      </div>
+      <div class="col-lg-4 col-sm-4">
+        <div class="right-icons">
+          <ul>
+            <li id="userInfo"><a href="/login">로그인 / 회원가입</a></li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
+</div>
 
   <!-- ***** Header Area Start ***** -->
   <header class="header-area header-sticky">
@@ -717,38 +717,137 @@
     document.querySelectorAll('.tabs a').forEach(tab => {
         tab.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             // 모든 탭의 active 클래스 제거
             document.querySelectorAll('.tabs li').forEach(li => li.classList.remove('is-active'));
-            
+
             // 현재 클릭된 탭에 active 클래스 추가
             this.parentNode.classList.add('is-active');
-            
+
             // 모든 컨텐츠 숨기기
             document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
-            
+
             // 클릭된 탭에 해당하는 컨텐츠 표시
             const contentId = this.getAttribute('data-tab');
             document.getElementById(contentId).classList.add('active');
         });
     });
-    //로그인하면 로그인/회원가입을 마이페이지로 바꿔주는 js
-    // 로그인 상태를 확인하는 함수 (여기서는 단순히 예제로 로그인된 상태로 가정)
-    function checkLoginStatus() {
-      // 이 함수는 실제로 서버에서 로그인 상태를 받아오는 로직을 포함해야 합니다.
-      // 예를 들어, 쿠키, 로컬 스토리지 또는 서버의 응답을 확인할 수 있습니다.
-      return true; // true면 로그인된 상태, false면 로그인되지 않은 상태
-    }
+        document.addEventListener('DOMContentLoaded', () => {
+          fetchUserInfo();
+        });
 
-    // DOM이 로드되면 실행
-    document.addEventListener('DOMContentLoaded', function() {
-      if (checkLoginStatus()) {
-        // 로그인 상태일 때 "로그인"과 "회원가입"을 "마이페이지"로 변경
-        document.getElementById('login').textContent = '마이페이지';
-        document.getElementById('login').href = '/my_page.html'; // 마이페이지 링크로 변경
+        function fetchUserInfo() {
+          fetch('/api/user-info')
+                  .then(response => {
+                    if (!response.ok) {
+                      throw new Error('네트워크 응답이 정상적이지 않습니다.');
+                    }
+                    return response.json();
+                  })
+                  .then(data => {
+                    updateUserInfo(data);
+                  })
+                  .catch(error => {
+                    console.error('Error:', error);
+                    showLoginButton();
+                  });
+        }
 
-      }
-    });
+        function updateUserInfo(data) {
+          const userInfoDiv = document.getElementById('userInfo');
+          if (data.username && data.username !== 'unknown') {
+            userInfoDiv.innerHTML = `
+                <p>${data.nickname}님 환영합니다!</p>
+                <button class="button" onclick="showNicknameForm()">닉네임 변경</button>
+                <a href="/my_page" class="button">마이페이지</a>
+                <button class="button" onclick="logout()">로그아웃</button>
+                <form id="nicknameForm" style="display: none;">
+                    <input type="text" id="newNickname" placeholder="새 닉네임을 입력하세요">
+                    <button class="button" type="button" onclick="checkNicknameDuplicate()">중복 확인</button>
+                    <button class="button" type="submit">수정</button>
+                </form>
+            `;
+            setupNicknameForm();
+          } else {
+            showLoginButton();
+          }
+        }
+
+        function showLoginButton() {
+          const userInfoDiv = document.getElementById('userInfo');
+          userInfoDiv.innerHTML = `<a href="/login">로그인/회원가입</a>`;
+        }
+
+        function showNicknameForm() {
+          const form = document.getElementById('nicknameForm');
+          form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function checkNicknameDuplicate() {
+          const newNickname = document.getElementById('newNickname').value;
+          if (!newNickname) {
+            alert('닉네임을 입력해주세요.');
+            return;
+          }
+
+          fetch(`/check/nickname/${encodeURIComponent(newNickname)}`)
+                  .then(response => response.json())
+                  .then(isDuplicate => {
+                    if (isDuplicate) {
+                      alert('이미 사용 중인 닉네임입니다.');
+                    } else {
+                      alert('사용 가능한 닉네임입니다.');
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error:', error);
+                    alert('중복 확인 중 오류가 발생했습니다.');
+                  });
+        }
+
+        function setupNicknameForm() {
+          document.getElementById('nicknameForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newNickname = document.getElementById('newNickname').value;
+
+            fetch('/api/user-info', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({newNickname: newNickname})
+            })
+                    .then(response => {
+                      if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) });
+                      }
+                      return response.json();
+                    })
+                    .then(data => {
+                      alert('닉네임이 성공적으로 변경되었습니다.');
+                      fetchUserInfo();
+                      document.getElementById('nicknameForm').style.display = 'none';
+                    })
+                    .catch(error => {
+                      console.error('Error:', error);
+                      alert(error.message || '닉네임 변경에 실패했습니다.');
+                    });
+          });
+        }
+
+        function logout() {
+          fetch('/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }).then(() => {
+            window.location.href = '/';
+          }).catch(error => {
+            console.error('Error:', error);
+            window.location.href = '/';
+          });
+        }
     </script>
 
 
@@ -761,26 +860,26 @@
       const chatContainer = document.getElementById('chatbot-container');
       const chatbotIcon = document.getElementById('chatbot-icon');
       const closeChatButton = document.getElementById('close-chat');
-  
+
       // Toggle chat window on clicking the chatbot icon
       chatbotIcon.addEventListener('click', () => {
           chatContainer.style.display = 'flex';
           chatbotIcon.style.display = 'none';
       });
-  
+
       // Close chat window and show chatbot icon again
       closeChatButton.addEventListener('click', () => {
           chatContainer.style.display = 'none';
           chatbotIcon.style.display = 'block';
       });
-  
+
       const messageContainer = document.getElementById('message-container');
       const inputMessage = document.getElementById('input-message');
       const sendButton = document.getElementById('send-button');
-  
+
       function sendMessage() {
           const message = inputMessage.value.trim();
-  
+
           if (message) {
               // User message
               const userMessageElement = document.createElement('div');
@@ -788,7 +887,7 @@
               userMessageElement.textContent = message;
               messageContainer.appendChild(userMessageElement);
               inputMessage.value = '';
-  
+
               // Simulated bot response
               setTimeout(() => {
                   const botMessage = "This is a simulated bot response.";
@@ -796,13 +895,13 @@
                   botMessageElement.classList.add('message', 'bot-message');
                   botMessageElement.textContent = botMessage;
                   messageContainer.appendChild(botMessageElement);
-  
+
                   // Scroll to the bottom of the message container
                   messageContainer.scrollTop = messageContainer.scrollHeight;
               }, 1000);
           }
       }
-  
+
       sendButton.addEventListener('click', sendMessage);
       inputMessage.addEventListener('keyup', (event) => {
           if (event.key === 'Enter') {
