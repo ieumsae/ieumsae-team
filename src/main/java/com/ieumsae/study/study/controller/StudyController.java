@@ -50,7 +50,7 @@ public class StudyController {
     public String getAllStudies(Model model) {
         List<Study> studies = studyRepository.findAll();
         model.addAttribute("studies", studies);
-        return "studyList"; // View 파일 이름 (e.g., studyList.html)
+        return "study_main"; // View 파일 이름 (e.g., studyList.html)
     }
 
     // 제목 or 내용 중 아무거로나 검색해도 해당 내용을 가진 스터디가 검색
@@ -58,7 +58,7 @@ public class StudyController {
     public String searchStudies(@RequestParam("keyword") String keyword, Model model) {
         List<Study> studies = studyRepository.findByTitleContainingOrContentContaining(keyword, keyword);
         model.addAttribute("studies", studies);
-        return "studyList"; // View 파일 이름 (e.g., studyList.html)
+        return "study_main"; // View 파일 이름 (e.g., studyList.html)
     }
 
     //스터디 상세설명
@@ -72,10 +72,23 @@ public class StudyController {
             model.addAttribute("nickname", creator.getNickname());
             model.addAttribute("content", study.getContent());
             model.addAttribute("createdDt", study.getCreatedDt());
-            return "studyDetails"; // View 파일 이름 (e.g., studyDetails.html)
+            return "study_detail"; // View 파일 이름 (e.g., studyDetails.html)
         } else {
             return "studyNotFound"; // 스터디를 찾지 못한 경우
         }
+    }
+
+    // 스터디 개설 폼 보기
+    @GetMapping("/studyCreateForm")
+    public String getStudyCreateForm(Model model) {
+        model.addAttribute("study", new StudyDTO());
+        // 닉네임 hidden으로 받으려다가 302 error 발생해서 주석처리해놓은 코드
+        /* Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName(); // 현재 인증된 사용자의 이름(아이디)을 가져옵니다.
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        model.addAttribute("nickname", user.getNickname()); */
+        return "study_create"; // 스터디 생성 폼 페이지로 이동
     }
 
     // 스터디 삭제
@@ -88,6 +101,14 @@ public class StudyController {
         } catch (RuntimeException e) {
             return "오류: " + e.getMessage();
         }
+    }
+
+    // 스터디 수정 폼 보기
+    @GetMapping("/studyUpdateForm/{studyId}")
+    public String getStudyUpdateForm(@PathVariable Long studyId, Model model) {
+        Optional<Study> study = studyRepository.findById(studyId);
+        model.addAttribute("study", study);
+        return "study_update";
     }
 
     // 스터디 수정
