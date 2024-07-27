@@ -41,14 +41,14 @@ public class StudyController {
     }
 
     // 스터디 개설 폼으로 이동
-    @GetMapping("/createStudy")
+    @GetMapping("/create")
     public String viewStudyCreateForm(Model model) {
         model.addAttribute("studyDTO", new StudyDTO());
         return "study_create";
     }
 
     // 스터디 개설
-    @PostMapping("/createStudy")
+    @PostMapping("/create")
     public String createStudy(@ModelAttribute StudyDTO studyDTO, Model model, RedirectAttributes redirectAttributes) {
         try {
             Long userId = SecurityUtils.getCurrentUserId();

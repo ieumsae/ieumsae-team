@@ -84,7 +84,8 @@
   </section>
 
   <div class="container" style="margin-top: 50px;">
-    <h2>커뮤니티 글 작성</h2>
+    <h2>스터디 글 작성</h2>
+    <!-- 스터디 생성 폼 -->
     <form th:action="@{/study/create}" th:if="${studyId == null}" method="post">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">게시글 제목</span>
@@ -96,6 +97,8 @@
       </div>
       <button type="submit" class="btn btn-success btn-lg" style="margin-top: 10px; position: relative; left: 45%;">게시</button>
     </form>
+
+    <!-- 스터디 수정 폼 -->
     <form th:action="@{/study/{studyId}/edit(studyId=${studyId})}" th:unless="${studyId == null}" method="post">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">게시글 제목</span>
@@ -105,7 +108,7 @@
         <span class="input-group-text">상세 내용</span>
         <textarea class="form-control" aria-label="Content" rows="5" name="content" required th:text="${content}"></textarea>
       </div>
-      <button type="submit" class="btn btn-success btn-lg" style="margin-top: 10px; position: relative; left: 45%;">게시</button>
+      <button type="submit" class="btn btn-success btn-lg" style="margin-top: 10px; position: relative; left: 45%;">수정</button>
     </form>
   </div>
 
