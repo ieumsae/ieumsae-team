@@ -1,0 +1,48 @@
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+    border-bottom: 2px solid #ddd;
+}
+.tabs ul {
+    display: flex;
+}
+.tabs li {
+    margin-right: 15px;
+    list-style: none;
+}
+.tabs a {
+    text-decoration: none;
+    color: #333;
+    padding: 10px 20px;
+    display: block;
+    border-radius: 5px 5px 0 0;
+}
+.tabs li.is-active a {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-bottom: none;
+}
+.content {
+    display: none;
+    padding: 20px;
+    
+   
+    margin-top: -1px;
+}
+.content.active {
+    display: block;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    background-color: #f8f8f8;
+}

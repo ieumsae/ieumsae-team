@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Create Account - Nickname</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: url(/static/front/assets/images/meetings-bg.jpg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            margin: -20px 0 50px;
+        }
+
+        h1 {
+            font-weight: bold;
+            margin: 0;
+        }
+
+        form {
+            height: 250px;
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 50px;
+            text-align: center;
+            width: 400px;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25),
+            0 10px 10px rgba(0,0,0,0.22);
+            border-radius: 10px;
+        }
+
+        input {
+            background-color: #eee;
+            border: none;
+            padding: 12px 15px;
+            margin: 8px 0;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        button {
+            border-radius: 20px;
+            border: 1px solid #FF4B2B;
+            background-color: #FF4B2B;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 80ms ease-in;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+<form id="nicknameForm">
+    <h1>Enter Your Nickname</h1>
+    <div class="id-check-container" style="display: flex; align-items: center; gap: 10px;">
+        <input type="text" placeholder="닉네임" id="nickname" name="nickname" required style="flex: 1;"/>
+        <button type="button" id="checkNickNameDuplicate" class="btn btn-primary">중복 확인</button>
+    </div>
+    <button type="submit" id="createAccountButton">create account</button>
+</form>
+
+<script>
+    function checkDuplicate(field, value) {
+        fetch(`/api/check/${field}/${encodeURIComponent(value)}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(isDuplicate => {
+                let fieldName = {
+                    'nickname': '닉네임'
+                }[field];
+                alert(isDuplicate ? `이미 사용 중인 ${fieldName}입니다.` : `사용 가능한 ${fieldName}입니다.`);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
+    }
+
+    document.getElementById('checkNickNameDuplicate').addEventListener('click', () => {
+        checkDuplicate('nickname', document.getElementById('nickname').value);
+    });
+
+    document.getElementById('nicknameForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const nickname = document.getElementById('nickname').value.trim();
+        if (nickname === "") {
+            alert('닉네임을 정확히 입력해주세요.');
+            return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+
+        if (!userId) {
+            alert('잘못된 접근입니다. 처음부터 다시 시도해주세요.');
+            window.location.href = '/login';
+            return;
+        }
+
+        fetch('/api/signup2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: userId,
+                nickname: nickname
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.userId) {
+                    alert('회원가입이 완료되었습니다. 환영합니다 ' + nickname + '님');
+                    window.location.href = '/login';
+                } else {
+                    alert(data.message || '회원가입 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('회원가입 중 오류가 발생했습니다.');
+            });
+    });
+</script>
+</body>
+</html>

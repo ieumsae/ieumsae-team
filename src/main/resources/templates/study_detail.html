@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="TemplateMo">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+  <title>ieumsae - 스터디 상세</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="/css/fontawesome.css">
+  <link rel="stylesheet" href="/css/templatemo-edu-meeting.css">
+  <link rel="stylesheet" href="/css/owl.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/css/table.css">
+  <link rel="stylesheet" href="/css/tabs.css">
+</head>
+
+<body>
+<!-- Sub Header -->
+<div class="sub-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-sm-8">
+        <div class="left-content">
+          <p>ieumsae</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-sm-4">
+        <div class="right-icons">
+          <ul>
+            <div th:replace="fragments/header :: header"></div>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ***** Header Area Start ***** -->
+<header class="header-area header-sticky">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <nav class="main-nav">
+          <!-- ***** Logo Start ***** -->
+          <a th:href="@{/}" class="logo">IEUMSAE</a>
+          <!-- ***** Logo End ***** -->
+          <!-- ***** Menu Start ***** -->
+          <ul class="nav">
+            <li class="scroll-to-section"><a href="./index.html" class="active">Home</a></li>
+            <li><a href="./study_main.html">STUDY</a></li>
+            <li><a href="./community_main.html">COMMUNITY</a></li>
+            <li><a href="./review_main.html">review</a></li>
+            <li><a href="./contact_us.html">Contact Us</a></li>
+          </ul>
+          <a class='menu-trigger'>
+            <span>Menu</span>
+          </a>
+          <!-- ***** Menu End ***** -->
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- ***** Header Area End ***** -->
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="게시판 세부 정보 페이지">
+  <meta name="author" content="ieumsae">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+  <title th:text="${title} + ' - 게시판 상세 정보'">게시판 상세 정보</title> <!-- 동적으로 게시글 제목 설정 -->
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="/css/fontawesome.css">
+  <link rel="stylesheet" href="/css/templatemo-edu-meeting.css">
+  <link rel="stylesheet" href="/css/owl.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/css/table.css">
+  <link rel="stylesheet" href="/css/tabs.css">
+</head>
+<body>
+<!-- 서브 헤더 시작 -->
+<div class="sub-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-sm-8">
+        <div class="left-content">
+          <p>ieumsae</p> <!-- 사이트 이름 -->
+        </div>
+      </div>
+      <div class="col-lg-4 col-sm-4">
+        <div class="right-icons">
+          <ul>
+            <li><a href="./login.html">로그인 / 회원가입</a></li> <!-- 로그인/회원가입 링크 -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 서브 헤더 끝 -->
+
+<!-- 헤더 영역 시작 -->
+<header class="header-area header-sticky">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <nav class="main-nav">
+          <!-- 로고 시작 -->
+          <a th:href="@{/}" class="logo">IEUMSAE</a>
+          <!-- 로고 끝 -->
+          <!-- 메뉴 시작 -->
+          <ul class="nav">
+            <li class="scroll-to-section"><a href="./index.html" class="active">Home</a></li> <!-- 홈 링크 -->
+            <li><a href="./study_main.html">STUDY</a></li> <!-- 스터디 페이지 링크 -->
+            <li><a href="./community_main.html">COMMUNITY</a></li> <!-- 커뮤니티 페이지 링크 -->
+            <li><a href="./review_main.html">review</a></li>
+            <li><a href="./contact_us.html">Contact Us</a></li> <!-- 연락처 페이지 링크 -->
+          </ul>
+          <a class='menu-trigger'>
+            <span>Menu</span> <!-- 모바일 메뉴 트리거 -->
+          </a>
+          <!-- 메뉴 끝 -->
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- 헤더 영역 끝 -->
+
+<!-- 커뮤니티 상세 설명 시작 -->
+<section class="heading-page header-text" id="top">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h2 th:text="${title}">게시글 상세 설명</h2> <!-- 게시글 제목 -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container" style="background-color: white; margin-top: 50px; max-width: 800px;">
+  <div class="input-form-backgroud row">
+    <div class="input-form col-md-12 mx-auto">
+      <div class="row" style="margin-top: 15px;">
+        <div class="col-md-6 mb-3">
+          <label>스터디 명 : <span th:text="${study.title}">제목을 로드 중...</span></label>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label>개설자 : <span th:text="${creatorNickname}">개설자를 로드 중...</span></label>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label>개설 일자 : <span th:text="${#temporals.format(study.createdDt, 'yyyy-MM-dd HH:mm')}">개설 일자를 로드 중...</span></label>
+        </div>
+      </div>
+      <hr class="mb-4">
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <label>내용 :</label>
+          <p th:text="${study.content}">내용을 로드 중...</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px; float: right;">
+        <div class="mb-4">
+          <button id="community-update" class="btn btn-secondary" th:onclick="'location.href=\'/community/' + ${communityId} + '/edit\''">게시글 수정</button>
+        </div>
+        <div class="mb-4">
+          <form th:action="@{/community/{communityId}/delete(communityId=${communityId})}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?');">
+            <button type="submit" class="btn btn-danger">게시글 삭제</button> <!-- 게시글 삭제 버튼 -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container comment" style="background-color: white; max-width: 800px;">
+  <div class="input-form-backgroud row">
+    <div class="input-form col-md-12 mx-auto">
+      <h4 class="mb-3 comment" style="text-align: center;">댓글</h4>
+      <form class="validation-form" novalidate>
+        <div class="row">
+        </div>
+        <hr class="mb-4">
+        <div class="card-footer">
+          <form onsubmit="addComment(event)">
+            <div class="form-group">
+              <input type="text" class="form-control comment_input_text" placeholder="댓글을 입력하세요" required>
+            </div>
+            <button type="submit" class="btn btn-primary comment_input_btn" style="margin-top: 10px;">작성</button>
+          </form>
+          <div class="comments mt-3">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>Copyright © 2024 ieumsae Co., Ltd. All Rights Reserved.
+    <br>Design: <a href="https://templatemo.com" target="_parent" title="free css templates">ieumsae</a></p> <!-- 저작권 및 디자인 크레딧 -->
+</div>
+
+<!-- 스크립트 시작 -->
+<!-- Bootstrap core JavaScript -->
+<script src="/jquery/jquery.min.js"></script>
+<script src="/js/custom.js"></script>
+
+<script>
+  function addComment(event) {
+    event.preventDefault();
+    var commentInput = event.target.querySelector("input");
+    var commentText = commentInput.value;
+    var date = new Date().toLocaleString();
+
+    var commentDiv = document.createElement("div");
+    commentDiv.className = "card my-3";
+    commentDiv.innerHTML = `
+        <div class="card-body">
+          <p class="card-text">${commentText}</p>
+          <p class="card-text"><small class="text-muted">${date}</small></p>
+        </div>
+      `;
+
+    var commentsDiv = event.target.parentNode.querySelector(".comments");
+    commentsDiv.insertBefore(commentDiv, commentsDiv.firstChild);
+
+    commentInput.value = "";
+  }
+</script>
+</body>
+</html>
+
+
+<div class="footer">
+  <p>Copyright © 2024 ieumsae Co., Ltd. All Rights Reserved.
+    <br>Design: <a href="https://templatemo.com" target="_parent" title="free css templates">ieumsae</a></p>
+</div>
+
+<!-- Scripts -->
+<!-- Bootstrap core JavaScript -->
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/isotope.min.js"></script>
+<script src="/js/owl-carousel.js"></script>
+<script src="/js/lightbox.js"></script>
+<script src="/js/tabs.js"></script>
+<script src="/js/video.js"></script>
+<script src="/js/slick-slider.js"></script>
+<script src="/js/custom.js"></script>
+</body>
+
+</html>
