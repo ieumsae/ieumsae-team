@@ -414,11 +414,66 @@
             <tbody>
             <tr>
                 <th>1</th>
-                <td>사진 촬영 스터디</td>
-                <td>첫 사진 촬영 후기</td>
+                <td>사진 공모전</td>
+                <td>한국사진협회</td>
+                <td>2024-07-19</td>
+            </tr>
+            <tr>
+                <th>2</th>
+                <td>웹 개발 대회</td>
+                <td>한국웹개발자협회</td>
+                <td>2024-07-17</td>
+            </tr>
+            <tr>
+                <th>3</th>
+                <td>프로그래밍 경진대회</td>
+                <td>코딩연합</td>
+                <td>2024-07-15</td>
+            </tr>
+            <tr>
+                <th>4</th>
+                <td>데이터 분석 대회</td>
+                <td>데이터사이언스연구회</td>
+                <td>2024-07-13</td>
+            </tr>
+            <tr>
+                <th>5</th>
+                <td>게임 개발 대회</td>
+                <td>게임개발자연합</td>
+                <td>2024-07-11</td>
+            </tr>
+            <tr>
+                <th>6</th>
+                <td>로봇 공학 대회</td>
+                <td>로봇기술협회</td>
+                <td>2024-07-09</td>
+            </tr>
+            <tr>
+                <th>7</th>
+                <td>앱 개발 공모전</td>
+                <td>앱개발자협회</td>
+                <td>2024-07-07</td>
+            </tr>
+            <tr>
+                <th>8</th>
+                <td>AI 챌린지</td>
+                <td>AI연구소</td>
+                <td>2024-07-05</td>
+            </tr>
+            <tr>
+                <th>9</th>
+                <td>영상 제작 공모전</td>
+                <td>한국영상제작연합</td>
+                <td>2024-07-03</td>
+            </tr>
+            <tr>
+                <th>10</th>
+                <td>디자인 경연 대회</td>
+                <td>디자인협회</td>
                 <td>2024-07-01</td>
             </tr>
-            <!-- 추가 행을 여기에 넣을 수 있습니다 -->
+
+
             </tbody>
         </table>
     </div>
@@ -434,12 +489,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <th>1</th>
-                <td style="text-align: center;">음악 작곡 스터디</td>
-                <td style="text-align: center;">작곡 스터디 시작</td>
+            <!-- 타임리프를 이용한 데이터 바인딩 -->
+            <tr th:each="notice, iterStat : ${recentNoticesKor}">
+                <th th:text="${iterStat.index + 1}"></th>
+                <td style="text-align: center;">
+                    <a th:href="${notice.link}" th:text="${notice.title}" target="_blank"></a>
+                </td>
+                <td style="text-align: center;" th:text="${notice.postingDate}"></td>
             </tr>
-            <!-- 추가 행을 여기에 넣을 수 있습니다 -->
             </tbody>
         </table>
     </div>
@@ -455,12 +512,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <th>1</th>
-                <td style="text-align: center;">영상 편집 스터디</td>
-                <td style="text-align: center;">편집 기술 배우기</td>
+            <!-- 타임리프를 이용한 데이터 바인딩 -->
+            <tr th:each="notice, iterStat : ${recentNoticesEng}">
+                <th th:text="${iterStat.index + 1}"></th>
+                <td style="text-align: center;">
+                    <a th:href="${notice.link}" th:text="${notice.title}" target="_blank"></a>
+                </td>
+                <td style="text-align: center;" th:text="${notice.postingDate}"></td>
             </tr>
-            <!-- 추가 행을 여기에 넣을 수 있습니다 -->
             </tbody>
         </table>
     </div>
