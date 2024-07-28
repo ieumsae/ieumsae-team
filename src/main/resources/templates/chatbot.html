@@ -45,49 +45,74 @@
     </style>
 </head>
 <body>
-    <div id="chat-container" class="card">
-        <div id="message-container" class="card-body"></div>
-        <div id="input-container" class="card-footer">
-            <div class="input-group">
-                <input type="text" id="input-message" class="form-control" placeholder="Type your message..." />
-                <button id="send-button" class="btn btn-primary">Send</button>
-            </div>
+<div id="chat-container" class="card">
+    <div id="message-container" class="card-body"></div>
+    <div id="input-container" class="card-footer">
+        <div class="input-group">
+            <input type="text" id="input-message" class="form-control" placeholder="Type your message..." />
+            <button id="send-button" class="btn btn-primary">Send</button>
         </div>
     </div>
+</div>
 
-    <script>
-        const messageContainer = document.getElementById('message-container');
-        const inputMessage = document.getElementById('input-message');
-        const sendButton = document.getElementById('send-button');
+<script>
+    const messageContainer = document.getElementById('message-container');
+    const inputMessage = document.getElementById('input-message');
+    const sendButton = document.getElementById('send-button');
 
-        function sendMessage() {
-            const message = inputMessage.value.trim();
+    async function sendMessage() {
+        const message = inputMessage.value.trim();
 
-            if (message) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message', 'user-message');
-                messageElement.textContent = message;
-                messageContainer.appendChild(messageElement);
-                inputMessage.value = '';
+        if (message) {
+            const userMessageElement = document.createElement('div');
+            userMessageElement.classList.add('message', 'user-message');
+            userMessageElement.textContent = message;
+            messageContainer.appendChild(userMessageElement);
+            inputMessage.value = '';
 
-                setTimeout(() => {
-                    const botMessage = "This is a simulated bot response.";
-                    const botMessageElement = document.createElement('div');
-                    botMessageElement.classList.add('message', 'bot-message');
-                    botMessageElement.textContent = botMessage;
-                    messageContainer.appendChild(botMessageElement);
-                }, 1000);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+
+            const botResponse = await fetchBotResponse(message);
+            if (botResponse) {
+                const botMessageElement = document.createElement('div');
+                botMessageElement.classList.add('message', 'bot-message');
+                botMessageElement.textContent = botResponse;
+                messageContainer.appendChild(botMessageElement);
 
                 messageContainer.scrollTop = messageContainer.scrollHeight;
             }
         }
+    }
 
-        sendButton.addEventListener('click', sendMessage);
-        inputMessage.addEventListener('keyup', (event) => {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
+    async function fetchBotResponse(message) {
+        const response = await fetch('https://api.dialogflow.com/v1/query?v=20150910', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer YOUR_CLIENT_ACCESS_TOKEN',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                query: message,
+                lang: 'ko',
+                sessionId: '12345'
+            })
         });
-    </script>
+
+        const data = await response.json();
+        try {
+            return data.result.fulfillment.speech;
+        } catch (error) {
+            console.error('Error fetching bot response:', error);
+            return 'Sorry, I am having trouble understanding you right now.';
+        }
+    }
+
+    sendButton.addEventListener('click', sendMessage);
+    inputMessage.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    });
+</script>
 </body>
 </html>
