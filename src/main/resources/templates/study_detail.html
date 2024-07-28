@@ -21,9 +21,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
-    <script src="/jquery/jquery.min.js"></script>
     <script src="/js/custom.js"></script>
-
+    <script src="/jquery/jquery.min.map"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
@@ -134,7 +133,7 @@
                 </div>
                 <!-- 새로운 버튼들 추가 -->
                 <script th:inline="javascript">
-                    var studyId = /*[[${studyId}]]*/ 0;
+                    let studyId = /*[[${studyId}]]*/ 0;
                 </script>
 
                 <div class="mb-4">
@@ -232,9 +231,9 @@
 
 <script th:inline="javascript">
     $(document).ready(function () {
-        var studyId = /*[[${studyId}]]*/ 0;
-        var userId = /*[[${userId}]]*/ 0;
-        var errorMessage = /*[[${errorMessage != null ? '\'' + errorMessage + '\'' : 'null'}]]*/ 'null';
+        let studyId = /*[[${studyId}]]*/ 0;
+        let userId = /*[[${userId}]]*/ 0;
+        let errorMessage = /*[[${errorMessage != null ? '\'' + errorMessage + '\'' : 'null'}]]*/ 'null';
 
         if (errorMessage !== 'null') {
             alert(errorMessage);
@@ -245,22 +244,13 @@
         });
 
         $('#group-chat').click(function (e) {
-            e.preventDefault(); // 기본 동작 방지
+            e.preventDefault();
 
             fetch('/chat/enterChat?chatType=GROUP&studyId=' + studyId)
                 .then(response => {
                     if (response.redirected) {
-                        // 리다이렉트된 경우 (스터디원이 아닌 경우)
-                        return response.text().then(html => {
-                            const parser = new DOMParser();
-                            const doc = parser.parseFromString(html, 'text/html');
-                            const errorMessage = doc.querySelector('#errorMessage');
-                            if (errorMessage) {
-                                throw new Error(errorMessage.textContent.trim());
-                            } else {
-                                throw new Error('스터디원이 아닙니다.');
-                            }
-                        });
+                        window.location.href = response.url;
+                        throw new Error('REDIRECTED');
                     }
                     if (!response.ok) {
                         throw new Error('HTTP error ' + response.status);
@@ -268,13 +258,14 @@
                     return response.text();
                 })
                 .then(html => {
-                    // 성공적으로 채팅방에 입장한 경우
                     document.open();
                     document.write(html);
                     document.close();
                 })
                 .catch(error => {
-                    alert(error.message);
+                    if (error.message !== 'REDIRECTED') {
+                        alert('채팅방 입장 중 오류가 발생했습니다: ' + error.message);
+                    }
                 });
         });
 
@@ -285,13 +276,13 @@
 
         // 신청 승인 버튼 이벤트 리스너 추가
         $('.approve-btn').click(function () {
-            var studyMemberId = $(this).data('study-member-id');
+            let studyMemberId = $(this).data('study-member-id');
             approveStudy(studyMemberId);
         });
 
         // 신청 거절 버튼 이벤트 리스너 추가
         $('.reject-btn').click(function () {
-            var applicantUserId = $(this).data('user-id');
+            let applicantUserId = $(this).data('user-id');
             rejectStudy(studyId, applicantUserId);
         });
     });
@@ -309,7 +300,9 @@
         })
             .then(response => {
                 if (!response.ok) {
-                    return response.text().then(text => { throw new Error(text) });
+                    return response.text().then(text => {
+                        throw new Error(text)
+                    });
                 }
                 return response.text();
             })
@@ -381,6 +374,20 @@
                 alert('거절 중 오류가 발생했습니다: ' + error.message);
             });
     }
+</script>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var errorMessage = urlParams.get('errorMessage');
+        if (errorMessage) {
+            // decodeURIComponent를 사용하여 URL 디코딩
+            errorMessage = decodeURIComponent(errorMessage);
+            // "+" 기호를 공백으로 변경
+            errorMessage = errorMessage.replace(/\+/g, ' ');
+            alert(errorMessage);
+        }
+    });
 </script>
 
 

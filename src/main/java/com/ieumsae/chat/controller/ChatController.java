@@ -16,6 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RequestMapping("/chat")
@@ -29,6 +31,8 @@ public class ChatController {
     public ChatController(ChatService chatService) {
         this.chatService = chatService;
     }
+
+    private static final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     @GetMapping
     public String chatPage() {
@@ -50,17 +54,23 @@ public class ChatController {
      */
 
     @GetMapping("/enterChat")
-    public String enterChat(@RequestParam("studyId") Long studyId, @RequestParam("chatType") ChatRoom.ChatType chatType, Model model, RedirectAttributes redirectAttributes) {
+    public String enterChat(@RequestParam("studyId") Long studyId,
+                            @RequestParam("chatType") ChatRoom.ChatType chatType,
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
         Long userId = SecurityUtils.getCurrentUserId();
+        log.info("Entering chat. StudyId: {}, ChatType: {}, UserId: {}", studyId, chatType, userId);
 
         try {
-
             if (chatType == ChatRoom.ChatType.GROUP && !chatService.canJoinGroupChat(studyId, userId)) {
+                log.warn("User {} cannot join group chat for study {}", userId, studyId);
                 throw new IllegalArgumentException("스터디에 속해있어야 그룹채팅에 참가할 수 있습니다.");
             }
 
             ChatRoom chatRoom = chatService.getOrCreateChatRoom(studyId, chatType);
             chatService.addUserToChat(chatRoom.getChatRoomId(), userId, chatType, studyId);
+
+            log.info("User {} successfully entered chat room {}", userId, chatRoom.getChatRoomId());
 
             model.addAttribute("chatRoomId", chatRoom.getChatRoomId());
             model.addAttribute("userId", userId);
@@ -72,9 +82,11 @@ public class ChatController {
 
             return "chat";
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            log.error("IllegalArgumentException in enterChat: {}", e.getMessage());
+            redirectAttributes.addAttribute("errorMessage", URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
             return "redirect:/study/" + studyId;
         } catch (Exception e) {
+            log.error("Unexpected error in enterChat", e);
             redirectAttributes.addFlashAttribute("errorMessage", "예기치 못한 오류가 발생했습니다.");
             return "redirect:/study/" + studyId;
         }

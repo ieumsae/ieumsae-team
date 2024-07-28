@@ -13,6 +13,9 @@
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
     <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/css/fontawesome.css">
     <link rel="stylesheet" href="/css/templatemo-edu-meeting.css">
@@ -20,6 +23,7 @@
     <link rel="stylesheet" href="/css/lightbox.css">
     <link rel="stylesheet" href="/css/table.css">
     <link rel="stylesheet" href="/css/tabs.css">
+
     <link rel="stylesheet" href="/css/chatbot.css">
 </head>
 
@@ -36,7 +40,7 @@
             <div class="col-lg-4 col-sm-4">
                 <div class="right-icons">
                     <ul>
-                        <li id="userInfo"><a href="/login">로그인 / 회원가입</a></li>
+                        <div th:replace="fragments/header :: header"></div>
                     </ul>
                 </div>
             </div>
@@ -76,7 +80,7 @@
 <!-- ***** Main Banner Area Start ***** -->
 <section class="section main-banner" id="top" data-section="section1">
     <video autoplay muted loop id="bg-video">
-        <source src="/images/study_main.mp4" type="video/mp4" />
+        <source src="/images/study_main.mp4" type="video/mp4"/>
     </video>
 
     <div class="video-overlay header-text">
@@ -85,7 +89,8 @@
                 <div class="col-lg-12">
                     <div class="caption">
                         <h6 style="position: relative; left: 150px; top: -100px;">Hello Students</h6>
-                        <h2 style="color: white; position:relative; left: 150px; top: -100px;">Welcome to <SPAN style="color: yellow;">IEUMSAE</SPAN></h2>
+                        <h2 style="color: white; position:relative; left: 150px; top: -100px;">Welcome to <SPAN
+                                style="color: yellow;">IEUMSAE</SPAN></h2>
                         <!--<div class="main-button-red" style="left: 100px;">
                             <div class="scroll-to-section"><a href="#contact">Join Us Now!</a></div>
                         </div>-->
@@ -464,9 +469,9 @@
 
 <section>
     <table class="table" bgcolor="white">
-        <DIV class="section-header" style="margin-bottom: 10px;">
+        <div class="section-header" style="margin-bottom: 10px;">
             <h3 color="white" style="font-size: 2em;">STUDY REVIEW</h3>
-        </DIV>
+        </div>
         <div class="more-link" style="margin-left: 1300px;">
             <a href="./review_main.html" id="board-more">
                 + 더보기
@@ -476,7 +481,7 @@
         <tr>
             <th>번호</th>
             <th>스터디 명</th>
-            <th >후기 제목</th>
+            <th>후기 제목</th>
             <th style="text-align: center;">작성 시간</th>
         </tr>
         </thead>
@@ -551,9 +556,9 @@
 
 <!-- 메인페이지에서 최근 10개의 커뮤니티 게시글 미리보기 -->
 <table class="table">
-    <DIV class="section-header" style="margin-bottom: 10px;">
+    <div class="section-header" style="margin-bottom: 10px;">
         <h3 color="white" style="font-size: 2em">COMMUNITY</h3>
-    </DIV>
+    </div>
     <div class="more-link" style="margin-left: 1300px;">
         <a th:href="@{/community}">
             + 더보기
@@ -562,7 +567,7 @@
     <thead>
     <tr>
         <th>번호</th>
-        <th >제목</th>
+        <th>제목</th>
         <th style="text-align: center;">작성자</th>
         <th style="text-align: center;">작성 시간</th>
     </tr>
@@ -587,10 +592,12 @@
 </div>
 
 <!-------------------------------- Chatbot container -------------------------->
-<!-- Chatbot icon -->
-<button id="chatbot-icon" style="border: none; background: none; position: fixed; bottom: 20px; right: -120px; cursor: pointer; z-index: 1000;">
+<!-- Chatbot icon-->
+<button id="chatbot-icon"
+        style="border: none; background: none; position: fixed; bottom: 20px; right: -120px; cursor: pointer; z-index: 1000;">
     <img src="/images/chatbot.png" alt="Chatbot Icon" style="width: 15%;">
 </button>
+
 
 <!-- Chatbot container -->
 <div id="chatbot-container" style="display: none;">
@@ -601,12 +608,13 @@
         <div id="message-container" class="card-body"></div>
         <div id="input-container" class="card-footer">
             <div class="input-group">
-                <input type="text" id="input-message" class="form-control" placeholder="Type your message..." />
+                <input type="text" id="input-message" class="form-control" placeholder="Type your message..."/>
                 <button id="send-button" class="btn btn-primary">Send</button>
             </div>
         </div>
     </div>
 </div>
+
 <!-------------------------------- Chatbot container 끝 -------------------------->
 <!-- Scripts -->
 <!-- Bootstrap core JavaScript -->
@@ -626,7 +634,8 @@
 
         if (isAnimate) {
             $('body, html').animate({
-                    scrollTop: reqSectionPos },
+                    scrollTop: reqSectionPos
+                },
                 800);
         } else {
             $('body, html').scrollTop(reqSectionPos);
@@ -645,8 +654,7 @@
                 var
                     currentId = $this.data('section'),
                     reqLink = $('a').filter('[href*=\\#' + currentId + ']');
-                reqLink.closest('li').addClass('active').
-                siblings().removeClass('active');
+                reqLink.closest('li').addClass('active').siblings().removeClass('active');
             }
         });
     };
@@ -662,7 +670,7 @@
     //notice_board java script
     // 탭 클릭 시 컨텐츠 전환을 위한 JavaScript 코드
     document.querySelectorAll('.tabs a').forEach(tab => {
-        tab.addEventListener('click', function(e) {
+        tab.addEventListener('click', function (e) {
             e.preventDefault();
 
             // 모든 탭의 active 클래스 제거
@@ -701,9 +709,9 @@
     }
 
     function updateUserInfo(data) {
-        const userInfoDiv = document.getElementById('userInfo');
+        const userInfodiv = document.getElementById('userInfo');
         if (data.username && data.username !== 'unknown') {
-            userInfoDiv.innerHTML = `
+            userInfodiv.innerHTML = `
                 <div style="width="1000px; float:right;">
                 <p style="float: LEFT; color: white; MARGIN-RIGHT:10PX; padding-top:5px;">${data.nickname}님 환영합니다!</p>
                 <button class="button" onclick="showNicknameForm()" style="padding-left:3px; padding-right:3px; padding-top:3px;">닉네임 변경</button>
@@ -722,8 +730,8 @@
     }
 
     function showLoginButton() {
-        const userInfoDiv = document.getElementById('userInfo');
-        userInfoDiv.innerHTML = `<a href="/login">로그인/회원가입</a>`;
+        const userInfodiv = document.getElementById('userInfo');
+        userInfodiv.innerHTML = `<a href="/login">로그인/회원가입</a>`;
     }
 
     function showNicknameForm() {
@@ -754,7 +762,7 @@
     }
 
     function setupNicknameForm() {
-        document.getElementById('nicknameForm').addEventListener('submit', function(e) {
+        document.getElementById('nicknameForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const newNickname = document.getElementById('newNickname').value;
 
@@ -767,7 +775,9 @@
             })
                 .then(response => {
                     if (!response.ok) {
-                        return response.text().then(text => { throw new Error(text) });
+                        return response.text().then(text => {
+                            throw new Error(text)
+                        });
                     }
                     return response.json();
                 })
@@ -855,5 +865,4 @@
 <!----------------------------chat bot script 종료---------------------------------->
 </body>
 
-</body>
 </html>
