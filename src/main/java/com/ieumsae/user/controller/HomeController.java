@@ -25,4 +25,14 @@ public class HomeController {
         model.addAttribute("recentCommunities", recentCommunities);
         return "index";
     }
+
+    @GetMapping("/review")
+    public String review(Model model) {
+        return "coming_soon";
+    }
+
+    @GetMapping("/contact_us")
+    public String contact_us(Model model) {
+        return "contact_us";
+    }
 }

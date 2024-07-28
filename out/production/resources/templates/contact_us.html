@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="TemplateMo">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <title>ieumsae</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="../static/css/fontawesome.css">
+    <link rel="stylesheet" href="../static/css/templatemo-edu-meeting.css">
+    <link rel="stylesheet" href="../static/css/owl.css">
+    <link rel="stylesheet" href="../static/css/lightbox.css">
+    <link rel="stylesheet" href="../static/css/table.css">
+    <link rel="stylesheet" href="../static/css/tabs.css">
+    
+<style>
+
+</style>
+  </head>
+
+<body>
+
+  <!-- Sub Header -->
+  <div class="sub-header">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-sm-8">
+          <div class="left-content">
+            <p>ieumsae</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-4">
+          <div class="right-icons">
+            <ul>
+              <li><a href="./login.html">로그인 / 회원가입</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ***** Header Area Start ***** -->
+  <header class="header-area header-sticky">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                    <!-- ***** Logo Start ***** -->
+                    <a th:href="@{/}" class="logo">IEUMSAE</a>
+                    <!-- ***** Logo End ***** -->
+                    <!-- ***** Menu Start ***** -->
+                  <ul class="nav">
+                    <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+                    <li><a th:href="@{/study}">STUDY</a></li>
+                    <li><a th:href="@{/community}">COMMUNITY</a></li>
+                    <li><a th:href="@{/review}">review</a></li>
+                    <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
+                    <li><a href="./contact_us.html">Contact Us</a></li>
+                  </ul>
+                  <a class='menu-trigger'>
+                        <span>Menu</span>
+                    </a>
+                    <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+  <!-- ***** Header Area End ***** -->
+
+  <section class="heading-page header-text" id="top">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h2>contact us</h2>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="email-me" style="width: 30%; margin: 0 auto; margin-top: 10px;">
+    <h2 class="title-section"></h2>
+    <form class="gform" action="https://script.google.com/macros/s/AKfycbwisG356DIfNq9xjrmRhP9SqKWvF8p0RH-0j-R4mOxLFDZEZ-0QfgrxSsQ4D8wZr7L0/exec" method="POST" data-email="test@gmail.com">
+      <fieldset>
+        <div class="box-input mb-3">
+          <label for="userName" class="form-label">이름</label>
+          <input type="text" id="userName" class="form-control" name="name" placeholder="홍길동" required>
+        </div>
+        <div class="box-input mb-3">
+          <label for="userEmail">Email</label>
+          <input type="email" id="userEmail" class="form-control" name="email" placeholder="ex@example.com" required>
+        </div>
+        <div class="box-input mb-3">
+          <label for="userMessage">메세지 내용</label>
+          <textarea name="message" class="form-control" id="userMessage" rows="10" required></textarea>
+        </div>
+        <div class="box-input">
+          <button type="submit" class="btn-send btn btn-success" style="margin-left: 160px;">Send Message</button>
+        </div>
+        <div style="display:none;" class="thankyou_message">
+          <!-- You can customize the thankyou message by editing the code below -->
+          <p style="color: white; margin-top: 10px;">연락주셔서 감사합니다. 빠른 시일 내에 답변 드리겠습니다🚀</p>
+          </h2>
+         </div>
+      </fieldset>
+    </form>
+    </div>
+  </section>
+
+
+  <div class="footer">
+    <p>Copyright © 2024 ieumsae Co., Ltd. All Rights Reserved. 
+        <br>Design: <a href="https://templatemo.com" target="_parent" title="free css templates">ieumsae</a></p>
+  </div>
+  
+
+
+  <!-- Scripts -->
+  <!-- Bootstrap core JavaScript -->
+    <script src="../static/jquery/jquery.min.js"></script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script src="../static/js/custom.js"></script>
+    <script src="../static/js/form-submission-handler.js" data-cfasync="false"></script><!--이메일 보내는 스크립트-->
+    <script>
+        //according to loftblog tut
+        $('.nav li:first').addClass('active');
+
+        var showSection = function showSection(section, isAnimate) {
+          var
+          direction = section.replace(/#/, ''),
+          reqSection = $('.section').filter('[data-section="' + direction + '"]'),
+          reqSectionPos = reqSection.offset().top - 0;
+
+          if (isAnimate) {
+            $('body, html').animate({
+              scrollTop: reqSectionPos },
+            800);
+          } else {
+            $('body, html').scrollTop(reqSectionPos);
+          }
+
+        };
+
+        var checkSection = function checkSection() {
+          $('.section').each(function () {
+            var
+            $this = $(this),
+            topEdge = $this.offset().top - 80,
+            bottomEdge = topEdge + $this.height(),
+            wScroll = $(window).scrollTop();
+            if (topEdge < wScroll && bottomEdge > wScroll) {
+              var
+              currentId = $this.data('section'),
+              reqLink = $('a').filter('[href*=\\#' + currentId + ']');
+              reqLink.closest('li').addClass('active').
+              siblings().removeClass('active');
+            }
+          });
+        };
+
+        $('.main-menu, .responsive-menu, .scroll-to-section').on('click', 'a', function (e) {
+          e.preventDefault();
+          showSection($(this).attr('href'), true);
+        });
+
+        $(window).scroll(function () {
+          checkSection();
+        });
+        //로그인 하면 화면이 마이페이지로 바뀌는 js
+        // 로그인 상태를 확인하는 함수 (여기서는 단순히 예제로 로그인된 상태로 가정)
+    function checkLoginStatus() {
+      // 이 함수는 실제로 서버에서 로그인 상태를 받아오는 로직을 포함해야 합니다.
+      // 예를 들어, 쿠키, 로컬 스토리지 또는 서버의 응답을 확인할 수 있습니다.
+      return true; // true면 로그인된 상태, false면 로그인되지 않은 상태
+    }
+
+    // DOM이 로드되면 실행
+    document.addEventListener('DOMContentLoaded', function() {
+      if (checkLoginStatus()) {
+        // 로그인 상태일 때 "로그인"과 "회원가입"을 "마이페이지"로 변경
+        document.getElementById('login').textContent = '마이페이지';
+        document.getElementById('login').href = '/mypage'; // 마이페이지 링크로 변경
+        // 회원가입 버튼 숨기기
+      }
+    });
+    </script>
+</body>
+
+
+  </body>
+
+</html>

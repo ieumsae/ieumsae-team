@@ -34,7 +34,7 @@
       <div class="col-lg-4 col-sm-4">
         <div class="right-icons">
           <ul>
-            <li><a href="./login.html">로그인 / 회원가입</a></li>
+            <div th:replace="fragments/header :: header"></div>
           </ul>
         </div>
       </div>
@@ -52,11 +52,12 @@
           <!-- ***** Logo End ***** -->
           <!-- ***** Menu Start ***** -->
           <ul class="nav">
-            <li class="scroll-to-section"><a href="./index.html" class="active">Home</a></li>
-            <li><a href="./study_main.html">STUDY</a></li>
-            <li><a href="./community_main.html">COMMUNITY</a></li>
-            <li><a href="./review_main.html">review</a></li>
-            <li><a href="./contact_us.html">Contact Us</a></li>
+            <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+            <li><a th:href="@{/study}">STUDY</a></li>
+            <li><a th:href="@{/community}">COMMUNITY</a></li>
+            <li><a th:href="@{/review}">review</a></li>
+            <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
+            <li><a th:href="@{/contact_us}">Contact Us</a></li>
           </ul>
           <a class='menu-trigger'>
             <span>Menu</span>

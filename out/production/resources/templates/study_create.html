@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="TemplateMo">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+  <title>ieumsae</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="/css/fontawesome.css">
+  <link rel="stylesheet" href="/css/templatemo-edu-meeting.css">
+  <link rel="stylesheet" href="/css/owl.css">
+  <link rel="stylesheet" href="/css/lightbox.css">
+  <link rel="stylesheet" href="/css/table.css">
+  <link rel="stylesheet" href="/css/tabs.css">
+
+  <style>
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Sub Header -->
+  <div class="sub-header">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-sm-8">
+          <div class="left-content">
+            <p>ieumsae</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-4">
+          <div class="right-icons">
+            <ul>
+              <li><a href="./login.html">로그인 / 회원가입</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ***** Header Area Start ***** -->
+  <header class="header-area header-sticky">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav class="main-nav">
+            <!-- ***** Logo Start ***** -->
+            <a th:href="@{/}" class="logo">IEUMSAE</a>
+            <!-- ***** Logo End ***** -->
+            <!-- ***** Menu Start ***** -->
+            <ul class="nav">
+              <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+              <li><a th:href="@{/study}">STUDY</a></li>
+              <li><a th:href="@{/community}">COMMUNITY</a></li>
+              <li><a th:href="@{/review}">review</a></li>
+              <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
+              <li><a href="./contact_us.html">Contact Us</a></li>
+            </ul>
+            <a class='menu-trigger'>
+              <span>Menu</span>
+            </a>
+            <!-- ***** Menu End ***** -->
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- ***** Header Area End ***** -->
+
+  <section class="heading-page header-text" id="top">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h2>스터디 개설</h2>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="margin-top: 50px;">
+    <h2>스터디 글 작성</h2>
+    <!-- 스터디 생성 폼 -->
+    <form th:action="@{/study/create}" th:if="${studyId == null}" method="post">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">스터디 제목</span>
+        <input type="text" class="form-control" placeholder="스터디 제목" aria-label="Title" aria-describedby="basic-addon1" name="title" th:value="${title}" required>
+      </div>
+      <div class="input-group">
+        <span class="input-group-text">상세 내용</span>
+        <textarea class="form-control" aria-label="Content" rows="5" name="content" required th:text="${content}"></textarea>
+      </div>
+      <button type="submit" class="btn btn-success btn-lg" style="margin-top: 10px; position: relative; left: 45%;">게시</button>
+    </form>
+
+    <!-- 스터디 수정 폼 -->
+    <form th:action="@{/study/{studyId}/edit(studyId=${studyId})}" th:unless="${studyId == null}" method="post">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">스터디 제목</span>
+        <input type="text" class="form-control" placeholder="스터디 제목" aria-label="Title" aria-describedby="basic-addon1" name="title" th:value="${title}" required>
+      </div>
+      <div class="input-group">
+        <span class="input-group-text">상세 내용</span>
+        <textarea class="form-control" aria-label="Content" rows="5" name="content" required th:text="${content}"></textarea>
+      </div>
+      <button type="submit" class="btn btn-success btn-lg" style="margin-top: 10px; position: relative; left: 45%;">수정</button>
+    </form>
+  </div>
+
+
+  <div class="footer">
+    <p>Copyright © 2024 ieumsae Co., Ltd. All Rights Reserved.
+        <br>Design: <a href="https://templatemo.com" target="_parent" title="free css templates">ieumsae</a></p>
+  </div>
+
+
+  <!-- Scripts -->
+  <!-- Bootstrap core JavaScript -->
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/custom.js"></script>
+
+  <script>
+    document.getElementById('studyForm').addEventListener('submit', function (event) {
+      // 폼 제출의 기본 동작을 막지 않습니다.
+      // event.preventDefault(); 를 제거합니다.
+
+      // 알림은 유지할 수 있습니다.
+      alert('스터디 개설이 완료되었습니다.');
+
+      // 페이지 이동은 서버의 리다이렉트에 의해 처리되므로 여기서는 제거합니다.
+      // window.location.href = 'study_main.html'; 를 제거합니다.
+    });
+
+    // 페이지 섹션 표시
+    var showSection = function showSection(section, isAnimate) {
+      var
+        direction = section.replace(/#/, ''),
+        reqSection = $('.section').filter('[data-section="' + direction + '"]'),
+        reqSectionPos = reqSection.offset().top - 0;
+
+      if (isAnimate) {
+        $('body, html').animate({
+          scrollTop: reqSectionPos
+        },
+          800);
+      } else {
+        $('body, html').scrollTop(reqSectionPos);
+      }
+
+    };
+
+    // 현재 섹션 확인
+    var checkSection = function checkSection() {
+      $('.section').each(function () {
+        var
+          $this = $(this),
+          topEdge = $this.offset().top - 80,
+          bottomEdge = topEdge + $this.height(),
+          wScroll = $(window).scrollTop();
+        if (topEdge < wScroll && bottomEdge > wScroll) {
+          var
+            currentId = $this.data('section'),
+            reqLink = $('a').filter('[href*=\\#' + currentId + ']');
+          reqLink.closest('li').addClass('active').
+            siblings().removeClass('active');
+        }
+      });
+    };
+
+    // 메뉴 클릭 시 섹션 표시
+    $('.main-menu, .responsive-menu, .scroll-to-section').on('click', 'a', function (e) {
+      e.preventDefault();
+      showSection($(this).attr('href'), true);
+    });
+
+    $(window).scroll(function () {
+      checkSection();
+    });
+  </script>
+</body>
+
+</html>

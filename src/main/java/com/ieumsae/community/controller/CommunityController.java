@@ -3,11 +3,15 @@ package com.ieumsae.community.controller;
 import com.ieumsae.common.repository.CommunityRepository;
 import com.ieumsae.community.dto.CommunityDTO;
 import com.ieumsae.community.service.CommunityService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/community")
@@ -61,12 +65,20 @@ public class CommunityController {
         return "redirect:/community"; // 커뮤니티 목록 페이지로 리다이렉트
     }
 
-    // 커뮤니티 삭제
-    // 커뮤니티 삭제 처리
     @PostMapping("/{communityId}/delete")
-    public String deleteCommunity(@PathVariable Long communityId) {
-        communityService.deleteCommunity(communityId);
-        return "redirect:/community"; // 삭제 후 목록 페이지로 리다이렉트
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteCommunity(@PathVariable Long communityId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            communityService.deleteCommunity(communityId);
+            response.put("status", "success");
+            response.put("message", "커뮤니티가 성공적으로 삭제되었습니다.");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
     }
 
 

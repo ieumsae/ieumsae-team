@@ -2,6 +2,8 @@ package com.ieumsae.chat.service;
 
 import com.ieumsae.common.entity.*;
 import com.ieumsae.common.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,9 @@ public class ChatService {
         this.studyMemberRepository = studyMemberRepository;
         this.messagingTemplate = messagingTemplate;
     }
+
+    private static final Logger log = LoggerFactory.getLogger(ChatService.class);
+
 
     /**
      * @param studyId
@@ -157,9 +162,12 @@ public class ChatService {
      */
 
     public boolean canJoinGroupChat(Long studyId, Long userId) {
-        return studyMemberRepository.findByStudyIdAndUserId(studyId, userId)
-                .map(StudyMember::isStatus) // Optional 값이 존재할 경우 isStatus 메소드를 호출, isStatus는 status 필드에 대한 getter
-                .orElse(false); // Optional 객체의 값이 존재하지 않을 경우 default 값을 false로 설정
+        boolean canJoin = studyMemberRepository.findByStudyIdAndUserId(studyId, userId)
+                .map(StudyMember::isStatus)
+                .orElse(false);
+
+        log.info("Checking if user {} can join study {}: {}", userId, studyId, canJoin);
+        return canJoin;
     }
 
     /**

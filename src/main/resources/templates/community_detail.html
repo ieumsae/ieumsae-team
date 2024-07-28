@@ -32,7 +32,7 @@
       <div class="col-lg-4 col-sm-4">
         <div class="right-icons">
           <ul>
-            <li><a href="./login.html">로그인 / 회원가입</a></li> <!-- 로그인/회원가입 링크 -->
+            <div th:replace="fragments/header :: header"></div>
           </ul>
         </div>
       </div>
@@ -55,9 +55,9 @@
             <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
             <li><a th:href="@{/study}">STUDY</a></li>
             <li><a th:href="@{/community}">COMMUNITY</a></li>
-            <li><a href="coming_soon.html">review</a></li>
+            <li><a th:href="@{/review}">review</a></li>
             <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
-            <li><a href="./contact_us.html">Contact Us</a></li>
+            <li><a th:href="@{/contact_us}">Contact Us</a></li>
           </ul>
           <a class='menu-trigger'>
             <span>Menu</span> <!-- 모바일 메뉴 트리거 -->
@@ -106,7 +106,7 @@
           <button id="community-update" class="btn btn-secondary" th:onclick="'location.href=\'/community/' + ${communityId} + '/edit\''">게시글 수정</button>
         </div>
         <div class="mb-4">
-          <form th:action="@{/community/{communityId}/delete(communityId=${communityId})}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?');">
+          <form id="deleteForm" th:action="@{/community/{communityId}/delete(communityId=${communityId})}" method="post" onsubmit="return deleteCommunity(event);">
             <button type="submit" class="btn btn-danger">게시글 삭제</button> <!-- 게시글 삭제 버튼 -->
           </form>
         </div>
@@ -149,25 +149,27 @@
 <script src="/js/custom.js"></script>
 
 <script>
-  function addComment(event) {
+  function deleteCommunity(event) {
     event.preventDefault();
-    var commentInput = event.target.querySelector("input");
-    var commentText = commentInput.value;
-    var date = new Date().toLocaleString();
+    var form = $('#deleteForm');
+    var actionUrl = form.attr('action');
 
-    var commentDiv = document.createElement("div");
-    commentDiv.className = "card my-3";
-    commentDiv.innerHTML = `
-        <div class="card-body">
-          <p class="card-text">${commentText}</p>
-          <p class="card-text"><small class="text-muted">${date}</small></p>
-        </div>
-      `;
+    $.ajax({
+      type: 'POST',
+      url: actionUrl,
+      success: function(response) {
+        alert(response.message);
+        if (response.status === 'success') {
+          window.location.href = '/community';
+        }
+      },
+      error: function(xhr) {
+        var response = xhr.responseJSON;
+        alert(response.message || '삭제 중 오류가 발생했습니다.');
+      }
+    });
 
-    var commentsDiv = event.target.parentNode.querySelector(".comments");
-    commentsDiv.insertBefore(commentDiv, commentsDiv.firstChild);
-
-    commentInput.value = "";
+    return false;
   }
 </script>
 </body>

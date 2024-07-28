@@ -24,7 +24,6 @@
 </head>
 
 <body>
-
 <!-- Sub Header -->
 <div class="sub-header">
     <div class="container">
@@ -52,18 +51,16 @@
             <div class="col-12">
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
-                    <a href="./index.html" class="logo">
-                        IEUMSAE
-                    </a>
+                    <a th:href="@{/}" class="logo">IEUMSAE</a>
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
                         <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
                         <li><a th:href="@{/study}">STUDY</a></li>
                         <li><a th:href="@{/community}">COMMUNITY</a></li>
-                        <li><a href="coming_soon.html">review</a></li>
+                        <li><a th:href="@{/review}">review</a></li>
                         <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
-                        <li><a href="./contact_us.html">Contact Us</a></li>
+                        <li><a th:href="@{/contact_us}">Contact Us</a></li>
                     </ul>
                     <a class='menu-trigger'>
                         <span>Menu</span>

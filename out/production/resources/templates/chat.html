@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IEUMSAE 채팅</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/templatemo-edu-meeting.css">
+
+    <style>
+        body, html {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #ffffff;
+        }
+        .chat-container {
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #ffffff;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background-color: #ffffff;
+            color: #333333;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-input {
+            padding: 20px;
+            background-color: #ffffff;
+            display: flex;
+            border-top: 1px solid #e0e0e0;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+        }
+        #send-button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            max-width: 70%;
+        }
+        .message-content {
+            padding: 10px;
+            border-radius: 18px;
+            position: relative;
+        }
+        .own-message {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .own-message .message-content {
+            background-color: #dcf8c6;
+            margin-left: 10px;
+        }
+        .other-message .message-content {
+            background-color: #f1f0f0;
+            margin-right: 10px;
+        }
+        .message .time {
+            font-size: 0.75em;
+            color: #999;
+            margin-top: 5px;
+        }
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .avatar {
+            font-size: 24px;
+            line-height: 1;
+        }
+        .own-message .user-icon {
+            background-color: #C8FFFF;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="sidebar">
+        <a th:href="@{/}" class="logo">IEUMSAE</a>
+        <h3 th:text="${chatType == T(com.ieumsae.common.entity.ChatRoom.ChatType).PERSONAL ? '1:1 채팅' : '그룹 채팅'}">채팅</h3>
+    </div>
+    <div class="main-content">
+        <div class="chat-header">
+            <h2 th:text="${chatType == T(com.ieumsae.common.entity.ChatRoom.ChatType).PERSONAL ? '1:1 채팅' : '그룹 채팅'}">채팅</h2>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <div th:each="message : ${previousMessages}" class="message" th:classappend="${message.userId} == ${userId} ? 'own-message' : 'other-message'">
+                <div class="user-icon">
+                    <div class="avatar">🙋‍♂️</div>
+                </div>                <div class="message-content">
+                    <span class="content" th:text="${message.content}"></span>
+                    <span class="time" th:text="${#temporals.format(message.sentAt, 'HH:mm:ss')}"></span>
+                </div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="메시지를 입력하세요..." />
+            <button id="send-button"><i class="fas fa-paper-plane"></i> 보내기</button>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/chat.js}"></script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const chatClient = new ChatClient();
+        const chatRoomId = /*[[${chatRoomId}]]*/ null;
+        const userId = /*[[${userId}]]*/ null;
+
+        if (chatRoomId && userId) {
+            chatClient.connect(chatRoomId, userId);
+        } else {
+            console.error('Chat room ID or User ID is not defined');
+            alert("채팅 연결에 필요한 정보가 올바르지 않습니다. 페이지를 새로고침하거나 다시 접속해주세요.");
+        }
+
+        const sendButton = document.getElementById('send-button');
+        const messageInput = document.getElementById('message-input');
+
+        sendButton.addEventListener('click', function () {
+            const message = messageInput.value;
+            if (message.trim() !== '') {
+                chatClient.sendMessage(message);
+                messageInput.value = '';
+            }
+        });
+
+        messageInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+    });
+</script>
+</body>
+</html>

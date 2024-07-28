@@ -16,7 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RequestMapping("/chat")
 @Controller
 public class ChatController {
 
@@ -28,9 +28,15 @@ public class ChatController {
         this.chatService = chatService;
     }
 
-    @GetMapping("/chat")
+    @GetMapping
     public String chatPage() {
         return "chat"; //
+    }
+
+    @GetMapping("/study/{studyId}")
+    public String enterStudyDetail(@PathVariable Long studyId, Model model) {
+        model.addAttribute("studyId", studyId);
+        return "study_detail";
     }
 
     /**
@@ -58,10 +64,10 @@ public class ChatController {
             List<Message> previousMessages = chatService.getPreviousMessages(chatRoom.getChatRoomId()); // 이전 채팅 기록 불러오기
             model.addAttribute("previousMessages", previousMessages); // 채팅방에 띄워주기 위해 model 객체에 추가
 
-            return "chatRoom";
+            return "chat";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "chat";
+            return "study_detail";
         }
     }
 
