@@ -21,7 +21,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
+  <script src="/jquery/jquery.min.js"></script>
+  <script src="/js/custom.js"></script>
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <style>
+    .content-box {
+      background-color: white;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
 <!-- 서브 헤더 시작 -->
@@ -36,7 +49,7 @@
       <div class="col-lg-4 col-sm-4">
         <div class="right-icons">
           <ul>
-            <li><a href="./login.html">로그인 / 회원가입</a></li> <!-- 로그인/회원가입 링크 -->
+            <div th:replace="fragments/header :: header"></div>
           </ul>
         </div>
       </div>
@@ -61,7 +74,7 @@
             <li><a th:href="@{/community}">COMMUNITY</a></li>
             <li><a th:href="@{/review}">review</a></li>
             <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
-            <li><a href="./contact_us.html">Contact Us</a></li>
+            <li><a th:href="@{/contact_us}">Contact Us</a></li>
           </ul>
           <a class='menu-trigger'>
             <span>Menu</span> <!-- 모바일 메뉴 트리거 -->
@@ -119,6 +132,7 @@
         <script th:inline="javascript">
           var studyId = /*[[${studyId}]]*/ 0;
         </script>
+
         <div class="mb-4">
           <button id="one-to-one-chat" class="btn btn-primary" th:onclick="'location.href=\'' + @{/chat/enterChat(chatType='PERSONAL', studyId=${studyId})} + '\''">1:1 채팅</button>
         </div>
@@ -126,6 +140,49 @@
           <button id="group-chat" class="btn btn-success" th:onclick="'location.href=\'' + @{/chat/enterChat(chatType='GROUP', studyId=${studyId})} + '\''">그룹 채팅</button>
         </div>
 
+        <div class="mb-4">
+          <button id="apply-study" class="btn btn-success"
+                  th:data-user-id="${userId}"
+                  th:data-study-id="${studyId}">신청</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 스터디 신청자 목록 섹션 -->
+<div class="container" style="background-color: white; margin-top: 50px; max-width: 800px;">
+  <div class="input-form-backgroud row">
+    <div class="input-form col-md-12 mx-auto">
+      <div class="study-applicants-section" th:if="${study.creatorId == userId}">
+        <h3>스터디 신청자 목록</h3>
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <table class="table">
+          <thead>
+          <tr>
+            <th>신청자</th>
+            <th>액션</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="member : ${pendingMembers}">
+            <td th:text="${member.nickname}"></td>
+            <td>
+              <form th:action="@{/study/approve_study}" method="post" style="display: inline;">
+              <input type="hidden" name="studyMemberId" th:value="${member.studyMemberId}">
+                <input type="hidden" name="studyId" th:value="${studyId}">
+                <button type="submit" class="btn btn-success btn-sm">승인</button>
+              </form>
+              <form th:action="@{/study/reject_study}" method="post" style="display: inline;">
+                <input type="hidden" name="studyId" th:value="${studyId}">
+                <input type="hidden" name="userId" th:value="${member.userId}">
+                <button type="submit" class="btn btn-danger btn-sm">거절</button>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -162,52 +219,150 @@
 
 <!-- 스크립트 시작 -->
 <!-- Bootstrap core JavaScript -->
-<script src="/jquery/jquery.min.js"></script>
-<script src="/js/custom.js"></script>
 
-<script>
 
-    $(document).ready(function() {
-    var studyId = /* 서버에서 전달받은 studyId 값 */;
+<script th:inline="javascript">
+  $(document).ready(function() {
+    var studyId = [[${studyId}]];
+    var userId = [[${userId}]];
+
     $('#one-to-one-chat').click(function() {
-    window.location.href = '/enterChat?chatType=PERSONAL&studyId=' + studyId;
-  });
+      window.location.href = '/enterChat?chatType=PERSONAL&studyId=' + studyId;
+    });
 
     $('#group-chat').click(function() {
-    window.location.href = '/enterChat?chatType=GROUP&studyId=' + studyId;
-  });
+      window.location.href = '/enterChat?chatType=GROUP&studyId=' + studyId;
+    });
+
+    // 스터디 신청 버튼 이벤트 리스너 추가
+    $('#apply-study').click(function() {
+      applyStudy(userId, studyId);
+    });
+
+    // 신청 승인 버튼 이벤트 리스너 추가
+    $('.approve-btn').click(function() {
+      var studyMemberId = $(this).data('study-member-id');
+      approveStudy(studyMemberId);
+    });
+
+    // 신청 거절 버튼 이벤트 리스너 추가
+    $('.reject-btn').click(function() {
+      var applicantUserId = $(this).data('user-id');
+      rejectStudy(studyId, applicantUserId);
+    });
 
     connect();
   });
 
-    var stompClient = null;
+  var stompClient = null;
 
-    function connect() {
+  function connect() {
     var socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-    console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/messages', function (message) {
-    showMessage(JSON.parse(message.body).content);
-  });
-  });
+      console.log('Connected: ' + frame);
+      stompClient.subscribe('/topic/messages', function (message) {
+        showMessage(JSON.parse(message.body).content);
+      });
+    });
   }
 
-    function sendMessage() {
+  function sendMessage() {
     var messageContent = $("#message").val();
     if(messageContent && stompClient) {
-    var chatMessage = {
-    content: messageContent
-  };
-    stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
-    $("#message").val("");
-  }
+      var chatMessage = {
+        content: messageContent
+      };
+      stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+      $("#message").val("");
+    }
   }
 
-    function showMessage(message) {
+  function showMessage(message) {
     $("#chat").append("<div>" + message + "</div>");
   }
 
+  // 스터디 신청 함수
+  function applyStudy(userId, studyId) {
+    fetch('/study/apply/' + studyId, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: userId
+      }),
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('HTTP error ' + response.status);
+              }
+              return response.text();
+            })
+            .then(data => {
+              alert(data);
+              console.log(data);
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              alert('신청 중 오류가 발생했습니다: ' + error.message);
+            });
+  }
+
+  // 스터디 신청 승인 함수
+  function approveStudy(studyMemberId) {
+    fetch('/api/studies/approve', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        studyMemberId: studyMemberId
+      }),
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('HTTP error ' + response.status);
+              }
+              return response.text();
+            })
+            .then(data => {
+              alert('신청이 승인되었습니다.');
+              location.reload();
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              alert('승인 중 오류가 발생했습니다: ' + error.message);
+            });
+  }
+
+  // 스터디 신청 거절 함수
+  function rejectStudy(studyId, applicantUserId) {
+    fetch('/api/studies/reject', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        studyId: studyId,
+        userId: applicantUserId
+      }),
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('HTTP error ' + response.status);
+              }
+              return response.text();
+            })
+            .then(data => {
+              alert('신청이 거절되었습니다.');
+              location.reload();
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              alert('거절 중 오류가 발생했습니다: ' + error.message);
+            });
+  }
 </script>
 </body>
 </html>

@@ -6,6 +6,7 @@ import com.ieumsae.common.repository.StudyRepository;
 import com.ieumsae.common.repository.UserRepository;
 import com.ieumsae.common.utils.SecurityUtils;
 import com.ieumsae.study.study.dto.StudyDTO;
+import com.ieumsae.study.study.dto.StudyMemberDTO;
 import com.ieumsae.study.study.service.StudyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -77,12 +78,21 @@ public class StudyController {
         if (optionalStudy.isPresent()) {
             Study study = optionalStudy.get();
             User creator = userRepository.findByUserId(study.getCreatorId());
+            Long userId = SecurityUtils.getCurrentUserId(); // 현재 로그인한 사용자 ID 추가
+
+            // 스터디 신청자 목록 가져오기
+            List<StudyMemberDTO> pendingMembers = studyService.getPendingMembersWithNickname(studyId);
+
             model.addAttribute("studyId", study.getStudyId());
             model.addAttribute("title", study.getTitle());
             model.addAttribute("nickname", creator.getNickname());
             model.addAttribute("createdDt", study.getCreatedDt());
             model.addAttribute("content", study.getContent());
-            return "study_detail"; // 템플릿 이름
+            model.addAttribute("userId", userId); // 사용자 ID 추가
+            model.addAttribute("pendingMembers", pendingMembers); // 신청자 목록을 모델에 추가합니다.
+            model.addAttribute("study", study); // study 객체 전체를 추가 (기존 속성들과 함께)
+
+            return "study_detail";
         } else {
             return "studyNotFound";
         }
@@ -119,29 +129,13 @@ public class StudyController {
         return "redirect:/study/" + studyId; // 수정 후 상세 페이지로 리다이렉트
     }
 
-    // 스터디 신청 거절
-    @PostMapping("/reject_study")
-    @ResponseBody
-    public String rejectStudyApplication(@RequestBody Map<String, Object> payload) {
-        Long studyId = ((Number) payload.get("study_id")).longValue();
-        Long applicantUserId = ((Number) payload.get("applicant_user_id")).longValue();
-
-        try {
-            studyService.rejectStudyApplication(studyId, applicantUserId);
-            return "스터디 신청이 성공적으로 거절되었습니다.";
-        } catch (RuntimeException e) {
-            return "오류: " + e.getMessage();
-        }
-    }
-
     // 스터디 신청
     // 프론트에서 fetch로 데이터를 보내면 JSON 형태로 데이터가 서버로 넘어옴
     // 해당 정보의 값을 Map 형태로 payload에 저장하고 그 중 userId와 studyId를 각 변수에 넣음
-    @PostMapping("/apply_study")
+    @PostMapping("/apply/{studyId}")
     @ResponseBody
-    public String applyStudy(@RequestBody Map<String, Object> payload) {
+    public String applyStudy(@PathVariable Long studyId, @RequestBody Map<String, Object> payload) {
         Long userId = ((Number) payload.get("user_id")).longValue();
-        Long studyId = ((Number) payload.get("study_id")).longValue();
 
         try {
             studyService.applyStudy(userId, studyId);
@@ -153,16 +147,35 @@ public class StudyController {
 
     // 스터디 신청 승인
     @PostMapping("/approve_study")
-    @ResponseBody
-    public String approveStudy(@RequestBody Map<String, Object> payload) {
-        Long studyMemberId = ((Number) payload.get("study_member_id")).longValue();
+    public String approveStudy(@RequestParam("studyMemberId") Long studyMemberId,
+                               @RequestParam("studyId") Long studyId,
+                               RedirectAttributes redirectAttributes) {
         Long userId = SecurityUtils.getCurrentUserId();
 
         try {
             studyService.approveStudy(studyMemberId, userId);
-            return "스터디 신청이 성공적으로 승인되었습니다.";
+            redirectAttributes.addFlashAttribute("message", "스터디 신청이 성공적으로 승인되었습니다.");
         } catch (RuntimeException e) {
-            return "오류: " + e.getMessage();
+            redirectAttributes.addFlashAttribute("error", "오류: " + e.getMessage());
         }
+
+        return "redirect:/study/" + studyId;
+    }
+
+    // 스터디 신청 거절
+    @PostMapping("/reject_study")
+    public String rejectStudyApplication(@RequestParam("studyId") Long studyId,
+                                         @RequestParam("userId") Long applicantUserId,
+                                         RedirectAttributes redirectAttributes) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+
+        try {
+            studyService.rejectStudyApplication(studyId, applicantUserId, currentUserId);
+            redirectAttributes.addFlashAttribute("message", "스터디 신청이 성공적으로 거절되었습니다.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", "오류: " + e.getMessage());
+        }
+
+        return "redirect:/study/" + studyId;
     }
 }

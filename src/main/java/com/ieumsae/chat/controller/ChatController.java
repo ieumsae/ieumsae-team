@@ -14,8 +14,10 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+
 @RequestMapping("/chat")
 @Controller
 public class ChatController {
@@ -40,7 +42,6 @@ public class ChatController {
     }
 
     /**
-     * 
      * @param studyId
      * @param chatType
      * @param model
@@ -49,27 +50,36 @@ public class ChatController {
      */
 
     @GetMapping("/enterChat")
-    public String enterChat(@RequestParam("studyId") Long studyId, @RequestParam("chatType") ChatRoom.ChatType chatType, Model model) {
+    public String enterChat(@RequestParam("studyId") Long studyId, @RequestParam("chatType") ChatRoom.ChatType chatType, Model model, RedirectAttributes redirectAttributes) {
         Long userId = SecurityUtils.getCurrentUserId();
 
         try {
+
+            if (chatType == ChatRoom.ChatType.GROUP && !chatService.canJoinGroupChat(studyId, userId)) {
+                throw new IllegalArgumentException("스터디에 속해있어야 그룹채팅에 참가할 수 있습니다.");
+            }
+
             ChatRoom chatRoom = chatService.getOrCreateChatRoom(studyId, chatType);
             chatService.addUserToChat(chatRoom.getChatRoomId(), userId, chatType, studyId);
 
-            model.addAttribute("chatRoomId", chatRoom.getChatRoomId()); // 생성되거나 조회된 채팅방 id
-            model.addAttribute("userId", userId); // 현재 접속한 회원의 userId
-            model.addAttribute("chatType", chatType); // enum으로 정의한 "PERSONAL", "GROUP"
-            model.addAttribute("entryMessage", chatService.createEntryMessage(userId)); // 입장메시지
+            model.addAttribute("chatRoomId", chatRoom.getChatRoomId());
+            model.addAttribute("userId", userId);
+            model.addAttribute("chatType", chatType);
+            model.addAttribute("entryMessage", chatService.createEntryMessage(userId));
 
-            List<Message> previousMessages = chatService.getPreviousMessages(chatRoom.getChatRoomId()); // 이전 채팅 기록 불러오기
-            model.addAttribute("previousMessages", previousMessages); // 채팅방에 띄워주기 위해 model 객체에 추가
+            List<Message> previousMessages = chatService.getPreviousMessages(chatRoom.getChatRoomId());
+            model.addAttribute("previousMessages", previousMessages);
 
             return "chat";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "study_detail";
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/study/" + studyId;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "예기치 못한 오류가 발생했습니다.");
+            return "redirect:/study/" + studyId;
         }
     }
+
 
     /**
      * @param chatRoomId
@@ -97,7 +107,7 @@ public class ChatController {
      * @param message
      * @return 채팅방과 메시지에 관한 정보를 유저를 채팅방에 추가 + 입장 메시지를 반환
      */
-    
+
     @MessageMapping("/chat.join/{chatRoomId}")
     @SendTo("/topic/chat/{chatRoomId}")
     public String addUser(@DestinationVariable Long chatRoomId, @Payload Message message) {

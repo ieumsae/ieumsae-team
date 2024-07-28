@@ -12,6 +12,7 @@ public class StudyDTO {
     private String nickname;
     private Long creatorId;
 
+
     public StudyDTO() {}
 
     public StudyDTO(Long studyId, String title, String content, LocalDateTime createdDt, String nickname, Long creatorId) {
@@ -30,4 +31,9 @@ public class StudyDTO {
         this.createdDt = createdDt;
         this.nickname = nickname;
     }
+
+
+
+
+
 }

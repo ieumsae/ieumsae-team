@@ -45,7 +45,7 @@ https://templatemo.com/tm-569-edu-meeting
         <div class="col-lg-4 col-sm-4">
           <div class="right-icons">
             <ul>
-              <li><a href="./login.html">로그인 / 회원가입</a></li>
+              <div th:replace="fragments/header :: header"></div>
             </ul>
           </div>
         </div>
@@ -69,7 +69,7 @@ https://templatemo.com/tm-569-edu-meeting
                     <li><a th:href="@{/community}">COMMUNITY</a></li>
                     <li><a th:href="@{/review}">review</a></li>
                     <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
-                    <li><a href="./contact_us.html">Contact Us</a></li>
+                    <li><a th:href="@{/contact_us}">Contact Us</a></li>
                   </ul>
                   <a class='menu-trigger'>
                         <span>Menu</span>

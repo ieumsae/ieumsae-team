@@ -80,7 +80,7 @@ public class CommunityService {
 
         return communities.stream().map(community -> {
             User user = userRepository.findByUserId(community.getUserId());
-            String nickname = user.getNickname();
+            String nickname = (user != null && user.getNickname() != null) ? user.getNickname() : "Unknown";
             return new CommunityDTO(community.getCommunityId(), community.getTitle(), community.getContent(), community.getWriteDt(), nickname);
         }).collect(Collectors.toList());
     }
@@ -90,7 +90,7 @@ public class CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new RuntimeException("커뮤니티를 찾을 수 없습니다."));
         User user = userRepository.findByUserId(community.getUserId());
-        String nickname = user.getNickname();
+        String nickname = (user != null && user.getNickname() != null) ? user.getNickname() : "Unknown";
         return new CommunityDTO(community.getCommunityId(), community.getTitle(), community.getContent(), community.getWriteDt(), nickname);
     }
 
@@ -99,8 +99,9 @@ public class CommunityService {
         List<Community> communities = communityRepository.findTop10ByOrderByWriteDtDesc();
         return communities.stream().map(community -> {
             User user = userRepository.findByUserId(community.getUserId());
-            String nickname = user.getNickname();
+            String nickname = (user != null && user.getNickname() != null) ? user.getNickname() : "Unknown";
             return new CommunityDTO(community.getCommunityId(), community.getTitle(), community.getContent(), community.getWriteDt(), nickname);
         }).limit(limit).collect(Collectors.toList());
     }
+
 }

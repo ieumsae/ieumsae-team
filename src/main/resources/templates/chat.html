@@ -150,7 +150,6 @@
     document.addEventListener('DOMContentLoaded', function () {
         const chatClient = new ChatClient();
         const chatRoomId = /*[[${chatRoomId}]]*/ null;
-        const userId = /*[[${userId}]]*/ null;
 
         if (chatRoomId && userId) {
             chatClient.connect(chatRoomId, userId);

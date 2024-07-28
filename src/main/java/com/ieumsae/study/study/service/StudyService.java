@@ -6,6 +6,7 @@ import com.ieumsae.common.entity.User;
 import com.ieumsae.common.repository.*;
 import com.ieumsae.common.utils.SecurityUtils;
 import com.ieumsae.study.study.dto.StudyDTO;
+import com.ieumsae.study.study.dto.StudyMemberDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class StudyService {
         studies.sort(Comparator.comparing(Study::getStudyId).reversed());
         return studies.stream().map(study -> {
             User user = userRepository.findByUserId(study.getCreatorId());
-            String nickname = user.getNickname();
+            String nickname = (user != null && user.getNickname() != null) ? user.getNickname() : "Unknown";
             return new StudyDTO(study.getStudyId(), study.getTitle(), study.getContent(), study.getCreatedDt(), nickname, study.getCreatorId());
         }).collect(Collectors.toList());
     }
@@ -101,49 +102,38 @@ public class StudyService {
     // 스터디 신청 승인 단계 = STUDY_MEMBER 테이블의 status가 true로 업데이트
     @Transactional
     public void approveStudy(Long studyMemberId, Long userId) {
-        Optional<StudyMember> optionalStudyMember = studyMemberRepository.findById(studyMemberId);
-        if (optionalStudyMember.isPresent()) {
-            StudyMember studyMember = optionalStudyMember.get();
+        StudyMember studyMember = studyMemberRepository.findById(studyMemberId)
+                .orElseThrow(() -> new RuntimeException("스터디 멤버를 찾을 수 없습니다. ID: " + studyMemberId));
 
-            // 스터디 방장 확인
-            Long studyId = studyMember.getStudyId();
-            Optional<Study> optionalStudy = studyRepository.findById(studyId);
-            if (optionalStudy.isPresent()) {
-                Study study = optionalStudy.get();
-                if (study.getCreatorId().equals(userId)) {
-                    studyMember.setStatus(true); // status를 true로 변경
-                    studyMemberRepository.save(studyMember);
-                } else {
-                    throw new RuntimeException("사용자가 스터디 방장이 아닙니다.");
-                }
-            } else {
-                throw new RuntimeException("스터디를 찾을 수 없습니다. ID: " + studyId);
-            }
+        Study study = studyRepository.findById(studyMember.getStudyId())
+                .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다. ID: " + studyMember.getStudyId()));
+
+        if (!study.getCreatorId().equals(userId)) {
+            throw new RuntimeException("사용자가 스터디 방장이 아닙니다.");
+        }
+
+        if (!studyMember.isStatus()) {
+            studyMember.setStatus(true);
+            studyMemberRepository.save(studyMember);
         } else {
-            throw new RuntimeException("스터디 멤버를 찾을 수 없습니다. ID: " + studyMemberId);
+            throw new RuntimeException("이미 승인된 멤버입니다.");
         }
     }
 
+
     // 스터디 신청 거절
     @Transactional
-    public void rejectStudyApplication(Long studyId, Long applicantUserId) {
-        // 현재 로그인한 사용자(스터디 방장)의 ID 가져오기
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-
-        // 스터디 정보 조회
+    public void rejectStudyApplication(Long studyId, Long applicantUserId, Long currentUserId) {
         Study study = studyRepository.findById(studyId)
                 .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다. ID: " + studyId));
 
-        // 현재 사용자가 스터디 방장인지 확인
         if (!currentUserId.equals(study.getCreatorId())) {
             throw new RuntimeException("스터디 방장만 신청을 거절할 수 있습니다.");
         }
 
-        // 해당 스터디 멤버 정보 조회
         StudyMember studyMember = studyMemberRepository.findByStudyIdAndUserId(studyId, applicantUserId)
                 .orElseThrow(() -> new RuntimeException("해당 사용자의 스터디 신청 정보를 찾을 수 없습니다."));
 
-        // status가 false인 경우(아직 승인되지 않은 경우)에만 삭제 진행
         if (!studyMember.isStatus()) {
             studyMemberRepository.delete(studyMember);
         } else {
@@ -152,7 +142,7 @@ public class StudyService {
     }
 
     @Transactional
-    // 커뮤니티 수정
+    // 스터디 수정
     public void updatestudy(Long studyId ,StudyDTO studyDTO) {
         Long userId = SecurityUtils.getCurrentUserId();
         Study study = studyRepository.findById(studyId)
@@ -170,12 +160,24 @@ public class StudyService {
 
     }
 
-    // 커뮤니티 상세 조회 메서드
+    // 스터디 상세 조회 메서드
     public StudyDTO getStudyById(Long studyId) {
         Study study = studyRepository.findById(studyId)
                 .orElseThrow(() -> new RuntimeException("커뮤니티를 찾을 수 없습니다."));
         User user = userRepository.findByUserId(study.getCreatorId());
-        String nickname = user.getNickname();
+        String nickname = (user != null && user.getNickname() != null) ? user.getNickname() : "Unknown";
         return new StudyDTO(study.getStudyId(), study.getTitle(), study.getContent(), study.getCreatedDt(), nickname);
+    }
+
+
+    // 신청자 리스트 가져오기 (닉네임으로)
+    public List<StudyMemberDTO> getPendingMembersWithNickname(Long studyId) {
+        List<StudyMember> pendingMembers = studyMemberRepository.findByStudyIdAndStatusFalse(studyId);
+        return pendingMembers.stream()
+                .map(studyMember -> {
+                    User user = userRepository.findByUserId(studyMember.getUserId());
+                    return new StudyMemberDTO(studyMember.getStudyMemberId(), studyMember.getUserId(), user.getNickname(), false);
+                })
+                .collect(Collectors.toList());
     }
 }

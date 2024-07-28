@@ -15,9 +15,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
 
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="../static/css/templatemo-edu-meeting.css">
-    <link rel="stylesheet" href="../static/css/table.css">
-    <link rel="stylesheet" href="../static/css/tabs.css">
+    <link rel="stylesheet" href="/css/templatemo-edu-meeting.css">
+    <link rel="stylesheet" href="/css/table.css">
+    <link rel="stylesheet" href="/css/tabs.css">
     
 <style>
 
@@ -25,7 +25,6 @@
   </head>
 
 <body>
-
   <!-- Sub Header -->
   <div class="sub-header">
     <div class="container">
@@ -38,7 +37,7 @@
         <div class="col-lg-4 col-sm-4">
           <div class="right-icons">
             <ul>
-              <li><a href="./login.html">로그인 / 회원가입</a></li>
+              <div th:replace="fragments/header :: header"></div>
             </ul>
           </div>
         </div>
@@ -62,7 +61,7 @@
                     <li><a th:href="@{/community}">COMMUNITY</a></li>
                     <li><a th:href="@{/review}">review</a></li>
                     <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
-                    <li><a href="./contact_us.html">Contact Us</a></li>
+                    <li><a th:href="@{/contact_us}">Contact Us</a></li>
                   </ul>
                   <a class='menu-trigger'>
                         <span>Menu</span>

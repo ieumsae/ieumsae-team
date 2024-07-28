@@ -114,6 +114,15 @@ class ChatClient {
             messageElement.classList.add('other-message');
         }
 
+        const userIcon = document.createElement('div');
+        userIcon.classList.add('user-icon');
+        const avatar = document.createElement('div');
+        avatar.classList.add('avatar');
+        avatar.textContent = '🙋‍♂️';
+        userIcon.appendChild(avatar);
+
+        const messageContent = document.createElement('div');
+        messageContent.classList.add('message-content');
         const contentSpan = document.createElement('span');
         contentSpan.classList.add('content');
         contentSpan.textContent = message.content;
@@ -124,8 +133,11 @@ class ChatClient {
             timeZone: 'Asia/Seoul'
         });
 
-        messageElement.appendChild(contentSpan);
-        messageElement.appendChild(timeSpan);
+        messageContent.appendChild(contentSpan);
+        messageContent.appendChild(timeSpan);
+
+        messageElement.appendChild(userIcon);
+        messageElement.appendChild(messageContent);
 
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight;
