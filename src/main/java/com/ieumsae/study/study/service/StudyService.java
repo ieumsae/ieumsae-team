@@ -87,15 +87,22 @@ public class StudyService {
         }
     }
 
-    // 스터디 신청
-    // 스터디 신청단계 = STUDY_MEMBER 테이블의 status가 false인 데이터
     public void applyStudy(Long userId, Long studyId) {
-        StudyMember studyMember = new StudyMember();
-        studyMember.setStudyId(studyId);
-        studyMember.setUserId(userId);
-        studyMember.setStatus(false); // 기본값으로 false 설정
+        // 이미 신청한 스터디인지 확인
+        Optional<StudyMember> existingMember = studyMemberRepository.findByUserIdAndStudyId(userId, studyId);
 
-        studyMemberRepository.save(studyMember);
+        if (existingMember.isPresent()) {
+            // 이미 신청한 경우 예외 처리
+            throw new RuntimeException("이미 신청한 스터디입니다.");
+        } else {
+            // 신규 신청인 경우 처리
+            StudyMember studyMember = new StudyMember();
+            studyMember.setStudyId(studyId);
+            studyMember.setUserId(userId);
+            studyMember.setStatus(false);
+
+            studyMemberRepository.save(studyMember);
+        }
     }
 
     // 스터디 신청 승인

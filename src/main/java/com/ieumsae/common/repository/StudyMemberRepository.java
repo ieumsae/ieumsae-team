@@ -21,9 +21,6 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Long> 
 
     List<StudyMember> findByStudyIdAndStatusFalse(Long studyId);
 
-    @Query("SELECT new com.ieumsae.study.study.dto.StudyMemberDTO(sm.studyMemberId, sm.studyId, sm.userId, sm.status, u.nickname) " +
-            "FROM StudyMember sm JOIN User u ON sm.userId = u.userId " +
-            "WHERE sm.studyId = :studyId AND sm.status = false")
-    List<StudyMemberDTO> findPendingMembersByStudyId(@Param("studyId") Long studyId);
+    Optional<StudyMember> findByUserIdAndStudyId(Long userId, Long studyId);
 
 }

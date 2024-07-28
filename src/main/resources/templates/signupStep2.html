@@ -78,12 +78,12 @@
 </head>
 <body>
 <form id="nicknameForm">
-    <h1>Enter Your Nickname</h1>
-    <div class="id-check-container" style="display: flex; align-items: center; gap: 10px;">
-        <input type="text" placeholder="닉네임" id="nickname" name="nickname" required style="flex: 1;"/>
-        <button type="button" id="checkNickNameDuplicate" class="btn btn-primary">중복 확인</button>
+    <h1>닉네임 설정</h1>
+    <div class="id-check-container" style="display: flex; align-items: center; gap: 10px; margin-left: 50px">
+        <input type="text" placeholder="닉네임" id="nickname" name="nickname" required style="flex: 1; "/>
+        <button type="button" id="checkNicknameDuplicate" style="height: 40px; padding: 0 10px; white-space: nowrap; background-color: #4169E1; color: white; border: none; cursor: pointer ; margin-left: 20px; ">중복 확인</button>
     </div>
-    <button type="submit" id="createAccountButton">create account</button>
+    <button type="submit" id="createAccountButton">계정 만들기</button>
 </form>
 
 <script>
@@ -107,7 +107,7 @@
             });
     }
 
-    document.getElementById('checkNickNameDuplicate').addEventListener('click', () => {
+    document.getElementById('checkNicknameDuplicate').addEventListener('click', () => {
         checkDuplicate('nickname', document.getElementById('nickname').value);
     });
 

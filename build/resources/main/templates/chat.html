@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="/css/templatemo-edu-meeting.css">
-
     <style>
         body, html {
             font-family: 'Poppins', sans-serif;
@@ -65,6 +64,9 @@
             border: none;
             border-radius: 20px;
             cursor: pointer;
+        }
+        #send-button:hover {
+            background-color: #0056b3;
         }
         .message {
             display: flex;
@@ -132,7 +134,8 @@
             <div th:each="message : ${previousMessages}" class="message" th:classappend="${message.userId} == ${userId} ? 'own-message' : 'other-message'">
                 <div class="user-icon">
                     <div class="avatar">🙋‍♂️</div>
-                </div>                <div class="message-content">
+                </div>
+                <div class="message-content">
                     <span class="content" th:text="${message.content}"></span>
                     <span class="time" th:text="${#temporals.format(message.sentAt, 'HH:mm:ss')}"></span>
                 </div>
@@ -149,7 +152,8 @@
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
         const chatClient = new ChatClient();
-        const chatRoomId = /*[[${chatRoomId}]]*/ null;
+        const chatRoomId = /*[[${chatRoomId}]]*/ 0;
+        const userId = /*[[${userId}]]*/ 0;
 
         if (chatRoomId && userId) {
             chatClient.connect(chatRoomId, userId);
