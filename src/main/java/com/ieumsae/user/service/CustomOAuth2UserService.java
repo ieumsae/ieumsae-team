@@ -19,15 +19,12 @@ import java.util.Map;
 @Slf4j
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-
     private final UserRepository userRepository;
     private final UserService userService;
-    private final UserServiceImpl userServiceImpl;
 
-    public CustomOAuth2UserService(UserRepository userRepository, UserService userService, UserServiceImpl userServiceImpl) {
+    public CustomOAuth2UserService(UserRepository userRepository, UserService userService){
         this.userRepository = userRepository;
         this.userService = userService;
-        this.userServiceImpl = userServiceImpl;
     }
 
     @Override
