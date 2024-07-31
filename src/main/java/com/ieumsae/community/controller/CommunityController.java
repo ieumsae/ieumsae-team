@@ -43,7 +43,7 @@ public class CommunityController {
         model.addAttribute("content", communityDTO.getContent());
         model.addAttribute("writeDt", communityDTO.getWriteDt());
         model.addAttribute("nickname", communityDTO.getNickname());
-        return "community_detail"; // community_detail.html 뷰를 반환 (아직 없음)
+        return "community_detail";
     }
 
     /* 커뮤니티 생성 */

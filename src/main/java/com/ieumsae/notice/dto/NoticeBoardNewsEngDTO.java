@@ -1,8 +1,14 @@
 package com.ieumsae.notice.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 public class NoticeBoardNewsEngDTO {
+    // Getters and setters
     private Long id;
     private String title;
     private LocalDateTime postingDate;
@@ -16,36 +22,4 @@ public class NoticeBoardNewsEngDTO {
         this.link = link;
     }
 
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public LocalDateTime getPostingDate() {
-        return postingDate;
-    }
-
-    public void setPostingDate(LocalDateTime postingDate) {
-        this.postingDate = postingDate;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
 }
