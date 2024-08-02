@@ -94,7 +94,6 @@ public class SecurityConfig {
                             .passwordParameter("password")
                             .loginPage("/login")
                             .successHandler(new CustomSuccessHandler(jwtUtil, userService, userRepository))
-                            .defaultSuccessUrl("/", true)
                             .permitAll();
                     log.info("폼 로그인 구성 완료");
                 })
