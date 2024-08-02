@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
         user.setName(form.getName());
         user.setPassword(bCryptPasswordEncoder.encode(form.getPassword())); // 비밀번호 암호화
         user.setEmail(form.getEmail());
-        user.setUserRole("ROLE_USER");
+        user.setUserRole("USER");
         user.setUserRegister(false); // 회원가입 미완료 상태로 설정
 
         try {
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(customOAuth2User.getUsername());
         user.setEmail(customOAuth2User.getEmail());
         user.setName(customOAuth2User.getName());
-        user.setUserRole("ROLE_USER");
+        user.setUserRole("USER");
         user.setUserRegister(false);
         User savedUser = userRepository.save(user);
 
