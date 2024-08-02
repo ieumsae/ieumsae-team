@@ -1,9 +1,13 @@
 package com.ieumsae.community.dto;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 public class CommunityDTO {
 
     private Long communityId;
@@ -24,43 +28,4 @@ public class CommunityDTO {
 
     }
 
-    public Long getCommunityId() {
-        return communityId;
-    }
-
-    public void setCommunityId(Long communityId) {
-        this.communityId = communityId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public LocalDateTime getWriteDt() {
-        return writeDt;
-    }
-
-    public void setWriteDt(LocalDateTime writeDt) {
-        this.writeDt = writeDt;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
 }
