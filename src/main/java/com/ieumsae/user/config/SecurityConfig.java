@@ -69,7 +69,7 @@ public class SecurityConfig {
                         .disable()) // CSRF 보호 기능 비활성화
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/signup", "/signup1", "/signup2", "/login", "/api/**", "/api/users/", "/", "/oauth2/**").permitAll()
-                            .requestMatchers("/admin/**").hasRole("ADMIN")
+                            .requestMatchers("/admin/**").hasAuthority("ADMIN")
                             .requestMatchers("/js/**", "/images/**", "/css/**", "/scss/**", "/jquery/**").permitAll()
                             .requestMatchers("/ws-endpoint/**").permitAll() // 웹소켓 엔드포인트 추가
                             .requestMatchers("/topic/**").permitAll() // STOMP 구독 엔드포인트 추가
