@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,14 +36,38 @@
 <body>
 <div id="sidebar">
     <h2>메뉴</h2>
-    <div class="menu-item"><a href="#">대시보드</a></div>
-    <div class="menu-item"><a href="#">사용자 관리</a></div>
+    <div class="menu-item"><a href="#" onclick="loadDashboard()">대시보드</a></div>
+    <div class="menu-item"><a href="#" onclick="loadUsers()">회원 관리</a></div>
     <div class="menu-item"><a href="#">콘텐츠 관리</a></div>
     <div class="menu-item"><a href="#">설정</a></div>
 </div>
 <div id="content">
     <h1>관리자 대시보드</h1>
-    <p>관리자 페이지입니다.본 페이지 관리는 상의 후 진행해주시면 감사하겠습니다!</p>
+    <p>관리자 페이지입니다. 본 페이지 관리는 상의 후 진행해주시면 감사하겠습니다!</p>
 </div>
+
+<script th:inline="javascript">
+    function loadDashboard() {
+        document.getElementById('content').innerHTML = `
+        <h1>관리자 대시보드</h1>
+        <p>관리자 페이지입니다. 본 페이지 관리는 상의 후 진행해주시면 감사하겠습니다!</p>
+    `;
+    }
+
+    function loadUsers() {
+        fetch('/api/admin/users')
+            .then(response => response.json())
+            .then(users => {
+                let userList = '<h1>사용자 관리</h1><ul>';
+                users.forEach(user => {
+                    userList += `<li>아이디: ${user.username} - 닉네임: ${user.nickname}</li>`;
+                });
+                userList += '</ul>';
+                document.getElementById('content').innerHTML = userList;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
 </body>
 </html>
+
