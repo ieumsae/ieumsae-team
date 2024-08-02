@@ -62,8 +62,10 @@ public class UserServiceImpl implements UserService {
         user.setUsername(customOAuth2User.getUsername());
         user.setEmail(customOAuth2User.getEmail());
         user.setName(customOAuth2User.getName());
+        user.setUserRole("ROLE_USER");
         user.setUserRegister(false);
         User savedUser = userRepository.save(user);
+
         return savedUser.getUserId();
     }
 
