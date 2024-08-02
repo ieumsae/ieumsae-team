@@ -41,8 +41,6 @@ public class ChatService {
 
 
     /**
-     * @param studyId
-     * @param chatType
      * @return ChatRoom 객체 타입
      * @note findByStudyIdAndChatType 메소드를 통해 기존에 채팅방이 존재하는지 확인
      * @note 기존에 채팅방이 존재하지 않는다면 새로운 ChatRoom 객체에 studyId, chatType을 추가해서 채팅방을 생성
@@ -59,10 +57,6 @@ public class ChatService {
     }
 
     /**
-     * @param chatRoomId
-     * @param userId
-     * @param chatType
-     * @param studyId
      * @note 그룹채팅의 경우 유저가 해당 스터디원인지 확인
      * @note 각 chatRoomId와 userId를 통해 유효성 확인
      * @note chatRoomId와 userId로 조회했을 때, 채팅멤버에 맞는 값이 없다면 chatRoomId, userId, joinedAt DB에 저장
@@ -142,7 +136,6 @@ public class ChatService {
     }
 
     /**
-     * @param chatRoomId
      * @return List 형태
      * @note 이전 채팅 기록 불러오기 메소드
      */
@@ -153,8 +146,6 @@ public class ChatService {
 
 
     /**
-     * @param studyId
-     * @param userId
      * @return 채팅방에 참여할 수 있는지 없는지 확인
      * @note .map은 일반적은 map이 아니라 Optional 타입에서 값이 존재할 때만 특정 메소드(isStatus)를 호출 -> boolean 값을 반환
      * @note studyId, userId를 통해 StudyMember 테이블에서 해당 스터디의 멤버 정보를 조회
