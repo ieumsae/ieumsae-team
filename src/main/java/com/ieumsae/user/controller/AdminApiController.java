@@ -2,9 +2,7 @@ package com.ieumsae.user.controller;
 
 import com.ieumsae.common.entity.User;
 import com.ieumsae.common.repository.UserRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,4 +19,12 @@ public class AdminApiController {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+
+    @DeleteMapping("/users/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userRepository.deleteById(id);
+    }
+
+
 }
