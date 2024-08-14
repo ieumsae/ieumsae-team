@@ -150,7 +150,7 @@ public class StudyService {
 
     @Transactional
     // 스터디 수정
-    public void updatestudy(Long studyId ,StudyDTO studyDTO) {
+    public void updatestudy(Long studyId, StudyDTO studyDTO) {
         Long userId = SecurityUtils.getCurrentUserId();
         Study study = studyRepository.findById(studyId)
                 .orElseThrow(() -> new RuntimeException("커뮤니티를 찾을 수 없습니다."));

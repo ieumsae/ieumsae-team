@@ -6,7 +6,6 @@ import com.ieumsae.user.domain.UserForm;
 import com.ieumsae.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
