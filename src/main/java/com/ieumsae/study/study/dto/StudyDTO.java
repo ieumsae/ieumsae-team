@@ -1,52 +1,39 @@
 package com.ieumsae.study.study.dto;
 
+import lombok.Data;
 import java.time.LocalDateTime;
 
+@Data
 public class StudyDTO {
+    private Long studyId;
+    private String title;
+    private String content;
+    private LocalDateTime createdDt;
+    private String nickname;
+    private Long creatorId;
 
-    public Long studyId;
-    public Long creatorId;
-    public String title;
-    public String content;
-    public LocalDateTime createdDt;
 
-    public Long getStudyId() {
-        return studyId;
-    }
+    public StudyDTO() {}
 
-    public void setStudyId(Long studyId) {
+    public StudyDTO(Long studyId, String title, String content, LocalDateTime createdDt, String nickname, Long creatorId) {
         this.studyId = studyId;
-    }
-
-    public Long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Long creatorId) {
+        this.title = title;
+        this.content = content;
+        this.createdDt = createdDt;
+        this.nickname = nickname;
         this.creatorId = creatorId;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
+    public StudyDTO(Long studyId, String title, String content, LocalDateTime createdDt, String nickname) {
+        this.studyId = studyId;
         this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
         this.content = content;
-    }
-
-    public LocalDateTime getCreatedDt() {
-        return createdDt;
-    }
-
-    public void setCreatedDt(LocalDateTime createdDt) {
         this.createdDt = createdDt;
+        this.nickname = nickname;
     }
+
+
+
+
+
 }

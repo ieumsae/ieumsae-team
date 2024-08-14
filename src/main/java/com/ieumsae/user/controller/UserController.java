@@ -1,3 +1,4 @@
+
 package com.ieumsae.user.controller;
 
 import com.ieumsae.common.entity.User;
@@ -5,7 +6,6 @@ import com.ieumsae.user.domain.UserForm;
 import com.ieumsae.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -42,7 +42,6 @@ public class UserController {
      * @param requestBody 회원가입 1단계에서 반환된 사용자 인덱스
      * @return ResponseEntity<?> 회원가입 완료 결과 (userIdx 또는 에러 메시지)
      */
-
     @PostMapping("/signup2")
     public ResponseEntity<?> signUp2(@RequestBody Map<String, Object> requestBody) {
         try {

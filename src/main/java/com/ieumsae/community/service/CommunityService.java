@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,9 +75,12 @@ public class CommunityService {
     // 커뮤니티 목록 조회 메서드
     public List<CommunityDTO> getAllCommunities() {
         List<Community> communities = communityRepository.findAll();
+        // 커뮤니티 리스트를 내림차순으로 정렬
+        communities.sort(Comparator.comparing(Community::getCommunityId).reversed());
+
         return communities.stream().map(community -> {
             User user = userRepository.findByUserId(community.getUserId());
-            String nickname = user.getNickname();
+            String nickname = (user != null && user.getNickname() != null) ? user.getNickname() : "Unknown";
             return new CommunityDTO(community.getCommunityId(), community.getTitle(), community.getContent(), community.getWriteDt(), nickname);
         }).collect(Collectors.toList());
     }
@@ -86,7 +90,18 @@ public class CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new RuntimeException("커뮤니티를 찾을 수 없습니다."));
         User user = userRepository.findByUserId(community.getUserId());
-        String nickname = user.getNickname();
+        String nickname = (user != null && user.getNickname() != null) ? user.getNickname() : "Unknown";
         return new CommunityDTO(community.getCommunityId(), community.getTitle(), community.getContent(), community.getWriteDt(), nickname);
     }
+
+    // 메인페이지에 커뮤니티 글 10개를 띄워주는 메소드
+    public List<CommunityDTO> getRecentCommunities(int limit) {
+        List<Community> communities = communityRepository.findTop10ByOrderByWriteDtDesc();
+        return communities.stream().map(community -> {
+            User user = userRepository.findByUserId(community.getUserId());
+            String nickname = (user != null && user.getNickname() != null) ? user.getNickname() : "Unknown";
+            return new CommunityDTO(community.getCommunityId(), community.getTitle(), community.getContent(), community.getWriteDt(), nickname);
+        }).limit(limit).collect(Collectors.toList());
+    }
+
 }

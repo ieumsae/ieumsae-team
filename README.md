@@ -1,2 +1,3 @@
-# ieumsae-team
-너와 나를 잇는 ieumsae 프로젝트입니다.
+
+# ieumsae
+Ieumsae 프로젝트를 위한 협업 저장소

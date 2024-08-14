@@ -1,6 +1,7 @@
 package com.ieumsae.user.config;
 
 //import com.ieumsae.jwt.JwtFilter;
+
 import com.ieumsae.user.jwt.JwtUtil;
 import com.ieumsae.user.oauth.CustomSuccessHandler;
 import com.ieumsae.common.repository.UserRepository;
@@ -63,11 +64,16 @@ public class SecurityConfig {
                         return configuration;
                     }
                 }))
-                .csrf(csrf -> csrf.disable()) // CSRF 보호 기능 비활성화
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/ws-endpoint/**")
+                        .disable()) // CSRF 보호 기능 비활성화
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/signup", "/signup1","/signup2","/login", "/api/**", "/api/users/", "/", "/oauth2/**").permitAll()
-                            .requestMatchers("/admin/**").hasRole("ADMIN")
-                            .requestMatchers("/js/**", "/images/**", "/css/**", "/scss/**").permitAll()
+                    auth.requestMatchers("/signup", "/signup1", "/signup2", "/login", "/api/**", "/api/users/", "/", "/oauth2/**").permitAll()
+                            .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                            .requestMatchers("/js/**", "/images/**", "/css/**", "/scss/**", "/jquery/**").permitAll()
+                            .requestMatchers("/ws-endpoint/**").permitAll() // 웹소켓 엔드포인트 추가
+                            .requestMatchers("/topic/**").permitAll() // STOMP 구독 엔드포인트 추가
+                            .requestMatchers("/app/**").permitAll() // STOMP 메시지 전송 엔드포인트 추가
                             .anyRequest().authenticated(); // 그 외 모든 요청은 인증 필요
                     log.info("인증 규칙 구성 완료");
                 })
@@ -79,7 +85,7 @@ public class SecurityConfig {
                                     .userService(customOAuth2UserService))
                             .loginPage("/login")
 
-                            .successHandler(new CustomSuccessHandler(jwtUtil, userService,userRepository));
+                            .successHandler(new CustomSuccessHandler(jwtUtil, userService, userRepository));
                     log.info("OAuth2 로그인 구성 완료");
                 })
                 .formLogin(form -> {
@@ -88,7 +94,6 @@ public class SecurityConfig {
                             .passwordParameter("password")
                             .loginPage("/login")
                             .successHandler(new CustomSuccessHandler(jwtUtil, userService, userRepository))
-                            .defaultSuccessUrl("/", true)
                             .permitAll();
                     log.info("폼 로그인 구성 완료");
                 })
@@ -100,7 +105,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
                     log.info("세션 관리 구성 완료");
-                });
+                })
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions
+                                .sameOrigin()
+                        )
+                );
 
         log.info("SecurityFilterChain 구성 완료");
         return http.build(); // 구성된 SecurityFilterChain 반환

@@ -16,4 +16,3 @@ public class SignController {
         return "signupStep2";
     }
 }
-

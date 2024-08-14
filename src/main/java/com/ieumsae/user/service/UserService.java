@@ -17,9 +17,6 @@ public interface UserService {
     @Transactional
     Long socialSignup(CustomOAuth2User customOAuth2User);
 
+    @Transactional
     boolean checkDuplicate(String field, String value);
-
-
-
-
 }

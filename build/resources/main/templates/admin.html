@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        #sidebar {
+            width: 200px;
+            background-color: #f1f1f1;
+            height: 100vh;
+            padding: 20px;
+        }
+        #content {
+            flex: 1;
+            padding: 20px;
+        }
+        .menu-item {
+            margin-bottom: 10px;
+        }
+        .menu-item a {
+            text-decoration: none;
+            color: #333;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div id="sidebar">
+    <h2>메뉴</h2>
+    <div class="menu-item"><a href="#" onclick="loadDashboard()">대시보드</a></div>
+    <div class="menu-item"><a href="#" onclick="loadUsers()">회원 관리</a></div>
+    <div class="menu-item"><a href="#">콘텐츠 관리</a></div>
+    <div class="menu-item"><a href="#">설정</a></div>
+</div>
+<div id="content">
+    <h1>관리자 대시보드</h1>
+    <p>관리자 페이지입니다. 본 페이지 관리는 상의 후 진행해주시면 감사하겠습니다!</p>
+</div>
+
+<script th:inline="javascript">
+    function loadDashboard() {
+        document.getElementById('content').innerHTML = `
+        <h1>관리자 대시보드</h1>
+        <p>관리자 페이지입니다. 본 페이지 관리는 상의 후 진행해주시면 감사하겠습니다!</p>
+    `;
+    }
+
+    function loadUsers() {
+        fetch('/api/admin/users')
+            .then(response => response.json())
+            .then(users => {
+                let userList = '<h1>사용자 관리</h1><ul>';
+                users.forEach(user => {
+                    userList += `
+                    <li>
+                        아이디: ${user.username} - 닉네임: ${user.nickname}
+                        <button onclick="deleteUser(${user.userId})">삭제</button>
+                    </li>`;
+                });
+                userList += '</ul>';
+                document.getElementById('content').innerHTML = userList;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function deleteUser(userId) {
+        if (confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
+            fetch(`/api/admin/users/${userId}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('사용자가 성공적으로 삭제되었습니다.');
+                        loadUsers();  // 사용자 목록 새로고침
+                    } else {
+                        alert('사용자 삭제에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('사용자 삭제 중 오류가 발생했습니다.');
+                });
+        }
+    }
+</script>
+</body>
+</html>
+
