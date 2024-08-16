@@ -66,12 +66,20 @@ public class ChatService {
 
     @Transactional
     public void addUserToChat(Long chatRoomId, Long userId, ChatRoom.ChatType chatType, Long studyId) {
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+
         if (chatType == ChatRoom.ChatType.GROUP && !canJoinGroupChat(studyId, userId)) {
             throw new IllegalArgumentException("해당 유저는 스터디원이 아닙니다.");
         }
 
-        // 유저가 채팅방에 속해있는지 확인
-        verifyChatRoomAndUserExistence(chatRoomId, userId);
+        if (chatType == ChatRoom.ChatType.PERSONAL) {
+            long memberCount = chatMemberRepository.countByChatRoomId(chatRoomId);
+            if (memberCount > 2) {
+                throw new IllegalStateException("개인 채팅방은 최대 2명까지만 참여할 수 있습니다.");
+            }
+        }
 
         // chatRoomId, userId로 ChatMember 테이블에 정보가 있는지 확인하고 없으면 addChatMember 메소드로 데이터를 저장
         if (!chatMemberRepository.existsByChatRoomIdAndUserId(chatRoomId, userId)) {
@@ -79,6 +87,9 @@ public class ChatService {
             String entryMessage = createEntryMessage(userId);
             messagingTemplate.convertAndSend("/topic/chat/" + chatRoomId, entryMessage);
         }
+
+        // 유저가 채팅방에 속해있는지 확인
+        verifyChatRoomAndUserExistence(chatRoomId, userId);
     }
 
     private void verifyChatRoomAndUserExistence(Long chatRoomId, Long userId) {
