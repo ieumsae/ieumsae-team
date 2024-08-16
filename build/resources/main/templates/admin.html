@@ -106,7 +106,7 @@
     <div class="menu-item"><a href="#" onclick="loadPage('settings')"><i class="fas fa-cog"></i> 설정</a></div>
 </div>
 <div id="content">
-    <!-- 콘텐츠가 여기에 로드됩니다 -->
+    <!-- 내용 업로드 칸 !-->
 </div>
 
 <script th:inline="javascript">
@@ -223,7 +223,7 @@
         loadContent(page);
     }
 
-    // 뒤로가기/앞으로가기 처리
+    // 뒤로가기/ 앞으로가기
     window.onpopstate = function(event) {
         if (event.state && event.state.page) {
             loadContent(event.state.page);
