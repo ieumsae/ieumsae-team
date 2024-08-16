@@ -9,4 +9,7 @@ public interface ChatMemberRepository extends JpaRepository<ChatMember, Long> {
 
 
     boolean existsByChatRoomIdAndUserId(Long chatRoomId, Long userId);
+
+    // 채팅방에 현재 몇명이 있는지 확인하는 메소드
+    long countByChatRoomId(Long chatRoomId);
 }
