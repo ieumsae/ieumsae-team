@@ -100,19 +100,41 @@
 <body>
 <div id="sidebar">
     <h2><i class="fas fa-cogs"></i> 관리자 메뉴</h2>
-    <div class="menu-item"><a href="#" onclick="loadDashboard()"><i class="fas fa-tachometer-alt"></i> 대시보드</a></div>
-    <div class="menu-item"><a href="#" onclick="loadUsers()"><i class="fas fa-users"></i> 회원 관리</a></div>
-    <div class="menu-item"><a href="#"><i class="fas fa-file-alt"></i> 콘텐츠 관리</a></div>
-    <div class="menu-item"><a href="#"><i class="fas fa-cog"></i> 설정</a></div>
+    <div class="menu-item"><a href="#" onclick="loadPage('dashboard')"><i class="fas fa-tachometer-alt"></i> 대시보드</a></div>
+    <div class="menu-item"><a href="#" onclick="loadPage('users')"><i class="fas fa-users"></i> 회원 관리</a></div>
+    <div class="menu-item"><a href="#" onclick="loadPage('content')"><i class="fas fa-file-alt"></i> 콘텐츠 관리</a></div>
+    <div class="menu-item"><a href="#" onclick="loadPage('settings')"><i class="fas fa-cog"></i> 설정</a></div>
 </div>
 <div id="content">
-    <div class="dashboard-card">
-        <h1><i class="fas fa-tachometer-alt"></i> 관리자 대시보드</h1>
-        <p>관리자 페이지입니다. 본 페이지 관리는 상의 후 진행해주시면 감사하겠습니다!</p>
-    </div>
+    <!-- 내용 업로드 칸 !-->
 </div>
 
 <script th:inline="javascript">
+    function loadPage(page) {
+        // URL 파라미터 업데이트
+        window.history.pushState({page: page}, '', `?page=${page}`);
+        loadContent(page);
+    }
+
+    function loadContent(page) {
+        switch(page) {
+            case 'dashboard':
+                loadDashboard();
+                break;
+            case 'users':
+                loadUsers();
+                break;
+            case 'content':
+                loadContentManagement();
+                break;
+            case 'settings':
+                loadSettings();
+                break;
+            default:
+                loadDashboard();
+        }
+    }
+
     function loadDashboard() {
         document.getElementById('content').innerHTML = `
         <div class="dashboard-card">
@@ -173,6 +195,40 @@
                     console.error('Error:', error);
                     alert('사용자 삭제 중 오류가 발생했습니다.');
                 });
+        }
+    }
+
+    function loadContentManagement() {
+        document.getElementById('content').innerHTML = `
+        <div class="dashboard-card">
+            <h1><i class="fas fa-file-alt"></i> 콘텐츠 관리</h1>
+            <p>콘텐츠 관리 기능은 아직 개발 중입니다.</p>
+        </div>
+    `;
+    }
+
+    function loadSettings() {
+        document.getElementById('content').innerHTML = `
+        <div class="dashboard-card">
+            <h1><i class="fas fa-cog"></i> 설정</h1>
+            <p>설정 페이지는 아직 개발 중입니다.</p>
+        </div>
+    `;
+    }
+
+    // 페이지 로드 시 실행
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page') || 'dashboard';
+        loadContent(page);
+    }
+
+    // 뒤로가기/ 앞으로가기
+    window.onpopstate = function(event) {
+        if (event.state && event.state.page) {
+            loadContent(event.state.page);
+        } else {
+            loadContent('dashboard');
         }
     }
 </script>
