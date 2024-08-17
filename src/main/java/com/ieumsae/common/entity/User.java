@@ -45,5 +45,6 @@ public class User {
     private LocalDateTime joinDate;
 
     //
+    @Column(name = "user_role")
     private String userRole;
 }
