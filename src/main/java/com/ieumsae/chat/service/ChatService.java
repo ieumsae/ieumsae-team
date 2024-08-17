@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,16 +50,37 @@ public class ChatService {
      * @note 기존에 채팅방이 존재하지 않는다면 새로운 ChatRoom 객체에 studyId, chatType을 추가해서 채팅방을 생성
      */
 
-    public ChatRoom getOrCreateChatRoom(Long studyId, ChatRoom.ChatType chatType) {
-        return chatRoomRepository.findByStudyIdAndChatType(studyId, chatType)
-                .orElseGet(() -> {
-                    ChatRoom newChatRoom = new ChatRoom();
-                    newChatRoom.setStudyId(studyId);
-                    newChatRoom.setChatType(chatType);
-                    return chatRoomRepository.save(newChatRoom);
-                });
+    @Transactional
+    public ChatRoom getOrCreateChatRoom(Long studyId, ChatRoom.ChatType chatType, Long userId) {
+        if (chatType == ChatRoom.ChatType.PERSONAL) {
+            // PERSONAL 채팅방의 경우 먼저 기존 채팅방 찾기
+            Optional<ChatRoom> existingRoom = chatRoomRepository.findPersonalChatRoomByUserIdAndStudyId(userId, studyId);
+
+            if (existingRoom.isPresent()) {
+                return existingRoom.get();
+            }
+
+            // 기존 채팅방이 없으면 새로운 채팅방 생성
+            ChatRoom newChatRoom = new ChatRoom();
+            newChatRoom.setStudyId(studyId);
+            newChatRoom.setChatType(chatType);
+            ChatRoom savedChatRoom = chatRoomRepository.save(newChatRoom);
+
+            // 새로운 채팅방에 사용자 추가
+            addUserToChat(savedChatRoom.getChatRoomId(), userId, chatType, studyId);
+
+            return savedChatRoom;
+        } else {
+            // GROUP 채팅방의 경우 기존 로직 유지
+            return chatRoomRepository.findByStudyIdAndChatType(studyId, chatType)
+                    .orElseGet(() -> {
+                        ChatRoom newChatRoom = new ChatRoom();
+                        newChatRoom.setStudyId(studyId);
+                        newChatRoom.setChatType(chatType);
+                        return chatRoomRepository.save(newChatRoom);
+                    });
+        }
     }
-    // zz
     /**
      * @note 그룹채팅의 경우 유저가 해당 스터디원인지 확인
      * @note 각 chatRoomId와 userId를 통해 유효성 확인

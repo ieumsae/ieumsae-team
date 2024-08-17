@@ -67,8 +67,7 @@ public class ChatController {
                 throw new IllegalArgumentException("스터디에 속해있어야 그룹채팅에 참가할 수 있습니다.");
             }
 
-            ChatRoom chatRoom = chatService.getOrCreateChatRoom(studyId, chatType);
-            chatService.addUserToChat(chatRoom.getChatRoomId(), userId, chatType, studyId);
+            ChatRoom chatRoom = chatService.getOrCreateChatRoom(studyId, chatType, userId);
 
             log.info("User {} successfully entered chat room {}", userId, chatRoom.getChatRoomId());
 

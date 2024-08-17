@@ -2,6 +2,8 @@ package com.ieumsae.common.repository;
 
 import com.ieumsae.common.entity.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,4 +20,11 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     // 스터디 방장의 인터페이스에 모든 1:1 채팅방을 조회해서 띄워주는 메소드
     List<ChatRoom> findAllByStudyIdAndChatType(Long studyId, ChatRoom.ChatType chatType);
+
+    @Query("SELECT cr FROM ChatRoom cr " +
+            "JOIN ChatMember cm ON cr.chatRoomId = cm.chatRoomId " +
+            "WHERE cr.chatType = 'PERSONAL' " +
+            "AND cr.studyId = :studyId " +
+            "AND cm.userId = :userId")
+    Optional<ChatRoom> findPersonalChatRoomByUserIdAndStudyId(@Param("userId") Long userId, @Param("studyId") Long studyId);
 }
