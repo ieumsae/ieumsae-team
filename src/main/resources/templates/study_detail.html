@@ -136,9 +136,8 @@
                     let studyId = /*[[${studyId}]]*/ 0;
                 </script>
 
-                <div class="mb-4">
-                    <a th:href="@{/chat/enterChat(chatType='PERSONAL', studyId=${studyId})}"
-                       class="btn btn-primary">1:1 채팅</a>
+                <div class="mb-4" th:if="${userId != study.creatorId}">
+                    <a th:href="@{/chat/enterChat(studyId=${studyId}, chatType='PERSONAL')}" class="btn btn-primary">1:1 채팅</a>
                 </div>
                 <div class="mb-4">
                     <a th:href="@{/chat/enterChat(chatType='GROUP', studyId=${studyId})}" class="btn btn-success">그룹
@@ -199,7 +198,6 @@
                             채팅방 #<span th:text="${chatRoom.get('chatRoomId') ?: '알 수 없음'}"></span> -
                             <span th:text="${chatRoom.get('otherUserNickname') ?: '알 수 없는 사용자'}"></span>
                         </a>
-                        <!-- 추가 정보가 있다면 여기에 표시 -->
                     </li>
                 </ul>
             </div>
