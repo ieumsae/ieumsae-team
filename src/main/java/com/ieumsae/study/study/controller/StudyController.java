@@ -1,5 +1,7 @@
 package com.ieumsae.study.study.controller;
 
+import com.ieumsae.chat.service.ChatService;
+import com.ieumsae.common.entity.ChatRoom;
 import com.ieumsae.common.entity.Study;
 import com.ieumsae.common.entity.User;
 import com.ieumsae.common.repository.StudyRepository;
@@ -25,12 +27,14 @@ public class StudyController {
     private final StudyRepository studyRepository;
     private final UserRepository userRepository;
     private final StudyService studyService;
+    private final ChatService chatService;
 
     @Autowired
-    public StudyController(StudyRepository studyRepository, UserRepository userRepository, StudyService studyService) {
+    public StudyController(StudyRepository studyRepository, UserRepository userRepository, StudyService studyService, ChatService chatService) {
         this.studyRepository = studyRepository;
         this.userRepository = userRepository;
         this.studyService = studyService;
+        this.chatService = chatService;
     }
 
     // 모든 스터디를 조회 (게시판에 스터디 목록으로 다 띄워주는 메소드)
@@ -82,6 +86,10 @@ public class StudyController {
 
             // 스터디 신청자 목록 가져오기
             List<StudyMemberDTO> pendingMembers = studyService.getPendingMembersWithNickname(studyId);
+
+            // 1:1 채팅방 목록 가져오기
+            List<ChatRoom> personalChatRooms = chatService.getPersonalChatRoomsForStudy(studyId);
+            model.addAttribute("personalChatRooms", personalChatRooms);
 
             model.addAttribute("studyId", study.getStudyId());
             model.addAttribute("title", study.getTitle());

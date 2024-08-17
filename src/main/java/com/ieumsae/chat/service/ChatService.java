@@ -192,14 +192,26 @@ public class ChatService {
     public ChatRoom getChatRoomById(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
+
     }
 
     /**
-     * @param authentication
-     * @return userId 값을 반환
-     * @note 현재 인증된 사용자의 "Authentication" 객체에서 userId를 가져오는 역할을 한다.
-     * @note 인증된 사용자의 principal 객체가 OAuth / UserDetails 중 어떤 유형인지 확인하고 해당 객체에서 userId를 추출한다.
+     *
+     * @param studyId
+     * @return
      */
+    // 해당 studyId를 가진 모든 채팅방을 조회 -> 스터디 방장이 스터디 상세보기 페이지에서 모든 1:1채팅을 볼 수 있게 만드는 메소드
+    // 구조상으로 스터디방장 ↔ 일반유저 상의 1:1 채팅만 가능 하기 때문에 스터디 방장만 1:1 채팅에 접근할 수 있도록 하면 된다.
+    public List<ChatRoom> getPersonalChatRoomsForStudy (Long studyId){
+        return chatRoomRepository.findAllByStudyIdAndChatType(studyId, ChatRoom.ChatType.PERSONAL);
+    }
+
+//    /**
+//     * @param authentication
+//     * @return userId 값을 반환
+//     * @note 현재 인증된 사용자의 "Authentication" 객체에서 userId를 가져오는 역할을 한다.
+//     * @note 인증된 사용자의 principal 객체가 OAuth / UserDetails 중 어떤 유형인지 확인하고 해당 객체에서 userId를 추출한다.
+//     */
 //    public Long getCurrentUserId(Authentication authentication) {
 //        Object principal = authentication.getPrincipal();
 //        if (principal instanceof CustomOAuth2User) {
