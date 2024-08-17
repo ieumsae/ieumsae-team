@@ -139,4 +139,5 @@ public class ChatController {
     public List<Message> getPreviousMessages(@PathVariable Long chatRoomId) {
         return chatService.getPreviousMessages(chatRoomId);
     }
+
 }
