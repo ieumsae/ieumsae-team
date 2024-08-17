@@ -51,11 +51,11 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .user-list {
+        .user-list, .study-list {
             list-style-type: none;
             padding: 0;
         }
-        .user-item {
+        .user-item, .study-item {
             background-color: white;
             border-radius: 8px;
             padding: 15px;
@@ -65,25 +65,25 @@
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .user-info {
+        .user-info, .study-info {
             display: flex;
             align-items: center;
         }
-        .user-info i {
+        .user-info i, .study-info i {
             color: #3498db;
             margin-right: 10px;
             font-size: 1.2em;
         }
-        .user-id {
+        .user-id, .study-title {
             color: #2980b9;
             font-weight: bold;
             margin-right: 5px;
         }
-        .user-nickname {
+        .user-nickname, .study-creator {
             color: #16a085;
             font-style: italic;
         }
-        .delete-btn {
+        .delete-btn, .view-studies-btn {
             background-color: #e74c3c;
             color: white;
             border: none;
@@ -91,9 +91,16 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-left: 10px;
         }
         .delete-btn:hover {
             background-color: #c0392b;
+        }
+        .view-studies-btn {
+            background-color: #3498db;
+        }
+        .view-studies-btn:hover {
+            background-color: #2980b9;
         }
     </style>
 </head>
@@ -214,7 +221,7 @@
                         <div class="study-info">
                             <i class="fas fa-book"></i>
                             <span class="study-title">제목: ${study.title}</span> /
-                            <span class="study-creator">생성자: ${study.username}</span>
+                            <span class="study-creator">생성자: ${study.nickname}</span>
                         </div>
                         <button class="delete-btn" onclick="deleteStudy(${study.studyId})"><i class="fas fa-trash"></i> 삭제</button>
                     </li>`;
@@ -254,9 +261,9 @@
     }
 
     function loadUserStudies(userId) {
-        fetch(`/api/admin/users/${userId}/posts`)
+        fetch(`api/users/${userId}/studies`)
             .then(response => response.json())
-            .then(studies => {
+            .then2(studies => {
                 let studyList = `
                 <div class="dashboard-card">
                     <h1><i class="fas fa-book"></i> 사용자의 스터디</h1>
