@@ -58,7 +58,7 @@ public class ChatService {
                     return chatRoomRepository.save(newChatRoom);
                 });
     }
-
+    // zz
     /**
      * @note 그룹채팅의 경우 유저가 해당 스터디원인지 확인
      * @note 각 chatRoomId와 userId를 통해 유효성 확인
