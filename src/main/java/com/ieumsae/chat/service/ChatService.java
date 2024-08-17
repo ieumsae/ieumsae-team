@@ -201,6 +201,7 @@ public class ChatService {
     /**
      *
      * @param studyId
+     * @param currentUserId
      * @return
      */
     // 해당 studyId를 가진 모든 채팅방을 조회 -> 스터디 방장이 스터디 상세보기 페이지에서 모든 1:1채팅을 볼 수 있게 만드는 메소드
@@ -226,7 +227,7 @@ public class ChatService {
         // 5. 상대방 userId로 User 정보 조회
         Map<Long, User> userMap = chatRoomToOtherUserId.values().stream()
                 .distinct()
-                .map(userId -> userRepository.findByUserId(userId))
+                .map(userRepository::findByUserId)
                 .collect(Collectors.toMap(User::getUserId, user -> user));
 
         // 6. 결과 Map 생성 및 반환
