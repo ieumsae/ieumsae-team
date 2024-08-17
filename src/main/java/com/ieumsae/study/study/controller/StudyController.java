@@ -75,30 +75,29 @@ public class StudyController {
         return "studyList"; // View 파일 이름 (e.g., studyList.html)
     }
 
-    // 스터디 상세설명
     @GetMapping("/{studyId}")
     public String getStudyDetails(@PathVariable Long studyId, Model model) {
         Optional<Study> optionalStudy = studyRepository.findById(studyId);
         if (optionalStudy.isPresent()) {
             Study study = optionalStudy.get();
             User creator = userRepository.findByUserId(study.getCreatorId());
-            Long userId = SecurityUtils.getCurrentUserId(); // 현재 로그인한 사용자 ID 추가
+            Long currentUserId = SecurityUtils.getCurrentUserId(); // 현재 로그인한 사용자 ID
 
             // 스터디 신청자 목록 가져오기
             List<StudyMemberDTO> pendingMembers = studyService.getPendingMembersWithNickname(studyId);
 
             // 1:1 채팅방 목록 가져오기
-            List<ChatRoom> personalChatRooms = chatService.getPersonalChatRoomsForStudy(studyId);
-            model.addAttribute("personalChatRooms", personalChatRooms);
+            List<Map<String, Object>> personalChatRooms = chatService.getPersonalChatRoomsForStudy(studyId, currentUserId);
 
             model.addAttribute("studyId", study.getStudyId());
             model.addAttribute("title", study.getTitle());
             model.addAttribute("nickname", creator.getNickname());
             model.addAttribute("createdDt", study.getCreatedDt());
             model.addAttribute("content", study.getContent());
-            model.addAttribute("userId", userId); // 사용자 ID 추가
-            model.addAttribute("pendingMembers", pendingMembers); // 신청자 목록을 모델에 추가합니다.
-            model.addAttribute("study", study); // study 객체 전체를 추가 (기존 속성들과 함께)
+            model.addAttribute("userId", currentUserId);
+            model.addAttribute("pendingMembers", pendingMembers);
+            model.addAttribute("study", study);
+            model.addAttribute("personalChatRooms", personalChatRooms);
 
             return "study_detail";
         } else {

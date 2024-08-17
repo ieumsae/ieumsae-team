@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatService {
@@ -18,7 +21,7 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMemberRepository chatMemberRepository;
     private final MessageRepository messageRepository;
-    private final UserRepository userRepositoryChat;
+    private final UserRepository userRepository;
     private final StudyMemberRepository studyMemberRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -26,13 +29,13 @@ public class ChatService {
     public ChatService(ChatRoomRepository chatRoomRepository,
                        ChatMemberRepository chatMemberRepository,
                        MessageRepository messageRepository,
-                       UserRepository userRepositoryChat,
+                       UserRepository userRepository,
                        StudyMemberRepository studyMemberRepository,
                        SimpMessagingTemplate messagingTemplate) {
         this.chatRoomRepository = chatRoomRepository;
         this.chatMemberRepository = chatMemberRepository;
         this.messageRepository = messageRepository;
-        this.userRepositoryChat = userRepositoryChat;
+        this.userRepository = userRepository;
         this.studyMemberRepository = studyMemberRepository;
         this.messagingTemplate = messagingTemplate;
     }
@@ -96,7 +99,7 @@ public class ChatService {
         chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
-        userRepositoryChat.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
     }
 
@@ -124,7 +127,7 @@ public class ChatService {
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
         // 유저 존재 여부 확인
-        User userChat = userRepositoryChat.findById(userId)
+        User userChat = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
         // 메시지 포맷팅
@@ -179,7 +182,7 @@ public class ChatService {
      */
 
     public String createEntryMessage(Long userId) {
-        User userChat = userRepositoryChat.findById(userId)
+        User userChat = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
         return userChat.getNickname() + "님이 입장하셨습니다.";
     }
@@ -198,12 +201,45 @@ public class ChatService {
     /**
      *
      * @param studyId
+     * @param currentUserId
      * @return
      */
     // 해당 studyId를 가진 모든 채팅방을 조회 -> 스터디 방장이 스터디 상세보기 페이지에서 모든 1:1채팅을 볼 수 있게 만드는 메소드
     // 구조상으로 스터디방장 ↔ 일반유저 상의 1:1 채팅만 가능 하기 때문에 스터디 방장만 1:1 채팅에 접근할 수 있도록 하면 된다.
-    public List<ChatRoom> getPersonalChatRoomsForStudy (Long studyId){
-        return chatRoomRepository.findAllByStudyIdAndChatType(studyId, ChatRoom.ChatType.PERSONAL);
+    public List<Map<String, Object>> getPersonalChatRoomsForStudy(Long studyId, Long currentUserId) {
+        // 1. 해당 스터디의 PERSONAL 타입 채팅방 조회
+        List<ChatRoom> personalChatRooms = chatRoomRepository.findAllByStudyIdAndChatType(studyId, ChatRoom.ChatType.PERSONAL);
+
+        // 2. 조회된 채팅방 ID 리스트 생성
+        List<Long> chatRoomIds = personalChatRooms.stream().map(ChatRoom::getChatRoomId).collect(Collectors.toList());
+
+        // 3. 채팅방 멤버 조회
+        List<ChatMember> chatMembers = chatMemberRepository.findByChatRoomIdIn(chatRoomIds);
+
+        // 4. 채팅방별 상대방 userId 매핑
+        Map<Long, Long> chatRoomToOtherUserId = new HashMap<>();
+        for (ChatMember member : chatMembers) {
+            if (!member.getUserId().equals(currentUserId)) {
+                chatRoomToOtherUserId.put(member.getChatRoomId(), member.getUserId());
+            }
+        }
+
+        // 5. 상대방 userId로 User 정보 조회
+        Map<Long, User> userMap = chatRoomToOtherUserId.values().stream()
+                .distinct()
+                .map(userRepository::findByUserId)
+                .collect(Collectors.toMap(User::getUserId, user -> user));
+
+        // 6. 결과 Map 생성 및 반환
+        return personalChatRooms.stream().map(chatRoom -> {
+            Map<String, Object> result = new HashMap<>();
+            result.put("chatRoomId", chatRoom.getChatRoomId());
+            Long otherUserId = chatRoomToOtherUserId.get(chatRoom.getChatRoomId());
+            User otherUser = userMap.get(otherUserId);
+            result.put("otherUserNickname", otherUser != null ? otherUser.getNickname() : "Unknown");
+            // TODO: 여기에 lastMessagePreview와 lastMessageTime 설정 로직 추가 (필요시)
+            return result;
+        }).collect(Collectors.toList());
     }
 
 //    /**
