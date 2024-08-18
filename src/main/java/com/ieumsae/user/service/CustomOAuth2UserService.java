@@ -49,7 +49,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Long userId = userService.socialSignup(new CustomOAuth2User(userForm, oAuth2User.getAttributes()));
 
         User savedUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found after social signup"));
+                .orElseThrow(() -> new RuntimeException("소셜로그인한 유저를 찾을 수 없읍니다."));
 
         userForm.setUserId(savedUser.getUserId());
 
@@ -60,7 +60,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return switch (registrationId) {
             case "naver" -> new NaverResponse(attributes);
             case "google" -> new GoogleResponse(attributes);
-            default -> throw new IllegalArgumentException("Unsupported OAuth2 provider: " + registrationId);
+            default -> throw new IllegalArgumentException("지원하지 않는 OAuth2 provider: " + registrationId);
         };
     }
 }
