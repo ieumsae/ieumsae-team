@@ -74,7 +74,7 @@
             margin-right: 10px;
             font-size: 1.2em;
         }
-        .user-id, .study-title {
+        .user-username, .study-title {
             color: #2980b9;
             font-weight: bold;
             margin-right: 5px;
@@ -113,7 +113,7 @@
     <div class="menu-item"><a href="#" onclick="loadPage('settings')"><i class="fas fa-cog"></i> 설정</a></div>
 </div>
 <div id="content">
-    <!-- 내용 업로드 칸 !-->
+    <!-- 내용 업로드 칸 -->
 </div>
 
 <script th:inline="javascript">
@@ -165,11 +165,11 @@
                     <li class="user-item">
                         <div class="user-info">
                             <i class="fas fa-user"></i>
-                            <span class="user-id">아이디: ${user.username}</span> /
+                            <span class="user-username">아이디: ${user.username}</span> /
                             <span class="user-nickname">닉네임: ${user.nickname}</span>
                         </div>
-                        <button class="view-studies-btn" onclick="loadUserStudies(${user.id})"><i class="fas fa-book"></i> 게시글 보기</button>
-                        <button class="delete-btn" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i> 삭제</button>
+                        <button class="view-studies-btn" onclick="loadUserStudies(${user.userId})"><i class="fas fa-book"></i> 게시글 보기</button>
+                        <button class="delete-btn" onclick="deleteUser(${user.userId})"><i class="fas fa-trash"></i> 삭제</button>
                     </li>`;
                 });
                 userList += '</ul></div>';
@@ -193,15 +193,20 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        alert('사용자가 성공적으로 삭제되었습니다.');
-                        loadUsers();  // 사용자 목록 새로고침
+                        return response.text();
+                    } else if (response.status === 404) {
+                        throw new Error('사용자를 찾을 수 없습니다.');
                     } else {
-                        alert('사용자 삭제에 실패했습니다.');
+                        throw new Error('서버 오류가 발생했습니다.');
                     }
+                })
+                .then(message => {
+                    alert('사용자가 성공적으로 삭제되었습니다. 관련된 모든 스터디도 함께 삭제되었습니다.');
+                    loadUsers();  // 사용자 목록 새로고침
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('사용자 삭제 중 오류가 발생했습니다.');
+                    alert('사용자 삭제 중 오류가 발생했습니다: ' + error.message);
                 });
         }
     }
@@ -263,7 +268,7 @@
     function loadUserStudies(userId) {
         fetch(`api/users/${userId}/studies`)
             .then(response => response.json())
-            .then2(studies => {
+            .then(studies => {
                 let studyList = `
                 <div class="dashboard-card">
                     <h1><i class="fas fa-book"></i> 사용자의 스터디</h1>
