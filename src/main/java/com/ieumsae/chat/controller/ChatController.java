@@ -56,11 +56,10 @@ public class ChatController {
     @GetMapping("/enterChat")
     public String enterChat(@RequestParam("studyId") Long studyId,
                             @RequestParam("chatType") ChatRoom.ChatType chatType,
-                            @RequestParam(value = "targetUserId", required = false) Long targetUserId,
                             Model model,
                             RedirectAttributes redirectAttributes) {
         Long userId = SecurityUtils.getCurrentUserId();
-        log.info("Entering chat. StudyId: {}, ChatType: {}, UserId: {}, TargetUserId: {}", studyId, chatType, userId, targetUserId);
+        log.info("Entering chat. StudyId: {}, ChatType: {}, UserId: {}", studyId, chatType, userId);
 
         try {
             if (chatType == ChatRoom.ChatType.GROUP && !chatService.canJoinGroupChat(studyId, userId)) {
@@ -68,7 +67,7 @@ public class ChatController {
                 throw new IllegalArgumentException("스터디에 속해있어야 그룹채팅에 참가할 수 있습니다.");
             }
 
-            ChatRoom chatRoom = chatService.getOrCreateChatRoom(studyId, chatType, userId, targetUserId);
+            ChatRoom chatRoom = chatService.getOrCreateChatRoom(studyId, chatType, userId);
 
             log.info("User {} successfully entered chat room {}", userId, chatRoom.getChatRoomId());
 

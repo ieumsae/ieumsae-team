@@ -92,7 +92,7 @@ public class ChatService {
     @Transactional
     public void addUserToChat(Long chatRoomId, Long userId, ChatRoom.ChatType chatType, Long studyId) {
 
-        chatRoomRepository.findById(chatRoomId)
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
         if (chatType == ChatRoom.ChatType.GROUP && !canJoinGroupChat(studyId, userId)) {
