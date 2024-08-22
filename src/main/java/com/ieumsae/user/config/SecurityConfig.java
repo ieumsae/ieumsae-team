@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import lombok.extern.slf4j.Slf4j;
@@ -31,13 +32,15 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final UserService userService;
     private final JwtUtil jwtUtil;
+    private final AuthenticationFailureHandler customFailureHandler;
 
     // 생성자를 통한 의존성 주입
     @Lazy
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, JwtUtil jwtUtil, UserService userService) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, JwtUtil jwtUtil, UserService userService,AuthenticationFailureHandler customAuthenticationFailureHandler) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+        this.customFailureHandler = customAuthenticationFailureHandler;
     }
 
     @Bean // 비밀번호 암호화를 위한 인코더 빈 등록
@@ -68,7 +71,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/ws-endpoint/**")
                         .disable()) // CSRF 보호 기능 비활성화
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/signup", "/signup1", "/signup2", "/login", "/api/**", "/api/users/", "/", "/oauth2/**").permitAll()
+                    auth.requestMatchers("/signup", "/signup1", "/signup2", "/login/**", "/api/**", "/api/users/", "/", "/oauth2/**").permitAll()
                             .requestMatchers("/admin/**").hasAuthority("ADMIN")
                             .requestMatchers("/js/**", "/images/**", "/css/**", "/scss/**", "/jquery/**").permitAll()
                             .requestMatchers("/ws-endpoint/**").permitAll() // 웹소켓 엔드포인트 추가
@@ -94,6 +97,7 @@ public class SecurityConfig {
                             .passwordParameter("password")
                             .loginPage("/login")
                             .successHandler(new CustomSuccessHandler(jwtUtil, userService, userRepository))
+                            .failureHandler(customFailureHandler)
                             .permitAll();
                     log.info("폼 로그인 구성 완료");
                 })
