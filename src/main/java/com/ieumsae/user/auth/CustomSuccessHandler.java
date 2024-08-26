@@ -1,4 +1,4 @@
-package com.ieumsae.user.oauth;
+package com.ieumsae.user.auth;
 
 import com.ieumsae.user.domain.CustomOAuth2User;
 import com.ieumsae.common.entity.User;

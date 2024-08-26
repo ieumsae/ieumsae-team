@@ -1,4 +1,4 @@
-package com.ieumsae.user.oauth;
+package com.ieumsae.user.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
