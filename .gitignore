@@ -25,3 +25,7 @@ replay_pid*
 .idea
 .gradle
 .DS_Store
+
+
+# Application properties
+src/main/resources/application.properties
