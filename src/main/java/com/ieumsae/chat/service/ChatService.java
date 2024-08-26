@@ -10,7 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatService {
@@ -18,7 +22,7 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMemberRepository chatMemberRepository;
     private final MessageRepository messageRepository;
-    private final UserRepository userRepositoryChat;
+    private final UserRepository userRepository;
     private final StudyMemberRepository studyMemberRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -26,13 +30,13 @@ public class ChatService {
     public ChatService(ChatRoomRepository chatRoomRepository,
                        ChatMemberRepository chatMemberRepository,
                        MessageRepository messageRepository,
-                       UserRepository userRepositoryChat,
+                       UserRepository userRepository,
                        StudyMemberRepository studyMemberRepository,
                        SimpMessagingTemplate messagingTemplate) {
         this.chatRoomRepository = chatRoomRepository;
         this.chatMemberRepository = chatMemberRepository;
         this.messageRepository = messageRepository;
-        this.userRepositoryChat = userRepositoryChat;
+        this.userRepository = userRepository;
         this.studyMemberRepository = studyMemberRepository;
         this.messagingTemplate = messagingTemplate;
     }
@@ -46,16 +50,37 @@ public class ChatService {
      * @note 기존에 채팅방이 존재하지 않는다면 새로운 ChatRoom 객체에 studyId, chatType을 추가해서 채팅방을 생성
      */
 
-    public ChatRoom getOrCreateChatRoom(Long studyId, ChatRoom.ChatType chatType) {
-        return chatRoomRepository.findByStudyIdAndChatType(studyId, chatType)
-                .orElseGet(() -> {
-                    ChatRoom newChatRoom = new ChatRoom();
-                    newChatRoom.setStudyId(studyId);
-                    newChatRoom.setChatType(chatType);
-                    return chatRoomRepository.save(newChatRoom);
-                });
-    }
+    @Transactional
+    public ChatRoom getOrCreateChatRoom(Long studyId, ChatRoom.ChatType chatType, Long userId) {
+        if (chatType == ChatRoom.ChatType.PERSONAL) {
+            // PERSONAL 채팅방의 경우 먼저 기존 채팅방 찾기
+            Optional<ChatRoom> existingRoom = chatRoomRepository.findPersonalChatRoomByUserIdAndStudyId(userId, studyId);
 
+            if (existingRoom.isPresent()) {
+                return existingRoom.get();
+            }
+
+            // 기존 채팅방이 없으면 새로운 채팅방 생성
+            ChatRoom newChatRoom = new ChatRoom();
+            newChatRoom.setStudyId(studyId);
+            newChatRoom.setChatType(chatType);
+            ChatRoom savedChatRoom = chatRoomRepository.save(newChatRoom);
+
+            // 새로운 채팅방에 사용자 추가
+            addUserToChat(savedChatRoom.getChatRoomId(), userId, chatType, studyId);
+
+            return savedChatRoom;
+        } else {
+            // GROUP 채팅방의 경우 기존 로직 유지
+            return chatRoomRepository.findByStudyIdAndChatType(studyId, chatType)
+                    .orElseGet(() -> {
+                        ChatRoom newChatRoom = new ChatRoom();
+                        newChatRoom.setStudyId(studyId);
+                        newChatRoom.setChatType(chatType);
+                        return chatRoomRepository.save(newChatRoom);
+                    });
+        }
+    }
     /**
      * @note 그룹채팅의 경우 유저가 해당 스터디원인지 확인
      * @note 각 chatRoomId와 userId를 통해 유효성 확인
@@ -66,12 +91,20 @@ public class ChatService {
 
     @Transactional
     public void addUserToChat(Long chatRoomId, Long userId, ChatRoom.ChatType chatType, Long studyId) {
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+
         if (chatType == ChatRoom.ChatType.GROUP && !canJoinGroupChat(studyId, userId)) {
             throw new IllegalArgumentException("해당 유저는 스터디원이 아닙니다.");
         }
 
-        // 유저가 채팅방에 속해있는지 확인
-        verifyChatRoomAndUserExistence(chatRoomId, userId);
+        if (chatType == ChatRoom.ChatType.PERSONAL) {
+            long memberCount = chatMemberRepository.countByChatRoomId(chatRoomId);
+            if (memberCount > 2) {
+                throw new IllegalStateException("개인 채팅방은 최대 2명까지만 참여할 수 있습니다.");
+            }
+        }
 
         // chatRoomId, userId로 ChatMember 테이블에 정보가 있는지 확인하고 없으면 addChatMember 메소드로 데이터를 저장
         if (!chatMemberRepository.existsByChatRoomIdAndUserId(chatRoomId, userId)) {
@@ -79,13 +112,16 @@ public class ChatService {
             String entryMessage = createEntryMessage(userId);
             messagingTemplate.convertAndSend("/topic/chat/" + chatRoomId, entryMessage);
         }
+
+        // 유저가 채팅방에 속해있는지 확인
+        verifyChatRoomAndUserExistence(chatRoomId, userId);
     }
 
     private void verifyChatRoomAndUserExistence(Long chatRoomId, Long userId) {
         chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
-        userRepositoryChat.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
     }
 
@@ -113,7 +149,7 @@ public class ChatService {
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
         // 유저 존재 여부 확인
-        User userChat = userRepositoryChat.findById(userId)
+        User userChat = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
         // 메시지 포맷팅
@@ -168,7 +204,7 @@ public class ChatService {
      */
 
     public String createEntryMessage(Long userId) {
-        User userChat = userRepositoryChat.findById(userId)
+        User userChat = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
         return userChat.getNickname() + "님이 입장하셨습니다.";
     }
@@ -181,14 +217,59 @@ public class ChatService {
     public ChatRoom getChatRoomById(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
+
     }
 
     /**
-     * @param authentication
-     * @return userId 값을 반환
-     * @note 현재 인증된 사용자의 "Authentication" 객체에서 userId를 가져오는 역할을 한다.
-     * @note 인증된 사용자의 principal 객체가 OAuth / UserDetails 중 어떤 유형인지 확인하고 해당 객체에서 userId를 추출한다.
+     *
+     * @param studyId
+     * @param currentUserId
+     * @return
      */
+    // 해당 studyId를 가진 모든 채팅방을 조회 -> 스터디 방장이 스터디 상세보기 페이지에서 모든 1:1채팅을 볼 수 있게 만드는 메소드
+    // 구조상으로 스터디방장 ↔ 일반유저 상의 1:1 채팅만 가능 하기 때문에 스터디 방장만 1:1 채팅에 접근할 수 있도록 하면 된다.
+    public List<Map<String, Object>> getPersonalChatRoomsForStudy(Long studyId, Long currentUserId) {
+        // 1. 해당 스터디의 PERSONAL 타입 채팅방 조회
+        List<ChatRoom> personalChatRooms = chatRoomRepository.findAllByStudyIdAndChatType(studyId, ChatRoom.ChatType.PERSONAL);
+
+        // 2. 조회된 채팅방 ID 리스트 생성
+        List<Long> chatRoomIds = personalChatRooms.stream().map(ChatRoom::getChatRoomId).collect(Collectors.toList());
+
+        // 3. 채팅방 멤버 조회
+        List<ChatMember> chatMembers = chatMemberRepository.findByChatRoomIdIn(chatRoomIds);
+
+        // 4. 채팅방별 상대방 userId 매핑
+        Map<Long, Long> chatRoomToOtherUserId = new HashMap<>();
+        for (ChatMember member : chatMembers) {
+            if (!member.getUserId().equals(currentUserId)) {
+                chatRoomToOtherUserId.put(member.getChatRoomId(), member.getUserId());
+            }
+        }
+
+        // 5. 상대방 userId로 User 정보 조회
+        Map<Long, User> userMap = chatRoomToOtherUserId.values().stream()
+                .distinct()
+                .map(userRepository::findByUserId)
+                .collect(Collectors.toMap(User::getUserId, user -> user));
+
+        // 6. 결과 Map 생성 및 반환
+        return personalChatRooms.stream().map(chatRoom -> {
+            Map<String, Object> result = new HashMap<>();
+            result.put("chatRoomId", chatRoom.getChatRoomId());
+            Long otherUserId = chatRoomToOtherUserId.get(chatRoom.getChatRoomId());
+            User otherUser = userMap.get(otherUserId);
+            result.put("otherUserNickname", otherUser != null ? otherUser.getNickname() : "Unknown");
+            // TODO: 여기에 lastMessagePreview와 lastMessageTime 설정 로직 추가 (필요시)
+            return result;
+        }).collect(Collectors.toList());
+    }
+
+//    /**
+//     * @param authentication
+//     * @return userId 값을 반환
+//     * @note 현재 인증된 사용자의 "Authentication" 객체에서 userId를 가져오는 역할을 한다.
+//     * @note 인증된 사용자의 principal 객체가 OAuth / UserDetails 중 어떤 유형인지 확인하고 해당 객체에서 userId를 추출한다.
+//     */
 //    public Long getCurrentUserId(Authentication authentication) {
 //        Object principal = authentication.getPrincipal();
 //        if (principal instanceof CustomOAuth2User) {
