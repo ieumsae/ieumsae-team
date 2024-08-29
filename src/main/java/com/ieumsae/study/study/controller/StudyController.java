@@ -83,6 +83,9 @@ public class StudyController {
             User creator = userRepository.findByUserId(study.getCreatorId());
             Long currentUserId = SecurityUtils.getCurrentUserId(); // 현재 로그인한 사용자 ID
 
+            // 스터디 상세 페이지를 로드할 때, 개인 채팅방 정보를 가져온다.
+            // ChatRoom personalChatRoom = chatService.getOrCreateChatRoom(studyId, ChatRoom.ChatType.PERSONAL, currentUserId);
+
             // 스터디 신청자 목록 가져오기
             List<StudyMemberDTO> pendingMembers = studyService.getPendingMembersWithNickname(studyId);
 
@@ -98,6 +101,7 @@ public class StudyController {
             model.addAttribute("pendingMembers", pendingMembers);
             model.addAttribute("study", study);
             model.addAttribute("personalChatRooms", personalChatRooms);
+            // model.addAttribute("chatRoomId", personalChatRoom.getChatRoomId());
 
             return "study_detail";
         } else {
