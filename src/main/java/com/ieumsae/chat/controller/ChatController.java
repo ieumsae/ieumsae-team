@@ -111,6 +111,7 @@ public class ChatController {
 
         logger.info("Sending message: {}", savedMessage);
         return savedMessage;
+
     }
 
     /**
