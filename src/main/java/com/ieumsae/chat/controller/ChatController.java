@@ -138,6 +138,7 @@ public class ChatController {
     @ResponseBody
     public List<Message> getPreviousMessages(@PathVariable Long chatRoomId) {
         return chatService.getPreviousMessages(chatRoomId);
+
     }
 
 }
