@@ -59,6 +59,7 @@ public class ChatController {
                             Model model,
                             RedirectAttributes redirectAttributes) {
         Long userId = SecurityUtils.getCurrentUserId();
+
         log.info("Entering chat. StudyId: {}, ChatType: {}, UserId: {}", studyId, chatType, userId);
 
         try {
