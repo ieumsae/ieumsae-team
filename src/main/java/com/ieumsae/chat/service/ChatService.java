@@ -246,6 +246,7 @@ public class ChatService {
             }
         }
 
+
         // 5. 상대방 userId로 User 정보 조회
         Map<Long, User> userMap = chatRoomToOtherUserId.values().stream()
                 .distinct()
@@ -262,6 +263,7 @@ public class ChatService {
             // TODO: 여기에 lastMessagePreview와 lastMessageTime 설정 로직 추가 (필요시)
             // HashMap 형태로 데이터를 추가
             return result;
+
         }).collect(Collectors.toList());
     }
 
