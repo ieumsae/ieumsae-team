@@ -96,28 +96,6 @@ public class ChatController {
     /**
      * @param chatRoomId
      * @param message
-     * @return Message 객체 타입의 chatRoomId, userId, content 값이 반환
-     * @DestinationVariable @MessageMapping / @SendTo 에 있는 chatRoomId 값을 Long chatRoomId 라는 변수에 바인딩
-     * @payload 메시지 본문
-     * @note chatRoomId와 message 본문을 DB에 저장하고 채팅방에 띄워주는 기능을 하는 메소드
-     */
-
-    @MessageMapping("/chat.sendMessage/{chatRoomId}")
-    @SendTo("/topic/chat/{chatRoomId}")
-    public Message sendMessage(@DestinationVariable Long chatRoomId, @Payload Message message) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        logger.info("Received message for room {}: {} from user {}", chatRoomId, message.getContent(), currentUserId);
-
-        Message savedMessage = chatService.saveAndSendMessage(chatRoomId, message.getUserId(), message.getContent(), currentUserId);
-
-        logger.info("Sending message: {}", savedMessage);
-        return savedMessage;
-
-    }
-
-    /**
-     * @param chatRoomId
-     * @param message
      * @return 채팅방과 메시지에 관한 정보를 유저를 채팅방에 추가 + 입장 메시지를 반환
      */
 
@@ -139,6 +117,28 @@ public class ChatController {
     @ResponseBody
     public List<Message> getPreviousMessages(@PathVariable Long chatRoomId) {
         return chatService.getPreviousMessages(chatRoomId);
+    }
+
+    /**
+     * @param chatRoomId
+     * @param message
+     * @return Message 객체 타입의 chatRoomId, userId, content 값이 반환
+     * @DestinationVariable @MessageMapping / @SendTo 에 있는 chatRoomId 값을 Long chatRoomId 라는 변수에 바인딩
+     * @payload 메시지 본문
+     * @note chatRoomId와 message 본문을 DB에 저장하고 채팅방에 띄워주는 기능을 하는 메소드
+     */
+
+    @MessageMapping("/chat.sendMessage/{chatRoomId}")
+    @SendTo("/topic/chat/{chatRoomId}")
+    public Message sendMessage(@DestinationVariable Long chatRoomId, @Payload Message message) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        logger.info("Received message for room {}: {} from user {}", chatRoomId, message.getContent(), currentUserId);
+
+        Message savedMessage = chatService.saveAndSendMessage(chatRoomId, message.getUserId(), message.getContent(), currentUserId);
+
+        logger.info("Sending message: {}", savedMessage);
+        return savedMessage;
+
     }
 
 }
