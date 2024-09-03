@@ -25,7 +25,7 @@ public class UserController {
     /**
      * 회원가입 1단계: 기본 정보 등록
      * @param userForm 사용자 기본 정보를 담은 폼 객체
-     * @return ResponseEntity<?> 회원가입 1단계 결과 (userIdx 또는 에러 메시지)
+     * @return ResponseEntity<?> 회원가입 1단계 결과 (userId 반환 또는 에러 메시지)
      */
     @PostMapping("/signup1")
     public ResponseEntity<?> signUp1(@RequestBody UserForm userForm) {

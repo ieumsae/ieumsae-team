@@ -9,6 +9,9 @@ import java.util.List;
 @Repository
 public interface StudyRepository extends JpaRepository<Study, Long>{
 
+    List<Study> findByCreatorId(Long creatorId);
+    void deleteByCreatorId(Long creatorId);
+
     // STUDY 테이블에서 studyId에 관련된 레코드를 삭제하는 메소드
     void deleteByStudyId(Long studyId);
 

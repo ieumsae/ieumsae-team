@@ -1,4 +1,4 @@
-package com.ieumsae.user.oauth;
+package com.ieumsae.user.auth;
 
 import com.ieumsae.user.domain.CustomOAuth2User;
 import com.ieumsae.common.entity.User;
@@ -98,7 +98,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // JWT 토큰 생성
         String token = jwtUtil.createJwt(username, role, 60 * 60 * 60L);
-        log.info("JWT 토큰 생성 완료");
+        log.info("JWT 토큰 생성 완료" + token);
 
         // 응답에 JWT 토큰을 담은 쿠키 추가
         response.addCookie(createCookie("Authorization", token));

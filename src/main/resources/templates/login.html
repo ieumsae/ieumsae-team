@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -231,6 +231,25 @@
             height: 40px;
             width: 40px;
         }
+        .error-container {
+            background-color: #fef3f3;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #f8d7da;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+
+        .error-message {
+            color: blueviolet;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
     </style>
 </head>
 <body>
@@ -264,6 +283,9 @@
 
 
             <input type="password" name="password" placeholder="비밀번호" required>
+            <div th:if="${error}" id="errorContainer" class="error-container">
+                <p id="valid" class="error-message" th:text="${exception}"></p>
+            </div>
             <a href="#">비밀번호를 잊으셨나요?</a>
             <button type="submit">로그인</button>
         </form>
@@ -281,7 +303,8 @@
                 <button class="ghost" id="signUp">회원가입</button>
             </div>
         </div>
-
+        <div>
+        </div>
     </div>
 </div>
 
@@ -315,7 +338,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('오류가 발생했습니다.');
+                alert('오류가 발생했습니다.!');
             });
     }
 
@@ -361,6 +384,7 @@
                 alert('회원가입 중 오류가 발생했습니다.');
             });
     });
+
 </script>
 </body>
 </html>
