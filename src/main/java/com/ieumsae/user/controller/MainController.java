@@ -26,6 +26,7 @@ public class MainController {
         this.userService = userService;
     }
 
+    //로그인 시 유저 정보 조회 API
     @GetMapping("/api/user-info")
     public ResponseEntity<UserInfoResponse> getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -64,6 +65,7 @@ public class MainController {
         return ResponseEntity.ok(new UserInfoResponse(username, nickname));
     }
 
+    //유저 정보 조회 및 닉네임 수정 API
     @PostMapping("/api/user-info")
     public ResponseEntity<UserInfoResponse> updateUserInfo(@RequestBody UserInfoRequest userInfoRequest) {
         try {
@@ -87,8 +89,8 @@ public class MainController {
                     return ResponseEntity.badRequest().body(new UserInfoResponse(user.getUsername(), "이미 존재하는 닉네임입니다."));
                 }
 
-                user.setNickname(userInfoRequest.getNewNickname());
-                userRepository.save(user);
+                user.setNickname(userInfoRequest.getNewNickname());  //닉네임값 세팅
+                userRepository.save(user); //DB에 저장
             }
 
             return ResponseEntity.ok(new UserInfoResponse(user.getUsername(), user.getNickname()));
@@ -98,6 +100,7 @@ public class MainController {
         }
     }
 
+    //닉네임 중복확인 API
     @GetMapping("/check/nickname/{nickname}")
     public ResponseEntity<Boolean> checkNicknameDuplicate(@PathVariable String nickname) {
         boolean isDuplicate = userService.checkDuplicate("nickname", nickname);

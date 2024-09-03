@@ -1,5 +1,7 @@
 package com.ieumsae.study.study.controller;
 
+import com.ieumsae.chat.service.ChatService;
+import com.ieumsae.common.entity.ChatRoom;
 import com.ieumsae.common.entity.Study;
 import com.ieumsae.common.entity.User;
 import com.ieumsae.common.repository.StudyRepository;
@@ -25,12 +27,14 @@ public class StudyController {
     private final StudyRepository studyRepository;
     private final UserRepository userRepository;
     private final StudyService studyService;
+    private final ChatService chatService;
 
     @Autowired
-    public StudyController(StudyRepository studyRepository, UserRepository userRepository, StudyService studyService) {
+    public StudyController(StudyRepository studyRepository, UserRepository userRepository, StudyService studyService, ChatService chatService) {
         this.studyRepository = studyRepository;
         this.userRepository = userRepository;
         this.studyService = studyService;
+        this.chatService = chatService;
     }
 
     // 모든 스터디를 조회 (게시판에 스터디 목록으로 다 띄워주는 메소드)
@@ -71,26 +75,33 @@ public class StudyController {
         return "studyList"; // View 파일 이름 (e.g., studyList.html)
     }
 
-    // 스터디 상세설명
     @GetMapping("/{studyId}")
     public String getStudyDetails(@PathVariable Long studyId, Model model) {
         Optional<Study> optionalStudy = studyRepository.findById(studyId);
         if (optionalStudy.isPresent()) {
             Study study = optionalStudy.get();
             User creator = userRepository.findByUserId(study.getCreatorId());
-            Long userId = SecurityUtils.getCurrentUserId(); // 현재 로그인한 사용자 ID 추가
+            Long currentUserId = SecurityUtils.getCurrentUserId(); // 현재 로그인한 사용자 ID
+
+            // 스터디 상세 페이지를 로드할 때, 개인 채팅방 정보를 가져온다.
+            // ChatRoom personalChatRoom = chatService.getOrCreateChatRoom(studyId, ChatRoom.ChatType.PERSONAL, currentUserId);
 
             // 스터디 신청자 목록 가져오기
             List<StudyMemberDTO> pendingMembers = studyService.getPendingMembersWithNickname(studyId);
+
+            // 1:1 채팅방 목록 가져오기
+            List<Map<String, Object>> personalChatRooms = chatService.getPersonalChatRoomsForStudy(studyId, currentUserId);
 
             model.addAttribute("studyId", study.getStudyId());
             model.addAttribute("title", study.getTitle());
             model.addAttribute("nickname", creator.getNickname());
             model.addAttribute("createdDt", study.getCreatedDt());
             model.addAttribute("content", study.getContent());
-            model.addAttribute("userId", userId); // 사용자 ID 추가
-            model.addAttribute("pendingMembers", pendingMembers); // 신청자 목록을 모델에 추가합니다.
-            model.addAttribute("study", study); // study 객체 전체를 추가 (기존 속성들과 함께)
+            model.addAttribute("userId", currentUserId);
+            model.addAttribute("pendingMembers", pendingMembers);
+            model.addAttribute("study", study);
+            model.addAttribute("personalChatRooms", personalChatRooms);
+            // model.addAttribute("chatRoomId", personalChatRoom.getChatRoomId());
 
             return "study_detail";
         } else {

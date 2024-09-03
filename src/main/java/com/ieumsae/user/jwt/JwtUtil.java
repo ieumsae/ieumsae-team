@@ -27,9 +27,9 @@ public class JwtUtil {
     }
 
     // JWT 토큰에서 userId를 추출합니다.
-    public String getUserId(String token) {
+    public String getUserName(String token) {
         log.info("토큰에서 userId 추출 시도");
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", String.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
     }
 
     // JWT 토큰에서 사용자 역할을 추출합니다.
@@ -47,14 +47,14 @@ public class JwtUtil {
     // 새로운 JWT 토큰을 생성합니다.
     private static final long DEFAULT_EXPIRATION_MS = 3600000; // 1시간을 기본값으로 설정
 
-    public String createJwt(String userId, String role, Long expiredMs) {
+    public String createJwt(String userName, String role, Long expiredMs) {
         // 유효하지 않은 만료 시간이 입력된 경우 기본값 사용
         long validExpiredMs = (expiredMs != null && expiredMs > 0) ? expiredMs : DEFAULT_EXPIRATION_MS;
 
-        log.info("새로운 JWT 토큰 생성 시도 - userId: {}, role: {}, 만료시간: {} ms", userId, role, validExpiredMs);
+        log.info("새로운 JWT 토큰 생성 시도 - userName: {}, role: {}, 만료시간: {} ms", userName, role, validExpiredMs);
 
         return Jwts.builder()
-                .claim("userId", userId)
+                .claim("userName", userName)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + validExpiredMs))
