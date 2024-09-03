@@ -59,9 +59,7 @@ public class ChatController {
                             Model model,
                             RedirectAttributes redirectAttributes) {
         Long userId = SecurityUtils.getCurrentUserId();
-
         log.info("Entering chat. StudyId: {}, ChatType: {}, UserId: {}", studyId, chatType, userId);
-
         try {
             if (chatType == ChatRoom.ChatType.GROUP && !chatService.canJoinGroupChat(studyId, userId)) {
                 log.warn("User {} cannot join group chat for study {}", userId, studyId);
@@ -82,11 +80,11 @@ public class ChatController {
 
             return "chat";
         } catch (IllegalArgumentException e) {
-            log.error("IllegalArgumentException in enterChat: {}", e.getMessage());
+            log.error("enterChat에서 에러가 발생했습니다.", e.getMessage());
             redirectAttributes.addAttribute("errorMessage", URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
             return "redirect:/study/" + studyId;
         } catch (Exception e) {
-            log.error("Unexpected error in enterChat", e);
+            log.error("enterChat에서 예상치 못한 예외가 발생했습니다.", e);
             redirectAttributes.addFlashAttribute("errorMessage", "예기치 못한 오류가 발생했습니다.");
             return "redirect:/study/" + studyId;
         }
