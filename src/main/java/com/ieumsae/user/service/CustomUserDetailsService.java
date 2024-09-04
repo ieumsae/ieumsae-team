@@ -42,10 +42,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             log.info("CustomUserDetails 생성 완료:");
             log.info("- 이름: {}", userDetails.getUsername());
             log.info("- 권한: {}", userDetails.getAuthorities());
-            log.info("- 계정 만료 여부: {}", userDetails.isAccountNonExpired());
-            log.info("- 계정 잠금 여부: {}", userDetails.isAccountNonLocked());
-            log.info("- 비밀번호 만료 여부: {}", userDetails.isCredentialsNonExpired());
-            log.info("- 계정 활성화 여부: {}", userDetails.isEnabled());
 
             return userDetails;
         } catch (UsernameNotFoundException e) {
