@@ -106,6 +106,15 @@
                 <div class="row" style="margin-top: 15px;">
                     <div class="col-md-6 mb-3">
 
+<<<<<<< HEAD
+                <div class="mb-4">
+                    <a th:href="@{/chat/enterChat(chatType='PERSONAL', studyId=${studyId})}"
+                       class="btn btn-primary">1:1 채팅</a>
+                </div>
+                <div class="mb-4">
+                    <a th:href="@{/chat/enterChat(chatType='GROUP', studyId=${studyId})}" class="btn btn-success">그룹
+                        채팅</a>
+=======
                         <label>스터디 명 : <span th:text="${title}">제목을 로드 중...</span></label>
                     </div>
                     <div class="col-md-6 mb-3">
@@ -121,6 +130,7 @@
                         <label>내용 :</label>
                         <p th:text="${content}">내용을 로드 중...</p>
                     </div>
+>>>>>>> 420913318c0ae644289f417c7f81b7988703c967
                 </div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;" >
                     <!-- 스터디 방장에게만 보이는 버튼 -->
