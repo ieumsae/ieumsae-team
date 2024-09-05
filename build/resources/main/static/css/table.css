@@ -7,7 +7,7 @@
 
 .table{
     position: relative;
-    width: 50%;         /* width: 50%; 부여 (240904) */
+    width: 60%;         /* width: 60%; 부여 (240903) */
     min-width: 1000px;  /* min-width: 1000px; 부여 (240903) */
     margin: 0 auto 100px auto;
 
