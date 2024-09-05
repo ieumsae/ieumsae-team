@@ -89,14 +89,14 @@
 </section>
 
 <!--스터디 메인 화면-->
-<div class="input-group mb-3" style="width: 30%; margin: 0 auto; margin-top: 20px;">
+<div class="input-group mb-3" style="margin: 0 auto; margin-top: 20px; width: 30%; min-width: 500px;">
+    <!-- width: 30%; min-width: 500px; 부여 (240903) -->
     <form th:action="@{/searchStudies}" method="get"></form>
     <input type="text" class="form-control" name="keyword" placeholder="스터디 명 검색" aria-label="Recipient's username"
            aria-describedby="button-addon2">
     <button class="btn btn-outline-secondary search-button" type="submit" id="button-addon2">검색</button>
-
 </div>
-<div class="button-container" style="position:relative; left: 80%;">
+<div class="button-container" style="position:relative; margin: 0 auto 15px auto; width: 50%; min-width: 1000px; display: flex; justify-content: flex-end;">
     <a th:href="@{/study/create}">
         <button type="button" class="btn btn-success create-button">스터디 개설</button>
     </a>

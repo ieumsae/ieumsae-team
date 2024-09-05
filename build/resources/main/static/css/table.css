@@ -4,12 +4,15 @@
     text-align: center;
     margin-bottom: 100px;
 }
+
 .table{
     position: relative;
-    left: 73px;
-    width: 90%;
-    margin-bottom: 100px;
+    width: 50%;         /* width: 50%; 부여 (240904) */
+    min-width: 1000px;  /* min-width: 1000px; 부여 (240903) */
+    margin: 0 auto 100px auto;
+
 }
+
 .more-link {
     position: inherit;
     right: 200;
