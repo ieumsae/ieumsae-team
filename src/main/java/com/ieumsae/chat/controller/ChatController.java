@@ -60,7 +60,6 @@ public class ChatController {
                             RedirectAttributes redirectAttributes) {
         Long userId = SecurityUtils.getCurrentUserId();
         log.info("Entering chat. StudyId: {}, ChatType: {}, UserId: {}", studyId, chatType, userId);
-
         try {
             if (chatType == ChatRoom.ChatType.GROUP && !chatService.canJoinGroupChat(studyId, userId)) {
                 log.warn("User {} cannot join group chat for study {}", userId, studyId);
@@ -81,38 +80,16 @@ public class ChatController {
 
             return "chat";
         } catch (IllegalArgumentException e) {
-            log.error("IllegalArgumentException in enterChat: {}", e.getMessage());
+            log.error("enterChat에서 에러가 발생했습니다.", e.getMessage());
             redirectAttributes.addAttribute("errorMessage", URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
             return "redirect:/study/" + studyId;
         } catch (Exception e) {
-            log.error("Unexpected error in enterChat", e);
+            log.error("enterChat에서 예상치 못한 예외가 발생했습니다.", e);
             redirectAttributes.addFlashAttribute("errorMessage", "예기치 못한 오류가 발생했습니다.");
             return "redirect:/study/" + studyId;
         }
     }
 
-
-    /**
-     * @param chatRoomId
-     * @param message
-     * @return Message 객체 타입의 chatRoomId, userId, content 값이 반환
-     * @DestinationVariable @MessageMapping / @SendTo 에 있는 chatRoomId 값을 Long chatRoomId 라는 변수에 바인딩
-     * @payload 메시지 본문
-     * @note chatRoomId와 message 본문을 DB에 저장하고 채팅방에 띄워주는 기능을 하는 메소드
-     */
-
-    @MessageMapping("/chat.sendMessage/{chatRoomId}")
-    @SendTo("/topic/chat/{chatRoomId}")
-    public Message sendMessage(@DestinationVariable Long chatRoomId, @Payload Message message) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        logger.info("Received message for room {}: {} from user {}", chatRoomId, message.getContent(), currentUserId);
-
-        Message savedMessage = chatService.saveAndSendMessage(chatRoomId, message.getUserId(), message.getContent(), currentUserId);
-
-        logger.info("Sending message: {}", savedMessage);
-        return savedMessage;
-
-    }
 
     /**
      * @param chatRoomId
@@ -138,6 +115,29 @@ public class ChatController {
     @ResponseBody
     public List<Message> getPreviousMessages(@PathVariable Long chatRoomId) {
         return chatService.getPreviousMessages(chatRoomId);
+
+    }
+
+    /**
+     * @param chatRoomId
+     * @param message
+     * @return Message 객체 타입의 chatRoomId, userId, content 값이 반환
+     * @DestinationVariable @MessageMapping / @SendTo 에 있는 chatRoomId 값을 Long chatRoomId 라는 변수에 바인딩
+     * @payload 메시지 본문
+     * @note chatRoomId와 message 본문을 DB에 저장하고 채팅방에 띄워주는 기능을 하는 메소드
+     */
+
+    @MessageMapping("/chat.sendMessage/{chatRoomId}")
+    @SendTo("/topic/chat/{chatRoomId}")
+    public Message sendMessage(@DestinationVariable Long chatRoomId, @Payload Message message) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        logger.info("Received message for room {}: {} from user {}", chatRoomId, message.getContent(), currentUserId);
+
+        Message savedMessage = chatService.saveAndSendMessage(chatRoomId, message.getUserId(), message.getContent(), currentUserId);
+
+        logger.info("Sending message: {}", savedMessage);
+        return savedMessage;
+
     }
 
 }

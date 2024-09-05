@@ -16,8 +16,9 @@ Ieumsae(이음새)는 스터디 모임 관리와 실시간 채팅 기능을 결�
 
 ## 🛠 기술 스택
 
-- Backend: Spring Boot 🍃
-- Frontend: Thymeleaf (템플릿 엔진) 🌿
+- Language: JAVA 17
+- Backend: Spring Boot 🍃 / JPA / QueryDSL
+- Frontend: HTML / CSS / JavaScript / Thymeleaf (템플릿 엔진) 🌿
 - Database: MySQL 🐬
 - 실시간 통신: WebSocket 🔌
 

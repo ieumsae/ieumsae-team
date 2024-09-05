@@ -84,33 +84,35 @@
 </section>
 
 <div class="container" style="background-color: white; margin-top: 50px; max-width: 800px;">
-  <div class="input-form-backgroud row">
-    <div class="input-form col-md-12 mx-auto">
-      <div class="row" style="margin-top: 15px;">
-        <div class="col-md-6 mb-3">
-          <label>게시글 명 : <span th:text="${title}">제목을 로드 중...</span></label> <!-- 게시글 명을 동적으로 표시 -->
+  <div style="margin: 0 12px;">
+    <div class="input-form-backgroud row">
+      <div class="input-form col-md-12 mx-auto">
+        <div class="row" style="margin-top: 15px;">
+          <div class="col-md-6 mb-3">
+            <label>게시글 명 : <span th:text="${title}">제목을 로드 중...</span></label> <!-- 게시글 명을 동적으로 표시 -->
+          </div>
+          <div class="col-md-6 mb-3">
+            <label>게시자 명 : <span th:text="${nickname}">작성자를 로드 중...</span></label> <!-- 게시자 명을 동적으로 표시 -->
+          </div>
+          <div class="col-md-6 mb-3">
+            <label>작성 일자 : <span th:text="${writeDt}">작성 일자를 로드 중...</span></label> <!-- 작성 일자를 동적으로 표시 -->
+          </div>
         </div>
-        <div class="col-md-6 mb-3">
-          <label>게시자 명 : <span th:text="${nickname}">작성자를 로드 중...</span></label> <!-- 게시자 명을 동적으로 표시 -->
+        <hr class="mb-4">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label>내용 : <span th:text="${content}">내용을 로드 중...</span></label> <!-- 내용을 동적으로 표시 -->
+          </div>
         </div>
-        <div class="col-md-6 mb-3">
-          <label>작성 일자 : <span th:text="${writeDt}">작성 일자를 로드 중...</span></label> <!-- 작성 일자를 동적으로 표시 -->
-        </div>
-      </div>
-      <hr class="mb-4">
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label>내용 : <span th:text="${content}">내용을 로드 중...</span></label> <!-- 내용을 동적으로 표시 -->
-        </div>
-      </div>
-      <div style="display: flex; gap: 10px; float: right;">
-        <div class="mb-4">
-          <button id="community-update" class="btn btn-secondary" th:onclick="'location.href=\'/community/' + ${communityId} + '/edit\''">게시글 수정</button>
-        </div>
-        <div class="mb-4">
-          <form id="deleteForm" th:action="@{/community/{communityId}/delete(communityId=${communityId})}" method="post" onsubmit="return deleteCommunity(event);">
-            <button type="submit" class="btn btn-danger">게시글 삭제</button> <!-- 게시글 삭제 버튼 -->
-          </form>
+        <div style="display: flex; gap: 10px; float: right;">
+          <div class="mb-4">
+            <button id="community-update" class="btn btn-secondary" th:onclick="'location.href=\'/community/' + ${communityId} + '/edit\''">게시글 수정</button>
+          </div>
+          <div class="mb-4">
+            <form id="deleteForm" th:action="@{/community/{communityId}/delete(communityId=${communityId})}" method="post" onsubmit="return deleteCommunity(event);">
+              <button type="submit" class="btn btn-danger">게시글 삭제</button> <!-- 게시글 삭제 버튼 -->
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -118,24 +120,26 @@
 </div>
 
 <div class="container comment" style="background-color: white; max-width: 800px;">
-  <div class="input-form-backgroud row">
-    <div class="input-form col-md-12 mx-auto">
-      <h4 class="mb-3 comment" style="text-align: center;">댓글</h4>
-      <form class="validation-form" novalidate>
-        <div class="row">
-        </div>
-        <hr class="mb-4">
-        <div class="card-footer">
-          <form onsubmit="addComment(event)">
-            <div class="form-group">
-              <input type="text" class="form-control comment_input_text" placeholder="댓글을 입력하세요" required>
-            </div>
-            <button type="submit" class="btn btn-primary comment_input_btn" style="margin-top: 10px;">작성</button>
-          </form>
-          <div class="comments mt-3">
+  <div style="margin: 0 12px;">
+    <div class="input-form-backgroud row">
+      <div class="input-form col-md-12 mx-auto">
+        <h4 class="mb-3 comment" style="text-align: center;">댓글</h4>
+        <form class="validation-form" novalidate>
+          <div class="row">
           </div>
-        </div>
-      </form>
+          <hr class="mb-4">
+          <div class="card-footer">
+            <form onsubmit="addComment(event)">
+              <div class="form-group">
+                <input type="text" class="form-control comment_input_text" placeholder="댓글을 입력하세요" required>
+              </div>
+              <button type="submit" class="btn btn-primary comment_input_btn" style="margin-top: 10px;">작성</button>
+            </form>
+            <div class="comments mt-3">
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>

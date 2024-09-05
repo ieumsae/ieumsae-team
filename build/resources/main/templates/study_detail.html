@@ -97,75 +97,80 @@
     </div>
 </section>
 
-<div class="container" style="background-color: white; margin-top: 50px; max-width: 800px;">
-    <div class="input-form-backgroud row">
-        <div class="input-form col-md-12 mx-auto">
-            <div class="row" style="margin-top: 15px;">
-                <div class="col-md-6 mb-3">
-                    <label>스터디 명 : <span th:text="${title}">제목을 로드 중...</span></label>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label>게시자 명 : <span th:text="${nickname}">작성자를 로드 중...</span></label>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label>작성 일자 : <span th:text="${createdDt}">작성 일자를 로드 중...</span></label>
-                </div>
-            </div>
-            <hr class="mb-4">
-            <div class="row">
-                <div class="col-md-12 mb-3">
-                    <label>내용 :</label>
-                    <p th:text="${content}">내용을 로드 중...</p>
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
-                <!-- 스터디 방장에게만 보이는 버튼 -->
-                <div th:if="${study.creatorId == userId}" class="mb-4">
-                    <button id="study-update" class="btn btn-secondary"
-                            th:onclick="'location.href=\'/study/' + ${studyId} + '/edit\''">스터디 수정
-                    </button>
-                </div>
-                <div th:if="${study.creatorId == userId}" class="mb-4">
-                    <form th:action="@{/study/{studyId}/delete(studyId=${studyId})}" method="post"
-                          onsubmit="return confirm('정말로 삭제하시겠습니까?');">
-                        <button type="submit" class="btn btn-danger">스터디 삭제</button>
-                    </form>
-                </div>
-                <!-- 새로운 버튼들 추가 -->
-                <script th:inline="javascript">
-                    let studyId = /*[[${studyId}]]*/ 0;
-                </script>
+<div class="container" style="background-color: white; margin-top: 50px; width: 800px; min-width: 800px;">
+    <!--style="max-width: 800px; => width: 800px; min-width: 800px;" 부여 (240904)-->
+    <div style="margin: 0 12px">
+    <!-- div 생성 및 style="margin: 0 12px" 부여 (240904) -->
+        <div class="input-form-backgroud row">
+            <div class="input-form col-md-12 mx-auto">
+                <div class="row" style="margin-top: 15px;">
+                    <div class="col-md-6 mb-3">
 
-                <!-- 1:1 채팅 버튼 수정 -->
-                <div class="mb-4">
-                    <a th:href="@{/chat/enterChat(chatType='PERSONAL', studyId=${studyId}, userId=${userId})}"
-                       class="btn btn-primary">1:1 채팅</a>
+                        <label>스터디 명 : <span th:text="${title}">제목을 로드 중...</span></label>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>게시자 명 : <span th:text="${nickname}">작성자를 로드 중...</span></label>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>작성 일자 : <span th:text="${createdDt}">작성 일자를 로드 중...</span></label>
+                    </div>
                 </div>
-                <!-- 그룹 채팅 버튼 수정 -->
-                <div class="mb-4">
-                    <a th:href="@{/chat/enterChat(chatType='GROUP', studyId=${studyId}, userId=${userId})}"
-                       class="btn btn-success">그룹 채팅</a>
+                <hr class="mb-4">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label>내용 :</label>
+                        <p th:text="${content}">내용을 로드 중...</p>
+                    </div>
                 </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;" >
+                    <!-- 스터디 방장에게만 보이는 버튼 -->
+                    <div th:if="${study.creatorId == userId}" class="mb-4">
+                        <button id="study-update" class="btn btn-secondary"
+                                th:onclick="'location.href=\'/study/' + ${studyId} + '/edit\''">스터디 수정
+                        </button>
+                    </div>
+                    <div th:if="${study.creatorId == userId}" class="mb-4">
+                        <form th:action="@{/study/{studyId}/delete(studyId=${studyId})}" method="post"
+                              onsubmit="return confirm('정말로 삭제하시겠습니까?');">
+                            <button type="submit" class="btn btn-danger">스터디 삭제</button>
+                        </form>
+                    </div>
+                    <!-- 새로운 버튼들 추가 -->
+                    <script th:inline="javascript">
+                        let studyId = /*[[${studyId}]]*/ 0;
+                    </script>
 
-                <div th:if="${study.creatorId != userId}" class="mb-4">
-                    <button id="apply-study" class="btn btn-success"
-                            th:data-user-id="${userId}"
-                            th:data-study-id="${studyId}">신청
-                    </button>
+                    <div class="mb-4">
+                        <a th:href="@{/chat/enterChat(chatType='PERSONAL', studyId=${studyId})}"
+                           class="btn btn-primary">1:1 채팅</a>
+                    </div>
+                    <div class="mb-4">
+                        <a th:href="@{/chat/enterChat(chatType='GROUP', studyId=${studyId})}" class="btn btn-success">그룹 채팅</a>
+                    </div>
+
+                    <div th:if="${study.creatorId != userId}" class="mb-4">
+                        <button id="apply-study" class="btn btn-success"
+                                th:data-user-id="${userId}"
+                                th:data-study-id="${studyId}">신청
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <!-- 스터디 신청자 목록 섹션 -->
-<div class="container" style="background-color: white; margin-top: 50px; max-width: 800px;">
-    <div class="input-form-backgroud row">
+<div class="container" style="background-color: white; margin-top: 50px; width: 800px; min-width: 800px;">
+    <!--style="max-width: 800px; => width: 800px; min-width: 800px;" 부여 (240904)-->
+    <div class="input-form-backgroud row" style="padding: 15px;">
+    <!--style="padding: 15px;" 부여 (240904)-->
         <div class="input-form col-md-12 mx-auto">
             <div class="study-applicants-section" th:if="${study.creatorId == userId}">
                 <h3>스터디 신청자 목록</h3>
                 <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
                 <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-                <table class="table">
+                <table class="table" style="width: 100%; max-width: 800px; min-width: 0px;">
+                <!-- style="width: 100%; max-width: 800px; min-width: 0px;" 부여 (240904) -->
                     <thead>
                     <tr>
                         <th>신청자</th>
@@ -210,8 +215,10 @@
 </div>
 
 
-<div class="container comment" style="background-color: white; max-width: 800px;">
-    <div class="input-form-backgroud row">
+<div class="container comment" style="background-color: white; width: 800px; min-width: 800px;">
+    <!--style="max-width: 800px; => width: 800px; min-width: 800px;" 부여 (240904)-->
+    <div class="input-form-backgroud row" style="padding: 15px;">
+    <!--style="padding: 15px;" 부여 (240904)-->
         <div class="input-form col-md-12 mx-auto">
             <h4 class="mb-3 comment" style="text-align: center;">댓글</h4>
             <form class="validation-form" novalidate>
@@ -255,43 +262,35 @@
             alert(errorMessage);
         }
 
-        // 1:1 채팅 버튼 클릭 이벤트
-        $('.btn-primary').click(function (e) {
-            e.preventDefault();
-            enterChat('PERSONAL', studyId, userId);
+        $('#one-to-one-chat').click(function () {
+            window.location.href = '/chat/enterChat?chatType=PERSONAL&studyId=' + studyId;
         });
 
-        // 그룹 채팅 버튼 클릭 이벤트
-        $('.btn-success').click(function (e) {
+        $('#group-chat').click(function (e) {
             e.preventDefault();
-            enterChat('GROUP', studyId, userId);
-        });
 
-        // 채팅방 입장 함수
-        function enterChat(chatType, studyId, userId) {
-            fetch(`/chat/enterChat?chatType=${chatType}&studyId=${studyId}&userId=${userId}`)
+            fetch('/chat/enterChat?chatType=GROUP&studyId=' + studyId)
                 .then(response => {
                     if (response.redirected) {
                         window.location.href = response.url;
                         throw new Error('REDIRECTED');
                     }
                     if (!response.ok) {
-                        return response.text().then(text => { throw new Error(text) });
+                        throw new Error('HTTP error ' + response.status);
                     }
-                    return response.json();
+                    return response.text();
                 })
-                .then(data => {
-                    // 채팅방 정보를 받아 처리
-                    console.log('채팅방 입장 성공:', data);
-                    // 여기서 채팅 UI를 열거나 채팅 페이지로 리다이렉트할 수 있습니다.
-                    window.location.href = `/chat/room/${data.chatRoomId}`;
+                .then(html => {
+                    document.open();
+                    document.write(html);
+                    document.close();
                 })
                 .catch(error => {
                     if (error.message !== 'REDIRECTED') {
                         alert('채팅방 입장 중 오류가 발생했습니다: ' + error.message);
                     }
                 });
-        }
+        });
 
         // 스터디 신청 버튼 이벤트 리스너 추가
         $('#apply-study').click(function () {
@@ -412,8 +411,7 @@
             alert(errorMessage);
         }
     });
+
 </script>
-
-
 </body>
 </html>
