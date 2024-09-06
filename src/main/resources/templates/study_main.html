@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
@@ -21,28 +21,15 @@
     <link rel="stylesheet" href="/css/lightbox.css">
     <link rel="stylesheet" href="/css/table.css">
     <link rel="stylesheet" href="/css/tabs.css">
-
-    <style>
-
-    </style>
 </head>
 
 <body>
 <!-- Sub Header -->
 <div class="sub-header">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-sm-8">
-                <div class="left-content">
-                    <p>ieumsae</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-sm-4">
-                <div class="right-icons">
-                    <ul>
-                        <div th:replace="fragments/header :: header"></div>
-                    </ul>
-                </div>
+        <div class="row" style="display: flex; justify-content: flex-end;">
+            <div class="col-lg-4 col-sm-4" style="min-width: 500px;">
+                <div th:replace="fragments/header :: header"></div>
             </div>
         </div>
     </div>
