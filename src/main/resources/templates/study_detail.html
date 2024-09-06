@@ -40,11 +40,6 @@
 <div class="sub-header">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-sm-8">
-                <div class="left-content">
-                    <p>ieumsae</p> <!-- 사이트 이름 -->
-                </div>
-            </div>
             <div class="col-lg-4 col-sm-4">
                 <div class="right-icons">
                     <ul>
@@ -115,17 +110,12 @@
                         <label>작성 일자 : <span th:text="${createdDt}">작성 일자를 로드 중...</span></label>
                     </div>
                 </div>
-<<<<<<< HEAD
-                <div class="mb-4">
-                    <a th:href="@{/chat/enterChat(chatType='GROUP', studyId=${studyId})}" class="btn btn-success">그룹 채팅</a>
-=======
                 <hr class="mb-4">
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label>내용 :</label>
                         <p th:text="${content}">내용을 로드 중...</p>
                     </div>
->>>>>>> 420913318c0ae644289f417c7f81b7988703c967
                 </div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;" >
                     <!-- 스터디 방장에게만 보이는 버튼 -->
