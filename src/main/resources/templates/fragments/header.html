@@ -48,7 +48,7 @@
             if (data.username && data.username !== 'unknown') {
                 userInfoDiv.innerHTML = `
                     <div style="float: right; display: flex; justify-content: flex-end; ">
-                        <p style="text-align: right; color: white; MARGIN-RIGHT:10PX; padding-top:5px; width: 250px;">${data.nickname}님 환영합니다!</p>
+                        <p style="text-align: right; color: white; MARGIN-RIGHT:10PX; width: 250px; height: 41px;">${data.nickname}님 환영합니다!</p>
                         <div style="width: 260px;">
                             <button class="button" onclick="showNicknameForm()" style="padding-left:3px; padding-right:3px; padding-top:3px;">닉네임 변경</button>
                             <button class="button" style="padding-left:3px; padding-right:3px; padding-top:3px"><a href="/my_page" style="color:black;">마이 페이지</a></button>
@@ -68,7 +68,11 @@
 
         function showLoginButton() {
             const userInfoDiv = document.getElementById('userInfo');
-            userInfoDiv.innerHTML = `<a href="/login">로그인/회원가입</a>`;
+            userInfoDiv.innerHTML = `
+                <div style="height: 41px; display: flex; align-items: center;">
+                    <a href="/login">로그인/회원가입</a>
+                </div>
+            `;
         }
 
         function showNicknameForm() {
