@@ -30,3 +30,4 @@ replay_pid*
 # Application properties
 src/main/resources/application.properties
 build/tmp/compileJava/previous-compilation-data.bin
+/build/
