@@ -67,6 +67,7 @@ public class ChatService {
             ChatRoom savedChatRoom = chatRoomRepository.save(newChatRoom);
 
             // 새로운 채팅방에 사용자 추가
+            // 주석 추가
             addUserToChat(savedChatRoom.getChatRoomId(), userId, chatType, studyId);
 
             return savedChatRoom;
