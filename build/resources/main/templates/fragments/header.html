@@ -47,12 +47,14 @@
             const userInfoDiv = document.getElementById('userInfo');
             if (data.username && data.username !== 'unknown') {
                 userInfoDiv.innerHTML = `
-                    <div style="width="1000px; float:right;">
-                    <p style="float: LEFT; color: white; MARGIN-RIGHT:10PX; padding-top:5px;">${data.nickname}님 환영합니다!</p>
-                    <button class="button" onclick="showNicknameForm()" style="padding-left:3px; padding-right:3px; padding-top:3px;">닉네임 변경</button>
-                    <button class="button" style="padding-left:3px; padding-right:3px; padding-top:3px"><a href="/my_page" style="color:black; font-size=2em; padding-bottom:3px">마이 페이지</a></button>
-                    <button class="button" onclick="logout()" style="padding-top:5px; padding-left:3px; padding-right:3px; padding-top:3px;">로그아웃</button>
-                    <div>
+                    <div style="float: right; display: flex; justify-content: flex-end; ">
+                        <p style="text-align: right; color: white; MARGIN-RIGHT:10PX; padding-top:5px; width: 250px;">${data.nickname}님 환영합니다!</p>
+                        <div style="width: 260px;">
+                            <button class="button" onclick="showNicknameForm()" style="padding-left:3px; padding-right:3px; padding-top:3px;">닉네임 변경</button>
+                            <button class="button" style="padding-left:3px; padding-right:3px; padding-top:3px"><a href="/my_page" style="color:black;">마이 페이지</a></button>
+                            <button class="button" onclick="logout()" style="padding-top:5px; padding-left:3px; padding-right:3px; padding-top:3px;">로그아웃</button>
+                        </div>
+                    </div>
                     <form id="nicknameForm" style="display: none;">
                         <input type="text" id="newNickname" placeholder="새 닉네임을 입력하세요"><button class="button" type="button" onclick="checkNicknameDuplicate()">중복 확인</button>
                         <button class="button" type="submit">변경</button>
