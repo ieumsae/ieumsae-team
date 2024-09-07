@@ -1,12 +1,10 @@
 package com.ieumsae.user.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("api/mypage")
 public class MyPageController {
-    @GetMapping("/my_page")
-    public String myPage() {
-        return "my_page";
+
     }
-}
