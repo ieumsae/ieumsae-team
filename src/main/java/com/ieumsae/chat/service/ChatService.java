@@ -53,34 +53,36 @@ public class ChatService {
     @Transactional
     public ChatRoom getOrCreateChatRoom(Long studyId, ChatRoom.ChatType chatType, Long userId) {
         if (chatType == ChatRoom.ChatType.PERSONAL) {
-            // PERSONAL 채팅방의 경우 먼저 기존 채팅방 찾기
-            Optional<ChatRoom> existingRoom = chatRoomRepository.findPersonalChatRoomByUserIdAndStudyId(userId, studyId);
-
-            if (existingRoom.isPresent()) {
-                return existingRoom.get();
-            }
-
-            // 기존 채팅방이 없으면 새로운 채팅방 생성
-            ChatRoom newChatRoom = new ChatRoom();
-            newChatRoom.setStudyId(studyId);
-            newChatRoom.setChatType(chatType);
-            ChatRoom savedChatRoom = chatRoomRepository.save(newChatRoom);
-
-            // 새로운 채팅방에 사용자 추가
-            // 주석 추가
-            addUserToChat(savedChatRoom.getChatRoomId(), userId, chatType, studyId);
-
-            return savedChatRoom;
+            return getOrCreatePersonalChatRoom(studyId, userId);
         } else {
-            // GROUP 채팅방의 경우 기존 로직 유지
-            return chatRoomRepository.findByStudyIdAndChatType(studyId, chatType)
-                    .orElseGet(() -> {
-                        ChatRoom newChatRoom = new ChatRoom();
-                        newChatRoom.setStudyId(studyId);
-                        newChatRoom.setChatType(chatType);
-                        return chatRoomRepository.save(newChatRoom);
-                    });
+            return getOrCreateGroupChatRoom(studyId, chatType);
         }
+    }
+
+    private ChatRoom getOrCreatePersonalChatRoom(Long studyId, Long userId) {
+        return chatRoomRepository.findPersonalChatRoomByUserIdAndStudyId(userId, studyId)
+                .orElseGet(() -> createPersonalChatRoom(studyId, userId));
+    }
+
+    private ChatRoom createPersonalChatRoom(Long studyId, Long userId) {
+        ChatRoom newChatRoom = new ChatRoom();
+        newChatRoom.setStudyId(studyId);
+        newChatRoom.setChatType(ChatRoom.ChatType.PERSONAL);
+        ChatRoom savedChatRoom = chatRoomRepository.save(newChatRoom);
+        addUserToChat(savedChatRoom.getChatRoomId(), userId, ChatRoom.ChatType.PERSONAL, studyId);
+        return savedChatRoom;
+    }
+
+    private ChatRoom getOrCreateGroupChatRoom(Long studyId, ChatRoom.ChatType chatType) {
+        return chatRoomRepository.findByStudyIdAndChatType(studyId, chatType)
+                .orElseGet(() -> createGroupChatRoom(studyId, chatType));
+    }
+
+    private ChatRoom createGroupChatRoom(Long studyId, ChatRoom.ChatType chatType) {
+        ChatRoom newChatRoom = new ChatRoom();
+        newChatRoom.setStudyId(studyId);
+        newChatRoom.setChatType(chatType);
+        return chatRoomRepository.save(newChatRoom);
     }
     /**
      * @note 그룹채팅의 경우 유저가 해당 스터디원인지 확인
