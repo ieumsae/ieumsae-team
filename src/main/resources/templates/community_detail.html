@@ -22,26 +22,16 @@
   <link rel="stylesheet" href="/css/tabs.css">
 </head>
 <body>
-<!-- 서브 헤더 시작 -->
+<!-- Sub Header -->
 <div class="sub-header">
   <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-sm-8">
-        <div class="left-content">
-          <p>ieumsae</p> <!-- 사이트 이름 -->
-        </div>
-      </div>
-      <div class="col-lg-4 col-sm-4">
-        <div class="right-icons">
-          <ul>
-            <div th:replace="fragments/header :: header"></div>
-          </ul>
-        </div>
+    <div class="row" style="display: flex; justify-content: flex-end;">
+      <div class="col-lg-4 col-sm-4" style="min-width: 600px;">
+        <div th:replace="fragments/header :: header"></div>
       </div>
     </div>
   </div>
 </div>
-<!-- 서브 헤더 끝 -->
 
 <!-- 헤더 영역 시작 -->
 <header class="header-area header-sticky">
@@ -54,9 +44,9 @@
           <!-- 로고 끝 -->
           <!-- 메뉴 시작 -->
           <ul class="nav">
-            <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+            <li class="scroll-to-section"><a href="#top">Home</a></li>
             <li><a th:href="@{/study}">STUDY</a></li>
-            <li><a th:href="@{/community}">COMMUNITY</a></li>
+            <li><a th:href="@{/community}" class="active">COMMUNITY</a></li>
             <li><a th:href="@{/review}">review</a></li>
             <li class="scroll-to-section"><a href="#notice-board">notice</a></li>
             <li><a th:href="@{/contact_us}">Contact Us</a></li>
