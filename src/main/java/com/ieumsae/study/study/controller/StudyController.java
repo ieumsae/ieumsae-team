@@ -132,7 +132,7 @@ public class StudyController {
         StudyDTO studyDTO = new StudyDTO();
         studyDTO.setTitle(title);
         studyDTO.setContent(content);
-        studyService.updatestudy(studyId, studyDTO);
+        studyService.updateStudy(studyId, studyDTO);
         return "redirect:/study/" + studyId; // 수정 후 상세 페이지로 리다이렉트
     }
 
