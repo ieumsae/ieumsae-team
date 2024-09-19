@@ -41,24 +41,27 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         return authenticationManager.authenticate(authToken);
     }
 
-    // 인증 성공 시 호출되는 메서드
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal(); // 인증된 사용자 정보 가져오기
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                            FilterChain chain, Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUsername();
+        String userRole = extractUserRole(authentication);
 
-        String userId = customUserDetails.getUsername();  // 사용자 ID 가져오기
+        String token = generateJwtToken(userId, userRole);
+        addTokenToResponse(response, token);
+    }
 
-        // 사용자의 권한 정보 가져오기
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
+    private String extractUserRole(Authentication authentication) {
+        return authentication.getAuthorities().iterator().next().getAuthority();
+    }
 
-        String role = auth.getAuthority(); // 사용자 역할(권한) 가져오기
+    private String generateJwtToken(String userId, String userRole) {
+        long tokenValidityInMillis = 24 * 60 * 60 * 1000L; // 24 hours
+        return jwtUtil.createJwt(userId, userRole, tokenValidityInMillis);
+    }
 
-        // JWT 토큰 생성 (유효기간: 24시간)
-        String token = jwtUtil.createJwt(userId, role, 24 * 60 * 60 * 1000L);
-
-        // 생성된 토큰을 응답 헤더에 추가
+    private void addTokenToResponse(HttpServletResponse response, String token) {
         response.addHeader("Authorization", "Bearer " + token);
     }
 
