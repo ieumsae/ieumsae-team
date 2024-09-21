@@ -98,7 +98,7 @@ public class StudyService {
     }
 
     @Transactional
-    public void rejectStudyApplication(Long studyId, Long applicantUserId, Long currentUserId) {
+    public void rejectStudyApplication(Long studyId, Long applicantUserId, Long currentUserId) { // 리펙토링 예정
         Study study = findStudyById(studyId);
 
         if (!study.getCreatorId().equals(currentUserId)) {
