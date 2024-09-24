@@ -164,35 +164,87 @@ public class ChatService {
      * @note 메시지를 받아서 저장하고 문자열 포맷팅 후 채팅방에 띄워주는 메소드
      */
 
+    import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
+
     @Transactional
     public Message saveAndSendMessage(Long chatRoomId, Long userId, String content, Long currentUserId) {
 
-        // 채팅방 존재 여부 확인
+        // Validate chat room existence
+        validateChatRoomExists(chatRoomId);
+
+        // Validate user existence and retrieve user information
+        User userChat = validateAndGetUser(userId);
+
+        // Format the message content based on the sender
+        String formattedContent = formatMessageContent(userId, currentUserId, userChat.getNickname(), content);
+
+        // Create and save the message
+        Message message = createAndSaveMessage(chatRoomId, userId, formattedContent);
+
+        // Optionally, you can add WebSocket messaging logic here if needed
+
+        return message;
+    }
+
+    /**
+     * Validates that the chat room exists.
+     *
+     * @param chatRoomId The ID of the chat room to validate.
+     * @throws RuntimeException if the chat room does not exist.
+     */
+    private void validateChatRoomExists(Long chatRoomId) {
         chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+    }
 
-        // 유저 존재 여부 확인
-        User userChat = userRepository.findById(userId)
+    /**
+     * Validates that the user exists and retrieves the user entity.
+     *
+     * @param userId The ID of the user to validate.
+     * @return The User entity.
+     * @throws RuntimeException if the user does not exist.
+     */
+    private User validateAndGetUser(Long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+    }
 
-        // 메시지 포맷팅
-        String formattedContent;
+    /**
+     * Formats the message content based on whether the sender is the current user.
+     *
+     * @param userId        The ID of the user sending the message.
+     * @param currentUserId The ID of the current authenticated user.
+     * @param nickname      The nickname of the user sending the message.
+     * @param content       The original message content.
+     * @return The formatted message content.
+     */
+    private String formatMessageContent(Long userId, Long currentUserId, String nickname, String content) {
         if (userId.equals(currentUserId)) {
-            formattedContent = String.format("나: %s", content);
+            return String.format("나: %s", content);
         } else {
-            formattedContent = String.format("%s: %s", userChat.getNickname(), content);
+            return String.format("%s: %s", nickname, content);
         }
+    }
 
-        // 메시지 생성 및 저장
+    /**
+     * Creates a Message entity and saves it to the repository.
+     *
+     * @param chatRoomId      The ID of the chat room.
+     * @param userId          The ID of the user sending the message.
+     * @param formattedContent The formatted message content.
+     * @return The saved Message entity.
+     */
+    private Message createAndSaveMessage(Long chatRoomId, Long userId, String formattedContent) {
         Message message = new Message();
         message.setChatRoomId(chatRoomId);
         message.setUserId(userId);
         message.setContent(formattedContent);
         message.setSentAt(LocalDateTime.now());
 
-        // WebSocket을 통해 메시지 전송
         return messageRepository.save(message);
     }
+
 
     /**
      * @return List 형태
