@@ -164,9 +164,6 @@ public class ChatService {
      * @note 메시지를 받아서 저장하고 문자열 포맷팅 후 채팅방에 띄워주는 메소드
      */
 
-    import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
-
     @Transactional
     public Message saveAndSendMessage(Long chatRoomId, Long userId, String content, Long currentUserId) {
 
@@ -228,12 +225,7 @@ import java.time.LocalDateTime;
     }
 
     /**
-     * Creates a Message entity and saves it to the repository.
-     *
-     * @param chatRoomId      The ID of the chat room.
-     * @param userId          The ID of the user sending the message.
-     * @param formattedContent The formatted message content.
-     * @return The saved Message entity.
+        * 메시지 저장 및 전송 로직
      */
     private Message createAndSaveMessage(Long chatRoomId, Long userId, String formattedContent) {
         Message message = new Message();
@@ -243,6 +235,7 @@ import java.time.LocalDateTime;
         message.setSentAt(LocalDateTime.now());
 
         return messageRepository.save(message);
+
     }
 
 
