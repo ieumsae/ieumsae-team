@@ -228,12 +228,7 @@ import java.time.LocalDateTime;
     }
 
     /**
-     * Creates a Message entity and saves it to the repository.
-     *
-     * @param chatRoomId      The ID of the chat room.
-     * @param userId          The ID of the user sending the message.
-     * @param formattedContent The formatted message content.
-     * @return The saved Message entity.
+
      */
     private Message createAndSaveMessage(Long chatRoomId, Long userId, String formattedContent) {
         Message message = new Message();
@@ -243,6 +238,7 @@ import java.time.LocalDateTime;
         message.setSentAt(LocalDateTime.now());
 
         return messageRepository.save(message);
+
     }
 
 
