@@ -30,30 +30,30 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("OAuth2 사용자 정보 로딩 중");
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("OAuth2User 속성: {}", oAuth2User.getAttributes());
+        logAttributes(oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         log.info("등록 ID: {}", registrationId);
 
         OAuth2Response oAuth2Response = createOAuth2Response(registrationId, oAuth2User.getAttributes());
-        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+
+        String username = generateUsername(oAuth2Response);
         log.info("생성된 사용자 ID: {}", username);
 
-        UserForm userForm = new UserForm();
-        userForm.setUsername(username);
-        userForm.setEmail(oAuth2Response.getEmail());
-        userForm.setName(oAuth2Response.getName());
-        userForm.setNickname(userForm.getNickname());
+        UserForm userForm = populateUserForm(username, oAuth2Response);
 
         Long userId = userService.socialSignup(new CustomOAuth2User(userForm, oAuth2User.getAttributes()));
-
-        User savedUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("소셜로그인한 유저를 찾을 수 없읍니다."));
+        User savedUser = findUserById(userId);
 
         userForm.setUserId(savedUser.getUserId());
 
         return new CustomOAuth2User(userForm, oAuth2User.getAttributes());
+    }
+
+    private void logAttributes(OAuth2User oAuth2User) {
+        log.info("OAuth2User 속성: {}", oAuth2User.getAttributes());
     }
 
     private OAuth2Response createOAuth2Response(String registrationId, Map<String, Object> attributes) {
@@ -63,4 +63,23 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             default -> throw new IllegalArgumentException("지원하지 않는 OAuth2 provider: " + registrationId);
         };
     }
+
+    private String generateUsername(OAuth2Response oAuth2Response) {
+        return oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+    }
+
+    private UserForm populateUserForm(String username, OAuth2Response oAuth2Response) {
+        UserForm userForm = new UserForm();
+        userForm.setUsername(username);
+        userForm.setEmail(oAuth2Response.getEmail());
+        userForm.setName(oAuth2Response.getName());
+        userForm.setNickname(userForm.getNickname());  // nickname 로직이 더 명확해야 함 (null이면 기본값 처리 필요)
+        return userForm;
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("소셜로그인한 유저를 찾을 수 없습니다."));
+    }
+
 }
