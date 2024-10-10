@@ -25,25 +25,16 @@
   </head>
 
 <body>
-  <!-- Sub Header -->
-  <div class="sub-header">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-sm-8">
-          <div class="left-content">
-            <p>ieumsae</p>
-          </div>
-        </div>
-        <div class="col-lg-4 col-sm-4">
-          <div class="right-icons">
-            <ul>
-              <div th:replace="fragments/header :: header"></div>
-            </ul>
-          </div>
-        </div>
+<!-- Sub Header -->
+<div class="sub-header">
+  <div class="container">
+    <div class="row" style="display: flex; justify-content: flex-end;">
+      <div class="col-lg-4 col-sm-4" style="min-width: 600px;">
+        <div th:replace="fragments/header :: header"></div>
       </div>
     </div>
   </div>
+</div>
 
   <!-- ***** Header Area Start ***** -->
   <header class="header-area header-sticky">
