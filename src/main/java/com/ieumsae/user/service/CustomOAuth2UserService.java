@@ -41,6 +41,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         UserForm userForm = populateUserForm(username, oAuth2Response);
 
+
+        String username = generateUsername(oAuth2Response);
+
+        UserForm userForm = populateUserForm(username, oAuth2Response);
+
         Long userId = userService.socialSignup(new CustomOAuth2User(userForm, oAuth2User.getAttributes()));
         User savedUser = findUserById(userId);
 
