@@ -50,11 +50,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             log.info("인증된 OAuth2 사용자 ID: {}", username);
 
             // 사용자 권한 정보 추출
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-            Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-            GrantedAuthority auth = iterator.next();
-            role = auth.getAuthority();
+            role = authentication.getAuthorities().iterator().next().getAuthority();
 
+            // 사용자 닉네임 확인
             User user = userRepository.findById(userId).orElse(null);
             String nickname = user != null ? user.getNickname() : null;
             boolean hasNickname = nickname != null && !nickname.trim().isEmpty();
@@ -77,22 +75,23 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             username = userDetails.getUsername();
             log.info("인증된 폼 로그인 사용자 ID: {}", username);
 
+            // 사용자 권한 정보 추출
             role = userDetails.getAuthorities().iterator().next().getAuthority();
+
+            // 리다이렉트 URL 설정
             if ("ADMIN".equals(role)) {
                 redirectUrl = "/admin";
                 log.info("관리자 사용자입니다. 관리자 페이지로 리다이렉트합니다.");
-
             } else if ("USER".equals(role)) {
                 redirectUrl = "/";
                 log.info("일반 사용자입니다. 메인 페이지로 리다이렉트합니다.");
-
             } else {
                 throw new IllegalStateException("예상치 못한 사용자 역할입니다.");
             }
-
         } else {
             throw new IllegalStateException("예상치 못한 인증 주체 유형입니다.");
         }
+
 
         log.info("사용자 권한: {}", role);
 
